@@ -1,0 +1,33 @@
+.login-container {
+    -fx-background-color: #f4f6f8;
+}
+
+.title-label {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.subtitle-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #7f8c8d;
+}
+
+.message-label {
+    -fx-text-fill: #c0392b;
+}
+
+.text-field, .password-field {
+    -fx-pref-width: 260px;
+}
+
+.button {
+    -fx-background-color: #2980b9;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-pref-width: 260px;
+}
+
+.button:hover {
+    -fx-background-color: #1f618d;
+}

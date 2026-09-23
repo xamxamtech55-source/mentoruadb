@@ -22,4 +22,8 @@ public class Filiere {
 
     public int getIdUfr() { return idUfr; }
     public void setIdUfr(int idUfr) { this.idUfr = idUfr; }
+    @Override
+    public String toString() {
+        return nom;
+    }
 }

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.ComboBox?>
+
+<?import javafx.scene.control.ScrollPane?>
+<ScrollPane fitToWidth="true" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.uadb.mentoruadb.controller.DashboardMentorController">
+<VBox spacing="12.0">
+    <padding>
+        <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+    </padding>
+
+    <HBox spacing="10.0" alignment="CENTER_LEFT">
+        <Label fx:id="bienvenueLabel" styleClass="title-label" />
+        <Region HBox.hgrow="ALWAYS" />
+        <Button fx:id="retourEtudiantButton" text="Retour espace étudiant" onAction="#onRetourEtudiantClick" styleClass="lien-button" />
+        <Button fx:id="deconnexionButton" text="Déconnexion" onAction="#onDeconnexionClick" styleClass="deconnexion-button" />
+        <Button fx:id="seanceGroupeButton" text="Créer une séance de groupe" onAction="#onSeanceGroupeClick" />
+    </HBox>
+
+    <Label text="Demandes reçues" styleClass="subtitle-label" />
+    <TableView fx:id="demandesTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colDemandeEtudiant" text="Étudiant" prefWidth="150.0" />
+            <TableColumn fx:id="colDemandeMatiere" text="Matière" prefWidth="120.0" />
+            <TableColumn fx:id="colDemandeDate" text="Date demande" prefWidth="110.0" />
+            <TableColumn fx:id="colDemandeStatut" text="Statut" prefWidth="100.0" />
+        </columns>
+    </TableView>
+
+    <Label text="Accepter la demande sélectionnée (planifier une séance)" />
+    <HBox spacing="10.0" alignment="CENTER_LEFT">
+        <DatePicker fx:id="dateSeancePicker" promptText="Date" />
+        <TextField fx:id="heureDebutField" promptText="Début (HH:mm)" prefWidth="90.0" />
+        <TextField fx:id="heureFinField" promptText="Fin (HH:mm)" prefWidth="90.0" />
+        <ComboBox fx:id="modaliteComboBox" promptText="Modalité" />
+        <TextField fx:id="lieuField" promptText="Salle ou lien" prefWidth="160.0" />
+    </HBox>
+    <HBox spacing="10.0">
+        <Button text="Accepter" onAction="#onAccepterClick" />
+        <Button text="Refuser" onAction="#onRefuserClick" styleClass="lien-button" />
+    </HBox>
+
+    <Label text="Mes séances" styleClass="subtitle-label" />
+    <TableView fx:id="seancesTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colSeanceEtudiant" text="Étudiant" prefWidth="150.0" />
+            <TableColumn fx:id="colSeanceMatiere" text="Matière" prefWidth="120.0" />
+            <TableColumn fx:id="colSeanceDate" text="Date" prefWidth="100.0" />
+            <TableColumn fx:id="colSeanceHeureDebut" text="Début" prefWidth="80.0" />
+            <TableColumn fx:id="colSeanceHeureFin" text="Fin" prefWidth="80.0" />
+            <TableColumn fx:id="colSeanceStatut" text="Statut" prefWidth="100.0" />
+        </columns>
+    </TableView>
+
+    <HBox spacing="10.0">
+        <Button text="Marquer réalisée" onAction="#onMarquerRealiseeClick" />
+        <Button text="Annuler la séance" onAction="#onAnnulerClick" styleClass="lien-button" />
+    </HBox>
+    <Label text="Mes évaluations" styleClass="subtitle-label" />
+    <TableView fx:id="evaluationsTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colEvalEtudiant" text="Étudiant" prefWidth="150.0" />
+            <TableColumn fx:id="colEvalMatiere" text="Matière" prefWidth="120.0" />
+            <TableColumn fx:id="colEvalNote" text="Note" prefWidth="60.0" />
+            <TableColumn fx:id="colEvalCommentaire" text="Commentaire" prefWidth="220.0" />
+            <TableColumn fx:id="colEvalDate" text="Date" prefWidth="100.0" />
+        </columns>
+    </TableView>
+    <Label text="Mes fichiers partagés" styleClass="subtitle-label" />
+    <HBox spacing="10.0" alignment="CENTER_LEFT">
+        <ComboBox fx:id="matiereFichierComboBox" promptText="Matière du fichier" />
+        <Button text="Choisir un fichier..." onAction="#onChoisirFichierClick" />
+        <Label fx:id="fichierSelectionneLabel" text="Aucun fichier choisi" />
+        <Button text="Partager" onAction="#onUploaderClick" />
+    </HBox>
+    <TableView fx:id="fichiersTable" prefHeight="120.0">
+        <columns>
+            <TableColumn fx:id="colFichierNom" text="Nom du fichier" prefWidth="250.0" />
+            <TableColumn fx:id="colFichierDate" text="Date" prefWidth="100.0" />
+        </columns>
+    </TableView>
+    <Label fx:id="messageLabel" styleClass="message-label" />
+</VBox>
+</ScrollPane>

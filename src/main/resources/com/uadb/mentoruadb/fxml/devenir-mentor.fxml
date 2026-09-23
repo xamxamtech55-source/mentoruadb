@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="15.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.uadb.mentoruadb.controller.DevenirMentorController">
+    <padding>
+        <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+    </padding>
+
+    <Label text="Devenir mentor" styleClass="title-label" />
+    <Label text="Sélectionne les matières dans lesquelles tu peux accompagner d'autres étudiants (Ctrl+clic pour en choisir plusieurs)" wrapText="true" />
+
+    <ListView fx:id="matieresListView" VBox.vgrow="ALWAYS" />
+
+    <HBox spacing="10.0">
+        <Button text="Envoyer ma candidature" onAction="#onCandidaterClick" />
+        <Button fx:id="retourButton" text="Retour au tableau de bord" onAction="#onRetourClick" styleClass="lien-button" />
+    </HBox>
+
+    <Label fx:id="messageLabel" styleClass="message-label" />
+</VBox>

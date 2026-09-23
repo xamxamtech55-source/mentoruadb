@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="12.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.uadb.mentoruadb.controller.SeanceGroupeController">
+    <padding>
+        <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+    </padding>
+
+    <Label text="Créer une séance de groupe" styleClass="title-label" />
+    <Label text="Tous les étudiants ayant une demande acceptée avec toi sur la matière choisie seront invités automatiquement." wrapText="true" />
+
+    <ComboBox fx:id="matiereComboBox" promptText="Matière" maxWidth="Infinity" />
+    <DatePicker fx:id="dateSeancePicker" promptText="Date" maxWidth="Infinity" />
+
+    <HBox spacing="10.0" alignment="CENTER_LEFT">
+        <TextField fx:id="heureDebutField" promptText="Début (HH:mm)" prefWidth="100.0" />
+        <TextField fx:id="heureFinField" promptText="Fin (HH:mm)" prefWidth="100.0" />
+        <ComboBox fx:id="modaliteComboBox" promptText="Modalité" />
+    </HBox>
+
+    <TextField fx:id="lieuField" promptText="Salle ou lien (visio)" maxWidth="Infinity" />
+
+    <HBox spacing="10.0">
+        <Button text="Créer la séance" onAction="#onCreerClick" />
+        <Button fx:id="retourButton" text="Retour" onAction="#onRetourClick" styleClass="lien-button" />
+    </HBox>
+
+    <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />
+</VBox>

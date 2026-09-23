@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="15.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.uadb.mentoruadb.controller.RechercheMentorController">
+    <padding>
+        <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+    </padding>
+
+    <Label text="Rechercher un mentor" styleClass="title-label" />
+
+    <HBox spacing="10.0" alignment="CENTER_LEFT">
+        <ComboBox fx:id="matiereComboBox" promptText="Choisir une matière" />
+        <Button text="Rechercher" onAction="#onRechercherClick" />
+    </HBox>
+
+    <TableView fx:id="mentorsTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colMentorNom" text="Mentor" prefWidth="180.0" />
+            <TableColumn fx:id="colMentorFiliere" text="Filière" prefWidth="150.0" />
+            <TableColumn fx:id="colMentorNiveau" text="Niveau" prefWidth="100.0" />
+        </columns>
+    </TableView>
+
+    <TextArea fx:id="profilTextArea" editable="false" wrapText="true" prefRowCount="5"
+              promptText="Sélectionne un mentor puis clique sur « Voir le profil »" />
+
+    <HBox spacing="10.0" alignment="CENTER_LEFT">
+        <Button text="Voir le profil" onAction="#onVoirProfilClick" />
+        <Button text="Envoyer une demande" onAction="#onDemanderClick" />
+        <Button fx:id="retourButton" text="Retour au tableau de bord" onAction="#onRetourClick" styleClass="lien-button" />
+    </HBox>
+
+    <Label fx:id="messageLabel" styleClass="message-label" />
+</VBox>

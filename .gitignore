@@ -21,3 +21,4 @@ Thumbs.db
 # Fichiers de config locaux sensibles (si vous en ajoutez)
 application.properties
 *.env
+uploads/

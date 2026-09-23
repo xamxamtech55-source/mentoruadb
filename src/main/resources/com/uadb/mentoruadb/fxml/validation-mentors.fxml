@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="15.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.uadb.mentoruadb.controller.ValidationMentorsController">
+    <padding>
+        <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+    </padding>
+
+    <Label text="Candidatures mentor en attente" styleClass="title-label" />
+
+    <TableView fx:id="candidatsTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colEtudiant" text="Étudiant" prefWidth="150.0" />
+            <TableColumn fx:id="colFiliere" text="Filière" prefWidth="120.0" />
+            <TableColumn fx:id="colNiveau" text="Niveau" prefWidth="90.0" />
+            <TableColumn fx:id="colMatieres" text="Matières déclarées" prefWidth="220.0" />
+        </columns>
+    </TableView>
+
+    <HBox spacing="10.0">
+        <Button text="Valider" onAction="#onValiderClick" />
+        <Button text="Refuser" onAction="#onRefuserClick" styleClass="lien-button" />
+        <Button fx:id="retourButton" text="Retour" onAction="#onRetourClick" styleClass="lien-button" />
+    </HBox>
+
+    <Label fx:id="messageLabel" styleClass="message-label" />
+</VBox>

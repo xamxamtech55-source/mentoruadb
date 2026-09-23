@@ -20,7 +20,7 @@ public class Main extends Application {
                 getClass().getResource("/com/uadb/mentoruadb/fxml/login.fxml")
         );
 
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(root, 950, 700);
         scene.getStylesheets().add(
                 getClass().getResource("/com/uadb/mentoruadb/css/style.css").toExternalForm()
         );

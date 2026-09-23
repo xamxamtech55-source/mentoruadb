@@ -3,7 +3,7 @@
 Application desktop de mise en relation et de gestion du mentorat étudiant à l'Université Alioune Diop de Bambey (UADB).
 
 **Stack** : Java 17 • JavaFX 21 • FXML • CSS • JDBC • MySQL 8
-**Architecture** : JavaFX/FXML/CSS → Controllers → Services → JDBC → MySQL (pas de couche DAO)
+**Architecture** : JavaFX/FXML/CSS → Controllers → Services → DAO → JDBC → MySQL
 
 ---
 
@@ -47,15 +47,18 @@ mvn clean javafx:run
 ## 4. Structure du projet
 
 ```
-src/main/java/.../Main.java              -> point d'entrée JavaFX
+    src/main/java/.../Main.java              -> point d'entrée JavaFX
 src/main/java/.../config/                -> DatabaseConnection (JDBC)
 src/main/java/.../model/                 -> entités (11 classes, cf. MEA section 6)
-src/main/java/.../service/               -> logique métier + accès aux données (JDBC)
+src/main/java/.../dao/                   -> accès aux données (JDBC, une classe par entité)
+src/main/java/.../dto/                   -> vues enrichies pour l'affichage (jointures SQL)
+src/main/java/.../service/               -> logique métier (InscriptionService, MentoratService)
 src/main/java/.../controller/            -> contrôleurs FXML
+src/main/java/.../util/                  -> SceneNavigator (navigation entre écrans)
 src/main/resources/.../fxml/             -> écrans (.fxml)
 src/main/resources/.../css/              -> styles
 database/schema.sql                      -> création des tables
-database/data.sql                        -> jeu de données de test
+database/data.sql                        -> jeu de données de test                   
 ```
 
 ## 5. Organisation de l'équipe

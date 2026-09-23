@@ -1,19 +1,27 @@
 package com.uadb.mentoruadb.model;
 
-/** Entité UTILISATEUR : compte commun à tous les rôles (étudiant, mentor, admin). */
+/** Entité UTILISATEUR (compte de connexion). */
 public class Utilisateur {
     private int idUtilisateur;
     private String nom;
     private String prenom;
     private String email;
     private String motDePasse;
-    private String role;   // ETUDIANT, MENTOR, ADMIN
-    private String statut; // ACTIF, INACTIF...
+    private String role;
+    private String statut;
+    private String telephone;
+    private String photo;
 
     public Utilisateur() {}
 
+    /** Constructeur historique, sans les nouveaux champs de profil (télephone/photo restent null). */
     public Utilisateur(int idUtilisateur, String nom, String prenom, String email,
-                        String motDePasse, String role, String statut) {
+                       String motDePasse, String role, String statut) {
+        this(idUtilisateur, nom, prenom, email, motDePasse, role, statut, null, null);
+    }
+
+    public Utilisateur(int idUtilisateur, String nom, String prenom, String email, String motDePasse,
+                       String role, String statut, String telephone, String photo) {
         this.idUtilisateur = idUtilisateur;
         this.nom = nom;
         this.prenom = prenom;
@@ -21,6 +29,8 @@ public class Utilisateur {
         this.motDePasse = motDePasse;
         this.role = role;
         this.statut = statut;
+        this.telephone = telephone;
+        this.photo = photo;
     }
 
     public int getIdUtilisateur() { return idUtilisateur; }
@@ -43,4 +53,10 @@ public class Utilisateur {
 
     public String getStatut() { return statut; }
     public void setStatut(String statut) { this.statut = statut; }
+
+    public String getTelephone() { return telephone; }
+    public void setTelephone(String telephone) { this.telephone = telephone; }
+
+    public String getPhoto() { return photo; }
+    public void setPhoto(String photo) { this.photo = photo; }
 }

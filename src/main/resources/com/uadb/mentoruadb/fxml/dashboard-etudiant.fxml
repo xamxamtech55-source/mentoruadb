@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Region?>
+
+<VBox spacing="15.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.uadb.mentoruadb.controller.DashboardEtudiantController">
+    <padding>
+        <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+    </padding>
+
+    <HBox spacing="10.0" alignment="CENTER_LEFT" xmlns:fx="http://javafx.com/fxml/1">
+        <Label fx:id="bienvenueLabel" styleClass="title-label" />
+        <Region HBox.hgrow="ALWAYS" />
+        <Button fx:id="devenirMentorButton" text="Devenir mentor" onAction="#onDevenirMentorClick" />
+        <Button fx:id="tableauMentorButton" text="Tableau de bord Mentor" onAction="#onTableauMentorClick" />
+        <Button fx:id="deconnexionButton" text="Déconnexion" onAction="#onDeconnexionClick" styleClass="deconnexion-button" />
+        <Button fx:id="profilButton" text="Mon profil" onAction="#onProfilClick" />
+    </HBox>
+    <Label fx:id="notificationLabel" styleClass="notification-label" wrapText="true" visible="false" managed="false" />
+    <Button fx:id="rechercherMentorButton" text="Rechercher un mentor" onAction="#onRechercherMentorClick" />
+    <Label text="Mes demandes de mentorat" styleClass="subtitle-label" />
+    <TableView fx:id="demandesTable" prefHeight="150.0" maxHeight="200.0">
+        <columns>
+            <TableColumn fx:id="colDemandeMentor" text="Mentor" prefWidth="150.0" />
+            <TableColumn fx:id="colDemandeMatiere" text="Matière" prefWidth="120.0" />
+            <TableColumn fx:id="colDemandeDate" text="Date demande" prefWidth="110.0" />
+            <TableColumn fx:id="colDemandeStatut" text="Statut" prefWidth="100.0" />
+        </columns>
+    </TableView>
+
+    <Label text="Mes séances" styleClass="subtitle-label" />
+    <TableView fx:id="seancesTable" prefHeight="150.0" maxHeight="200.0">
+        <columns>
+            <TableColumn fx:id="colSeanceMentor" text="Mentor" prefWidth="150.0" />
+            <TableColumn fx:id="colSeanceMatiere" text="Matière" prefWidth="120.0" />
+            <TableColumn fx:id="colSeanceDate" text="Date" prefWidth="100.0" />
+            <TableColumn fx:id="colSeanceHeureDebut" text="Début" prefWidth="80.0" />
+            <TableColumn fx:id="colSeanceHeureFin" text="Fin" prefWidth="80.0" />
+            <TableColumn fx:id="colSeanceStatut" text="Statut" prefWidth="100.0" />
+        </columns>
+    </TableView>
+    <Label text="Fichiers partagés par mes mentors" styleClass="subtitle-label" />
+    <TableView fx:id="fichiersTable" prefHeight="150.0" minHeight="150.0">
+        <columns>
+            <TableColumn fx:id="colFichierNom" text="Nom du fichier" prefWidth="220.0" />
+            <TableColumn fx:id="colFichierMatiere" text="Matière" prefWidth="120.0" />
+            <TableColumn fx:id="colFichierDate" text="Date" prefWidth="100.0" />
+        </columns>
+    </TableView>
+    <Button text="Ouvrir le fichier sélectionné" onAction="#onOuvrirFichierClick" />
+    <Label text="Évaluer une séance réalisée (sélectionne-la dans le tableau ci-dessus)" wrapText="true" />
+    <HBox spacing="10.0" alignment="CENTER_LEFT">
+        <ComboBox fx:id="noteComboBox" promptText="Note (1-5)" />
+        <TextField fx:id="commentaireField" promptText="Commentaire" HBox.hgrow="ALWAYS" />
+        <Button text="Évaluer" onAction="#onEvaluerClick" />
+    </HBox>
+</VBox>

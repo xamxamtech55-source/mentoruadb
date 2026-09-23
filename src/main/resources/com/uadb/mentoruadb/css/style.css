@@ -31,3 +31,31 @@
 .button:hover {
     -fx-background-color: #1f618d;
 }
+.toggle-password-button {
+    -fx-background-color: #c2c2c2;
+    -fx-text-fill: #000000;
+    -fx-border-color: #999999;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+    -fx-min-width: 32px;
+    -fx-max-width: 32px;
+    -fx-padding: 4 0 4 0;
+}
+.deconnexion-button {
+    -fx-font-size: 11px;
+    -fx-padding: 4 10 4 10;
+    -fx-background-color: #c0392b;
+    -fx-text-fill: white;
+    -fx-background-radius: 3;
+    -fx-cursor: hand;
+}
+.notification-label {
+    -fx-background-color: #fff3cd;
+    -fx-text-fill: #856404;
+    -fx-padding: 8 12 8 12;
+    -fx-background-radius: 4;
+    -fx-border-color: #ffeeba;
+    -fx-border-radius: 4;
+}

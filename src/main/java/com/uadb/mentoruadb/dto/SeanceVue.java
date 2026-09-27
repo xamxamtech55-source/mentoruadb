@@ -3,7 +3,7 @@ package com.uadb.mentoruadb.dto;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-/** Vue enrichie d'une séance, pour l'affichage dans un tableau (pas une entité de la base). */
+/** Vue enrichie d'une séance (individuelle ou de groupe), pour l'affichage (pas une entité de la base). */
 public class SeanceVue {
     private final int idSeance;
     private final String nomMentor;
@@ -12,9 +12,10 @@ public class SeanceVue {
     private final LocalTime heureDebut;
     private final LocalTime heureFin;
     private final String statut;
+    private final String typeSeance;
 
     public SeanceVue(int idSeance, String nomMentor, String nomMatiere, LocalDate dateSeance,
-                     LocalTime heureDebut, LocalTime heureFin, String statut) {
+                     LocalTime heureDebut, LocalTime heureFin, String statut, String typeSeance) {
         this.idSeance = idSeance;
         this.nomMentor = nomMentor;
         this.nomMatiere = nomMatiere;
@@ -22,6 +23,7 @@ public class SeanceVue {
         this.heureDebut = heureDebut;
         this.heureFin = heureFin;
         this.statut = statut;
+        this.typeSeance = typeSeance;
     }
 
     public int getIdSeance() { return idSeance; }
@@ -31,4 +33,5 @@ public class SeanceVue {
     public LocalTime getHeureDebut() { return heureDebut; }
     public LocalTime getHeureFin() { return heureFin; }
     public String getStatut() { return statut; }
+    public String getTypeSeance() { return typeSeance; }
 }

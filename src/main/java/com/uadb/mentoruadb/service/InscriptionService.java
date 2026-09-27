@@ -12,8 +12,7 @@ import java.sql.SQLException;
 /**
  * Gère la création de compte (Utilisateur + profil Etudiant ou Mentor).
  * Limite connue : pas de vraie transaction SQL (chaque DAO ouvre/ferme sa
- * connexion) — si le 2e insert échoue, le 1er reste en base. Acceptable
- * pour ce projet, à mentionner dans le rapport comme piste d'amélioration.
+ * connexion) — si le 2e insert échoue, le 1er reste en base.
  */
 public class InscriptionService {
 
@@ -24,7 +23,7 @@ public class InscriptionService {
     private final MentorDao mentorDao = new MentorDao();
 
     public Etudiant inscrireEtudiant(String nom, String prenom, String email, String motDePasse,
-                                     int idFiliere, int idNiveau) throws SQLException {
+                                     int idFiliere, int idNiveau, String telephone, String numeroCarte) throws SQLException {
 
         if (!email.toLowerCase().endsWith(DOMAINE_INSTITUTIONNEL)) {
             throw new IllegalArgumentException("L'inscription nécessite une adresse email institutionnelle ("
@@ -35,18 +34,18 @@ public class InscriptionService {
             throw new IllegalArgumentException("Un compte existe déjà avec cet email.");
         }
 
-        Utilisateur utilisateur = new Utilisateur(0, nom, prenom, email, motDePasse, "ETUDIANT", "ACTIF");
+        Utilisateur utilisateur = new Utilisateur(0, nom, prenom, email, motDePasse, "ETUDIANT", "ACTIF", telephone, null);
         utilisateur = utilisateurDao.create(utilisateur);
 
-        Etudiant etudiant = new Etudiant(0, utilisateur.getIdUtilisateur(), idFiliere, idNiveau);
+        Etudiant etudiant = new Etudiant(0, utilisateur.getIdUtilisateur(), idFiliere, idNiveau, numeroCarte);
         return etudiantDao.create(etudiant);
     }
 
     /** Un mentor est d'abord un étudiant ; il demande ensuite à devenir mentor (statut EN_ATTENTE). */
     public Mentor inscrireMentor(String nom, String prenom, String email, String motDePasse,
-                                 int idFiliere, int idNiveau) throws SQLException {
+                                 int idFiliere, int idNiveau, String telephone, String numeroCarte) throws SQLException {
 
-        Etudiant etudiant = inscrireEtudiant(nom, prenom, email, motDePasse, idFiliere, idNiveau);
+        Etudiant etudiant = inscrireEtudiant(nom, prenom, email, motDePasse, idFiliere, idNiveau, telephone, numeroCarte);
 
         Mentor mentor = new Mentor(0, etudiant.getIdEtudiant(), "EN_ATTENTE");
         return mentorDao.create(mentor);

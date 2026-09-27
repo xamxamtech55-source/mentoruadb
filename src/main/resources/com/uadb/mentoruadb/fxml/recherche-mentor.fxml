@@ -7,7 +7,9 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox spacing="15.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
@@ -31,8 +33,13 @@
         </columns>
     </TableView>
 
-    <TextArea fx:id="profilTextArea" editable="false" wrapText="true" prefRowCount="5"
-              promptText="Sélectionne un mentor puis clique sur « Voir le profil »" />
+    <HBox spacing="15.0" alignment="CENTER_LEFT">
+        <StackPane styleClass="photo-frame" maxWidth="100.0" maxHeight="100.0" minWidth="100.0" minHeight="100.0">
+            <ImageView fx:id="photoMentorImageView" fitWidth="100.0" fitHeight="100.0" preserveRatio="true" />
+        </StackPane>
+        <TextArea fx:id="profilTextArea" editable="false" wrapText="true" prefRowCount="5" HBox.hgrow="ALWAYS"
+                  promptText="Sélectionne un mentor puis clique sur « Voir le profil »" />
+    </HBox>
 
     <HBox spacing="10.0" alignment="CENTER_LEFT">
         <Button text="Voir le profil" onAction="#onVoirProfilClick" />

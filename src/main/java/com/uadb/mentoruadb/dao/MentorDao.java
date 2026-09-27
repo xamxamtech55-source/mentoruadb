@@ -123,6 +123,29 @@ public class MentorDao implements Dao<Mentor, Integer> {
         return resultats;
     }
 
+    /** Chemin de la photo de profil du mentor (via son compte utilisateur), pour l'affichage dans la recherche. */
+    public Optional<String> findPhotoByMentor(int idMentor) throws SQLException {
+        String sql = """
+                SELECT u.photo
+                FROM mentor m
+                JOIN etudiant e ON m.id_etudiant = e.id_etudiant
+                JOIN utilisateur u ON e.id_utilisateur = u.id_utilisateur
+                WHERE m.id_mentor = ?
+                """;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idMentor);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.ofNullable(rs.getString("photo"));
+                }
+                return Optional.empty();
+            }
+        }
+    }
+
     @Override
     public List<Mentor> findAll() throws SQLException {
         String sql = "SELECT * FROM mentor";

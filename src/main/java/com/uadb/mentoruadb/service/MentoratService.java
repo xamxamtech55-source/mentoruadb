@@ -73,8 +73,8 @@ public class MentoratService {
         seanceDao.update(seance);
     }
 
-    /** Une séance ne peut être évaluée qu'une fois réalisée, et une seule fois (contrainte UNIQUE en base). */
-    public Evaluation evaluerSeance(int idSeance, int note, String commentaire) throws SQLException {
+    /** Une séance ne peut être évaluée qu'une fois réalisée, et une seule fois par étudiant (contrainte UNIQUE en base). */
+    public Evaluation evaluerSeance(int idSeance, int idEtudiant, int note, String commentaire) throws SQLException {
         if (note < 1 || note > 5) {
             throw new IllegalArgumentException("La note doit être comprise entre 1 et 5.");
         }
@@ -86,11 +86,11 @@ public class MentoratService {
         if (!"REALISEE".equals(resultatSeance.get().getStatut())) {
             throw new IllegalStateException("Seule une séance réalisée peut être évaluée.");
         }
-        if (evaluationDao.findBySeance(idSeance).isPresent()) {
-            throw new IllegalStateException("Cette séance a déjà été évaluée.");
+        if (evaluationDao.findBySeanceEtEtudiant(idSeance, idEtudiant).isPresent()) {
+            throw new IllegalStateException("Tu as déjà évalué cette séance.");
         }
 
-        Evaluation evaluation = new Evaluation(0, idSeance, note, commentaire, LocalDate.now());
+        Evaluation evaluation = new Evaluation(0, idSeance, idEtudiant, note, commentaire, LocalDate.now());
         return evaluationDao.create(evaluation);
     }
 }

@@ -4,6 +4,7 @@ import com.uadb.mentoruadb.config.DatabaseConnection;
 import com.uadb.mentoruadb.model.DemandeMentorat;
 import com.uadb.mentoruadb.dto.DemandeVue;
 import com.uadb.mentoruadb.dto.DemandeRecueVue;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,6 @@ public class DemandeMentoratDao implements Dao<DemandeMentorat, Integer> {
         }
     }
 
-    /** Historique des demandes envoyées par un étudiant. */
     public List<DemandeMentorat> findByEtudiant(int idEtudiant) throws SQLException {
         String sql = "SELECT * FROM demande_mentorat WHERE id_etudiant = ?";
         List<DemandeMentorat> resultats = new ArrayList<>();
@@ -66,7 +66,6 @@ public class DemandeMentoratDao implements Dao<DemandeMentorat, Integer> {
         return resultats;
     }
 
-    /** Demandes reçues par un mentor, utile pour son tableau de bord (accepter/refuser). */
     public List<DemandeMentorat> findByMentor(int idMentor) throws SQLException {
         String sql = "SELECT * FROM demande_mentorat WHERE id_mentor = ?";
         List<DemandeMentorat> resultats = new ArrayList<>();
@@ -84,7 +83,7 @@ public class DemandeMentoratDao implements Dao<DemandeMentorat, Integer> {
         return resultats;
     }
 
-    /** Demandes d'un étudiant, avec le nom du mentor et de la matière déjà résolus (JOIN). */
+    /** Demandes d'un étudiant (hors celles qu'il a masquées), avec mentor/matière résolus. */
     public List<DemandeVue> findByEtudiantAvecDetails(int idEtudiant) throws SQLException {
         String sql = """
                 SELECT d.id_demande, u.nom AS nom_mentor, u.prenom AS prenom_mentor,
@@ -94,7 +93,7 @@ public class DemandeMentoratDao implements Dao<DemandeMentorat, Integer> {
                 JOIN etudiant e ON me.id_etudiant = e.id_etudiant
                 JOIN utilisateur u ON e.id_utilisateur = u.id_utilisateur
                 JOIN matiere mat ON d.id_matiere = mat.id_matiere
-                WHERE d.id_etudiant = ?
+                WHERE d.id_etudiant = ? AND d.masque_etudiant = 0
                 ORDER BY d.date_demande DESC
                 """;
 
@@ -117,7 +116,78 @@ public class DemandeMentoratDao implements Dao<DemandeMentorat, Integer> {
             }
         }
         return resultats;
+    }
 
+    /** Demandes reçues par un mentor (hors celles qu'il a masquées), avec étudiant/matière résolus. */
+    public List<DemandeRecueVue> findByMentorAvecDetails(int idMentor) throws SQLException {
+        String sql = """
+                SELECT d.id_demande, u.nom AS nom_etudiant, u.prenom AS prenom_etudiant,
+                       mat.nom AS nom_matiere, d.date_demande, d.statut
+                FROM demande_mentorat d
+                JOIN etudiant e ON d.id_etudiant = e.id_etudiant
+                JOIN utilisateur u ON e.id_utilisateur = u.id_utilisateur
+                JOIN matiere mat ON d.id_matiere = mat.id_matiere
+                WHERE d.id_mentor = ? AND d.masque_mentor = 0
+                ORDER BY d.date_demande DESC
+                """;
+
+        List<DemandeRecueVue> resultats = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idMentor);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    resultats.add(new DemandeRecueVue(
+                            rs.getInt("id_demande"),
+                            rs.getString("prenom_etudiant") + " " + rs.getString("nom_etudiant"),
+                            rs.getString("nom_matiere"),
+                            rs.getDate("date_demande").toLocalDate(),
+                            rs.getString("statut")
+                    ));
+                }
+            }
+        }
+        return resultats;
+    }
+
+    public List<Integer> findEtudiantsAcceptesByMentorEtMatiere(int idMentor, int idMatiere) throws SQLException {
+        String sql = "SELECT DISTINCT id_etudiant FROM demande_mentorat WHERE id_mentor = ? AND id_matiere = ? AND statut = 'ACCEPTEE'";
+        List<Integer> resultats = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idMentor);
+            stmt.setInt(2, idMatiere);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    resultats.add(rs.getInt("id_etudiant"));
+                }
+            }
+        }
+        return resultats;
+    }
+
+    /** L'étudiant masque cette demande de sa propre vue (les données restent en base, l'admin les voit toujours). */
+    public void masquerPourEtudiant(int idDemande) throws SQLException {
+        String sql = "UPDATE demande_mentorat SET masque_etudiant = 1 WHERE id_demande = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idDemande);
+            stmt.executeUpdate();
+        }
+    }
+
+    /** Le mentor masque cette demande de sa propre vue. */
+    public void masquerPourMentor(int idDemande) throws SQLException {
+        String sql = "UPDATE demande_mentorat SET masque_mentor = 1 WHERE id_demande = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idDemande);
+            stmt.executeUpdate();
+        }
     }
 
     @Override
@@ -136,7 +206,6 @@ public class DemandeMentoratDao implements Dao<DemandeMentorat, Integer> {
         return resultats;
     }
 
-    /** Utilisée pour accepter/refuser une demande (changement de statut). */
     @Override
     public void update(DemandeMentorat d) throws SQLException {
         String sql = "UPDATE demande_mentorat SET id_etudiant=?, id_mentor=?, id_matiere=?, date_demande=?, statut=? WHERE id_demande=?";
@@ -175,56 +244,5 @@ public class DemandeMentoratDao implements Dao<DemandeMentorat, Integer> {
                 rs.getDate("date_demande").toLocalDate(),
                 rs.getString("statut")
         );
-    }
-    /** Demandes reçues par un mentor, avec le nom de l'étudiant et de la matière résolus (JOIN). */
-    public List<DemandeRecueVue> findByMentorAvecDetails(int idMentor) throws SQLException {
-        String sql = """
-                SELECT d.id_demande, u.nom AS nom_etudiant, u.prenom AS prenom_etudiant,
-                       mat.nom AS nom_matiere, d.date_demande, d.statut
-                FROM demande_mentorat d
-                JOIN etudiant e ON d.id_etudiant = e.id_etudiant
-                JOIN utilisateur u ON e.id_utilisateur = u.id_utilisateur
-                JOIN matiere mat ON d.id_matiere = mat.id_matiere
-                WHERE d.id_mentor = ?
-                ORDER BY d.date_demande DESC
-                """;
-
-        List<DemandeRecueVue> resultats = new ArrayList<>();
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, idMentor);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    resultats.add(new DemandeRecueVue(
-                            rs.getInt("id_demande"),
-                            rs.getString("prenom_etudiant") + " " + rs.getString("nom_etudiant"),
-                            rs.getString("nom_matiere"),
-                            rs.getDate("date_demande").toLocalDate(),
-                            rs.getString("statut")
-                    ));
-                }
-            }
-        }
-        return resultats;
-    }
-    /** Étudiants ayant une demande acceptée avec ce mentor sur cette matière (pour l'invitation automatique aux séances de groupe). */
-    public List<Integer> findEtudiantsAcceptesByMentorEtMatiere(int idMentor, int idMatiere) throws SQLException {
-        String sql = "SELECT DISTINCT id_etudiant FROM demande_mentorat WHERE id_mentor = ? AND id_matiere = ? AND statut = 'ACCEPTEE'";
-        List<Integer> resultats = new ArrayList<>();
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, idMentor);
-            stmt.setInt(2, idMatiere);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    resultats.add(rs.getInt("id_etudiant"));
-                }
-            }
-        }
-        return resultats;
     }
 }

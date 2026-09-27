@@ -10,38 +10,42 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ScrollPane?>
 
-<VBox alignment="CENTER" spacing="10.0" styleClass="login-container"
-      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.uadb.mentoruadb.controller.InscriptionController">
-    <padding>
-        <Insets top="30.0" right="40.0" bottom="30.0" left="40.0" />
-    </padding>
+<ScrollPane fitToWidth="true" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.uadb.mentoruadb.controller.InscriptionController">
+    <VBox alignment="CENTER" spacing="10.0" styleClass="login-container">
+        <padding>
+            <Insets top="30.0" right="40.0" bottom="30.0" left="40.0" />
+        </padding>
 
-    <ImageView fitHeight="80.0" preserveRatio="true">
-        <Image url="@../images/logo-uadb.png" />
-    </ImageView>
-    <Label text="Mentor UADB" styleClass="title-label" />
-    <Label text="Créer un compte étudiant" styleClass="subtitle-label" />
+        <ImageView fitHeight="80.0" preserveRatio="true">
+            <Image url="@../images/logo-uadb.png" />
+        </ImageView>
+        <Label text="Mentor UADB" styleClass="title-label" />
+        <Label text="Créer un compte étudiant" styleClass="subtitle-label" />
 
-    <TextField fx:id="nomField" promptText="Nom" prefWidth="280.0" maxWidth="280.0" />
-    <TextField fx:id="prenomField" promptText="Prénom" prefWidth="280.0" maxWidth="280.0" />
-    <TextField fx:id="emailField" promptText="Email institutionnel (@uadb.edu.sn)" prefWidth="280.0" maxWidth="280.0" />
+        <TextField fx:id="nomField" promptText="Nom" prefWidth="280.0" maxWidth="280.0" />
+        <TextField fx:id="prenomField" promptText="Prénom" prefWidth="280.0" maxWidth="280.0" />
+        <TextField fx:id="emailField" promptText="Email institutionnel (@uadb.edu.sn)" prefWidth="280.0" maxWidth="280.0" />
+        <TextField fx:id="telephoneField" promptText="Téléphone" prefWidth="280.0" maxWidth="280.0" />
+        <TextField fx:id="numeroCarteField" promptText="Numéro de carte d'étudiant" prefWidth="280.0" maxWidth="280.0" />
 
-    <StackPane prefWidth="280.0" maxWidth="280.0">
-        <PasswordField fx:id="motDePasseField" promptText="Mot de passe" prefWidth="280.0" maxWidth="280.0"
-                       style="-fx-padding: 8 42 8 10;" />
-        <TextField fx:id="motDePasseVisibleField" promptText="Mot de passe" prefWidth="280.0" maxWidth="280.0"
-                   style="-fx-padding: 8 42 8 10;" visible="false" managed="false" />
-        <Button fx:id="toggleMotDePasseButton" text="👁" onAction="#onToggleMotDePasseClick"
-                styleClass="toggle-password-button" StackPane.alignment="CENTER_RIGHT" />
-    </StackPane>
+        <StackPane prefWidth="280.0" maxWidth="280.0">
+            <PasswordField fx:id="motDePasseField" promptText="Mot de passe" prefWidth="280.0" maxWidth="280.0"
+                           style="-fx-padding: 8 42 8 10;" />
+            <TextField fx:id="motDePasseVisibleField" promptText="Mot de passe" prefWidth="280.0" maxWidth="280.0"
+                       style="-fx-padding: 8 42 8 10;" visible="false" managed="false" />
+            <Button fx:id="toggleMotDePasseButton" text="👁" onAction="#onToggleMotDePasseClick"
+                    styleClass="toggle-password-button" StackPane.alignment="CENTER_RIGHT" />
+        </StackPane>
 
-    <ComboBox fx:id="filiereComboBox" promptText="Filière" prefWidth="280.0" maxWidth="280.0" />
-    <ComboBox fx:id="niveauComboBox" promptText="Niveau" prefWidth="280.0" maxWidth="280.0" />
+        <ComboBox fx:id="filiereComboBox" promptText="Filière" prefWidth="280.0" maxWidth="280.0" />
+        <ComboBox fx:id="niveauComboBox" promptText="Niveau" prefWidth="280.0" maxWidth="280.0" />
 
-    <Button text="S'inscrire" onAction="#onInscriptionClick" prefWidth="280.0" maxWidth="280.0" />
-    <Button fx:id="retourButton" text="J'ai déjà un compte" onAction="#onRetourConnexionClick" styleClass="lien-button" prefWidth="280.0" maxWidth="280.0" />
+        <Button text="S'inscrire" onAction="#onInscriptionClick" prefWidth="280.0" maxWidth="280.0" />
+        <Button fx:id="retourButton" text="J'ai déjà un compte" onAction="#onRetourConnexionClick" styleClass="lien-button" prefWidth="280.0" maxWidth="280.0" />
 
-    <Label fx:id="messageLabel" styleClass="message-label" />
-</VBox>
+        <Label fx:id="messageLabel" styleClass="message-label" />
+    </VBox>
+</ScrollPane>

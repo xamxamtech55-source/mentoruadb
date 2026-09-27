@@ -2,7 +2,9 @@ package com.uadb.mentoruadb.controller;
 
 import com.uadb.mentoruadb.dao.EvaluationDao;
 import com.uadb.mentoruadb.dao.ExpertiseDao;
+import com.uadb.mentoruadb.dao.FiliereDao;
 import com.uadb.mentoruadb.dao.MatiereDao;
+import com.uadb.mentoruadb.dao.MentorDao;
 import com.uadb.mentoruadb.dto.EvaluationVue;
 import com.uadb.mentoruadb.dto.MentorVue;
 import com.uadb.mentoruadb.model.Etudiant;
@@ -19,8 +21,11 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
@@ -34,13 +39,16 @@ public class RechercheMentorController {
     @FXML private TableColumn<MentorVue, String> colMentorNom;
     @FXML private TableColumn<MentorVue, String> colMentorFiliere;
     @FXML private TableColumn<MentorVue, String> colMentorNiveau;
+    @FXML private ImageView photoMentorImageView;
     @FXML private TextArea profilTextArea;
     @FXML private Label messageLabel;
     @FXML private Button retourButton;
 
+    private final FiliereDao filiereDao = new FiliereDao();
     private final MatiereDao matiereDao = new MatiereDao();
     private final ExpertiseDao expertiseDao = new ExpertiseDao();
     private final EvaluationDao evaluationDao = new EvaluationDao();
+    private final MentorDao mentorDao = new MentorDao();
     private final MentoratService mentoratService = new MentoratService();
 
     private Etudiant etudiantConnecte;
@@ -51,20 +59,23 @@ public class RechercheMentorController {
         colMentorNom.setCellValueFactory(new PropertyValueFactory<>("nomMentor"));
         colMentorFiliere.setCellValueFactory(new PropertyValueFactory<>("nomFiliere"));
         colMentorNiveau.setCellValueFactory(new PropertyValueFactory<>("libelleNiveau"));
-
-        try {
-            List<Matiere> matieres = matiereDao.findAll();
-            matiereComboBox.getItems().setAll(matieres);
-        } catch (SQLException e) {
-            messageLabel.setText("Erreur de chargement des matières.");
-        }
     }
+
     /** Appelée manuellement depuis DashboardEtudiantController après le chargement de cet écran. */
     public void setEtudiantConnecte(Etudiant etudiant, String prenom) {
         this.etudiantConnecte = etudiant;
         this.prenomConnecte = prenom;
-    }
 
+        try {
+            List<Matiere> matieres = filiereDao.findMatieresByFiliere(etudiant.getIdFiliere());
+            matiereComboBox.getItems().setAll(matieres);
+            if (matieres.isEmpty()) {
+                messageLabel.setText("Aucune matière n'est rattachée à ta filière pour l'instant.");
+            }
+        } catch (SQLException e) {
+            messageLabel.setText("Erreur de chargement des matières.");
+        }
+    }
 
     @FXML
     private void onRechercherClick() {
@@ -78,6 +89,7 @@ public class RechercheMentorController {
             List<MentorVue> mentors = expertiseDao.findMentorsValidesParMatiere(matiere.getIdMatiere());
             mentorsTable.setItems(FXCollections.observableArrayList(mentors));
             profilTextArea.clear();
+            photoMentorImageView.setImage(null);
 
             if (mentors.isEmpty()) {
                 messageLabel.setText("Aucun mentor validé pour cette matière pour le moment.");
@@ -95,6 +107,19 @@ public class RechercheMentorController {
         if (mentor == null) {
             messageLabel.setText("Sélectionne un mentor dans le tableau d'abord.");
             return;
+        }
+
+        photoMentorImageView.setImage(null);
+        try {
+            Optional<String> cheminPhoto = mentorDao.findPhotoByMentor(mentor.getIdMentor());
+            if (cheminPhoto.isPresent() && !cheminPhoto.get().isBlank()) {
+                File fichierPhoto = new File(cheminPhoto.get());
+                if (fichierPhoto.exists()) {
+                    photoMentorImageView.setImage(new Image(fichierPhoto.toURI().toString()));
+                }
+            }
+        } catch (SQLException ignored) {
+            // Pas de photo -> le cadre reste vide, ce n'est pas bloquant
         }
 
         try {

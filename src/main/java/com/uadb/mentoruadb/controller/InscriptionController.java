@@ -1,7 +1,6 @@
 package com.uadb.mentoruadb.controller;
 
 import com.uadb.mentoruadb.dao.FiliereDao;
-import com.uadb.mentoruadb.dao.NiveauDao;
 import com.uadb.mentoruadb.model.Filiere;
 import com.uadb.mentoruadb.model.Niveau;
 import com.uadb.mentoruadb.service.InscriptionService;
@@ -24,6 +23,8 @@ public class InscriptionController {
     @FXML private TextField nomField;
     @FXML private TextField prenomField;
     @FXML private TextField emailField;
+    @FXML private TextField telephoneField;
+    @FXML private TextField numeroCarteField;
     @FXML private PasswordField motDePasseField;
     @FXML private TextField motDePasseVisibleField;
     @FXML private Button toggleMotDePasseButton;
@@ -34,11 +35,9 @@ public class InscriptionController {
 
     private final InscriptionService inscriptionService = new InscriptionService();
     private final FiliereDao filiereDao = new FiliereDao();
-    private final NiveauDao niveauDao = new NiveauDao();
 
     private boolean motDePasseVisible = false;
 
-    /** Appelée automatiquement par JavaFX juste après le chargement du FXML. */
     @FXML
     public void initialize() {
         motDePasseVisibleField.textProperty().bindBidirectional(motDePasseField.textProperty());
@@ -84,24 +83,27 @@ public class InscriptionController {
         motDePasseVisibleField.setManaged(motDePasseVisible);
         toggleMotDePasseButton.setText(motDePasseVisible ? "🙈" : "👁");
     }
+
     @FXML
     private void onInscriptionClick() {
         String nom = nomField.getText();
         String prenom = prenomField.getText();
         String email = emailField.getText();
+        String telephone = telephoneField.getText();
+        String numeroCarte = numeroCarteField.getText();
         String motDePasse = motDePasseField.getText();
         Filiere filiere = filiereComboBox.getValue();
         Niveau niveau = niveauComboBox.getValue();
 
-        if (nom.isBlank() || prenom.isBlank() || email.isBlank() || motDePasse.isBlank()
-                || filiere == null || niveau == null) {
+        if (nom.isBlank() || prenom.isBlank() || email.isBlank() || telephone.isBlank()
+                || numeroCarte.isBlank() || motDePasse.isBlank() || filiere == null || niveau == null) {
             messageLabel.setText("Veuillez remplir tous les champs.");
             return;
         }
 
         try {
             inscriptionService.inscrireEtudiant(
-                    nom, prenom, email, motDePasse, filiere.getIdFiliere(), niveau.getIdNiveau()
+                    nom, prenom, email, motDePasse, filiere.getIdFiliere(), niveau.getIdNiveau(), telephone, numeroCarte
             );
             messageLabel.setText("Compte créé avec succès ! Redirection vers la connexion...");
 

@@ -29,16 +29,13 @@ CREATE TABLE utilisateur (
 
                              mot_de_passe VARCHAR(255) NOT NULL,
 
-                             role ENUM(
-        'ETUDIANT',
-        'MENTOR',
-        'ADMIN'
-    ) NOT NULL,
+                             role ENUM('ETUDIANT', 'MENTOR', 'ADMIN') NOT NULL,
 
-                             statut ENUM(
-        'ACTIF',
-        'INACTIF'
-    ) NOT NULL DEFAULT 'ACTIF'
+                             statut ENUM('ACTIF', 'INACTIF') NOT NULL DEFAULT 'ACTIF',
+
+    -- Champs de profil (sécurité/identification)
+                             telephone VARCHAR(20) NULL,
+                             photo VARCHAR(500) NULL
 );
 
 
@@ -48,7 +45,6 @@ CREATE TABLE utilisateur (
 
 CREATE TABLE ufr (
                      id_ufr INT AUTO_INCREMENT PRIMARY KEY,
-
                      nom VARCHAR(150) NOT NULL UNIQUE
 );
 
@@ -59,19 +55,13 @@ CREATE TABLE ufr (
 
 CREATE TABLE filiere (
                          id_filiere INT AUTO_INCREMENT PRIMARY KEY,
-
                          nom VARCHAR(150) NOT NULL,
-
                          id_ufr INT NOT NULL,
 
-                         CONSTRAINT uq_filiere_ufr
-                             UNIQUE (nom, id_ufr),
+                         CONSTRAINT uq_filiere_ufr UNIQUE (nom, id_ufr),
 
-                         CONSTRAINT fk_filiere_ufr
-                             FOREIGN KEY (id_ufr)
-                                 REFERENCES ufr(id_ufr)
-                                 ON UPDATE CASCADE
-                                 ON DELETE RESTRICT
+                         CONSTRAINT fk_filiere_ufr FOREIGN KEY (id_ufr)
+                             REFERENCES ufr(id_ufr) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 
@@ -81,7 +71,6 @@ CREATE TABLE filiere (
 
 CREATE TABLE niveau (
                         id_niveau INT AUTO_INCREMENT PRIMARY KEY,
-
                         libelle VARCHAR(50) NOT NULL UNIQUE
 );
 
@@ -96,17 +85,11 @@ CREATE TABLE filiere_niveau (
 
                                 PRIMARY KEY (id_filiere, id_niveau),
 
-                                CONSTRAINT fk_filiere_niveau_filiere
-                                    FOREIGN KEY (id_filiere)
-                                        REFERENCES filiere(id_filiere)
-                                        ON UPDATE CASCADE
-                                        ON DELETE CASCADE,
+                                CONSTRAINT fk_filiere_niveau_filiere FOREIGN KEY (id_filiere)
+                                    REFERENCES filiere(id_filiere) ON UPDATE CASCADE ON DELETE CASCADE,
 
-                                CONSTRAINT fk_filiere_niveau_niveau
-                                    FOREIGN KEY (id_niveau)
-                                        REFERENCES niveau(id_niveau)
-                                        ON UPDATE CASCADE
-                                        ON DELETE CASCADE
+                                CONSTRAINT fk_filiere_niveau_niveau FOREIGN KEY (id_niveau)
+                                    REFERENCES niveau(id_niveau) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 
@@ -116,28 +99,22 @@ CREATE TABLE filiere_niveau (
 
 CREATE TABLE etudiant (
                           id_etudiant INT AUTO_INCREMENT PRIMARY KEY,
-
                           id_utilisateur INT NOT NULL UNIQUE,
-
                           id_filiere INT NOT NULL,
-
                           id_niveau INT NOT NULL,
 
-                          CONSTRAINT fk_etudiant_utilisateur
-                              FOREIGN KEY (id_utilisateur)
-                                  REFERENCES utilisateur(id_utilisateur)
-                                  ON UPDATE CASCADE
-                                  ON DELETE CASCADE,
+    -- Champ de profil (identification académique)
+                          numero_carte VARCHAR(50) NULL,
+
+                          CONSTRAINT fk_etudiant_utilisateur FOREIGN KEY (id_utilisateur)
+                              REFERENCES utilisateur(id_utilisateur) ON UPDATE CASCADE ON DELETE CASCADE,
 
     /*
        Cette clé étrangère composite garantit que le niveau
        choisi est bien autorisé pour la filière choisie.
     */
-                          CONSTRAINT fk_etudiant_filiere_niveau
-                              FOREIGN KEY (id_filiere, id_niveau)
-                                  REFERENCES filiere_niveau(id_filiere, id_niveau)
-                                  ON UPDATE CASCADE
-                                  ON DELETE RESTRICT
+                          CONSTRAINT fk_etudiant_filiere_niveau FOREIGN KEY (id_filiere, id_niveau)
+                              REFERENCES filiere_niveau(id_filiere, id_niveau) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 
@@ -147,7 +124,6 @@ CREATE TABLE etudiant (
 
 CREATE TABLE matiere (
                          id_matiere INT AUTO_INCREMENT PRIMARY KEY,
-
                          nom VARCHAR(150) NOT NULL UNIQUE
 );
 
@@ -158,20 +134,18 @@ CREATE TABLE matiere (
 
 CREATE TABLE mentor (
                         id_mentor INT AUTO_INCREMENT PRIMARY KEY,
-
                         id_etudiant INT NOT NULL UNIQUE,
 
-                        statut_validation ENUM(
-        'EN_ATTENTE',
-        'VALIDE',
-        'REFUSE'
-    ) NOT NULL DEFAULT 'EN_ATTENTE',
+                        statut_validation ENUM('EN_ATTENTE', 'VALIDE', 'REFUSE') NOT NULL DEFAULT 'EN_ATTENTE',
 
-                        CONSTRAINT fk_mentor_etudiant
-                            FOREIGN KEY (id_etudiant)
-                                REFERENCES etudiant(id_etudiant)
-                                ON UPDATE CASCADE
-                                ON DELETE CASCADE
+    -- Champs de profil mentor
+                        biographie TEXT NULL,
+                        experience VARCHAR(255) NULL,
+                        mode_preference ENUM('EN_LIGNE', 'PRESENTIEL', 'LES_DEUX') NULL,
+                        nombre_max_mentores INT NULL DEFAULT 5,
+
+                        CONSTRAINT fk_mentor_etudiant FOREIGN KEY (id_etudiant)
+                            REFERENCES etudiant(id_etudiant) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 
@@ -181,22 +155,15 @@ CREATE TABLE mentor (
 
 CREATE TABLE expertise (
                            id_mentor INT NOT NULL,
-
                            id_matiere INT NOT NULL,
 
                            PRIMARY KEY (id_mentor, id_matiere),
 
-                           CONSTRAINT fk_expertise_mentor
-                               FOREIGN KEY (id_mentor)
-                                   REFERENCES mentor(id_mentor)
-                                   ON UPDATE CASCADE
-                                   ON DELETE CASCADE,
+                           CONSTRAINT fk_expertise_mentor FOREIGN KEY (id_mentor)
+                               REFERENCES mentor(id_mentor) ON UPDATE CASCADE ON DELETE CASCADE,
 
-                           CONSTRAINT fk_expertise_matiere
-                               FOREIGN KEY (id_matiere)
-                                   REFERENCES matiere(id_matiere)
-                                   ON UPDATE CASCADE
-                                   ON DELETE CASCADE
+                           CONSTRAINT fk_expertise_matiere FOREIGN KEY (id_matiere)
+                               REFERENCES matiere(id_matiere) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 
@@ -206,99 +173,123 @@ CREATE TABLE expertise (
 
 CREATE TABLE demande_mentorat (
                                   id_demande INT AUTO_INCREMENT PRIMARY KEY,
-
                                   id_etudiant INT NOT NULL,
-
                                   id_mentor INT NOT NULL,
-
                                   id_matiere INT NOT NULL,
-
                                   date_demande DATE NOT NULL,
 
-                                  statut ENUM(
-        'EN_ATTENTE',
-        'ACCEPTEE',
-        'REFUSEE'
-    ) NOT NULL DEFAULT 'EN_ATTENTE',
+                                  statut ENUM('EN_ATTENTE', 'ACCEPTEE', 'REFUSEE') NOT NULL DEFAULT 'EN_ATTENTE',
 
-                                  CONSTRAINT fk_demande_etudiant
-                                      FOREIGN KEY (id_etudiant)
-                                          REFERENCES etudiant(id_etudiant)
-                                          ON UPDATE CASCADE
-                                          ON DELETE RESTRICT,
+                                  CONSTRAINT fk_demande_etudiant FOREIGN KEY (id_etudiant)
+                                      REFERENCES etudiant(id_etudiant) ON UPDATE CASCADE ON DELETE RESTRICT,
 
-                                  CONSTRAINT fk_demande_mentor
-                                      FOREIGN KEY (id_mentor)
-                                          REFERENCES mentor(id_mentor)
-                                          ON UPDATE CASCADE
-                                          ON DELETE RESTRICT,
+                                  CONSTRAINT fk_demande_mentor FOREIGN KEY (id_mentor)
+                                      REFERENCES mentor(id_mentor) ON UPDATE CASCADE ON DELETE RESTRICT,
 
-                                  CONSTRAINT fk_demande_matiere
-                                      FOREIGN KEY (id_matiere)
-                                          REFERENCES matiere(id_matiere)
-                                          ON UPDATE CASCADE
-                                          ON DELETE RESTRICT
+                                  CONSTRAINT fk_demande_matiere FOREIGN KEY (id_matiere)
+                                      REFERENCES matiere(id_matiere) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 
 -- =========================================================
 -- 12. TABLE SEANCE
+-- Individuelle (liée à une demande) OU de groupe (liée à un
+-- mentor + une matière, avec les participants dans seance_participant)
 -- =========================================================
 
 CREATE TABLE seance (
                         id_seance INT AUTO_INCREMENT PRIMARY KEY,
 
-                        id_demande INT NOT NULL,
+                        id_demande INT NULL,                                   -- rempli si INDIVIDUELLE
+                        type_seance ENUM('INDIVIDUELLE', 'GROUPE') NOT NULL DEFAULT 'INDIVIDUELLE',
+                        id_mentor INT NULL,                                     -- rempli si GROUPE
+                        id_matiere INT NULL,                                    -- rempli si GROUPE
 
                         date_seance DATE NOT NULL,
-
                         heure_debut TIME NOT NULL,
-
                         heure_fin TIME NOT NULL,
 
-                        statut ENUM(
-        'PLANIFIEE',
-        'REALISEE',
-        'ANNULEE'
-    ) NOT NULL DEFAULT 'PLANIFIEE',
+                        statut ENUM('PLANIFIEE', 'REALISEE', 'ANNULEE') NOT NULL DEFAULT 'PLANIFIEE',
 
-                        CONSTRAINT fk_seance_demande
-                            FOREIGN KEY (id_demande)
-                                REFERENCES demande_mentorat(id_demande)
-                                ON UPDATE CASCADE
-                                ON DELETE RESTRICT,
+    -- Modalité de la séance
+                        modalite ENUM('EN_LIGNE', 'PRESENTIEL') NOT NULL DEFAULT 'PRESENTIEL',
+                        lieu VARCHAR(255) NULL,                                 -- salle ou lien visio
 
-                        CONSTRAINT chk_heure_seance
-                            CHECK (heure_fin > heure_debut)
+                        CONSTRAINT fk_seance_demande FOREIGN KEY (id_demande)
+                            REFERENCES demande_mentorat(id_demande) ON UPDATE CASCADE ON DELETE RESTRICT,
+
+                        CONSTRAINT fk_seance_mentor FOREIGN KEY (id_mentor)
+                            REFERENCES mentor(id_mentor) ON UPDATE CASCADE ON DELETE CASCADE,
+
+                        CONSTRAINT fk_seance_matiere FOREIGN KEY (id_matiere)
+                            REFERENCES matiere(id_matiere) ON UPDATE CASCADE ON DELETE CASCADE,
+
+                        CONSTRAINT chk_heure_seance CHECK (heure_fin > heure_debut)
 );
 
 
 -- =========================================================
--- 13. TABLE EVALUATION
+-- 13. TABLE PARTICIPANTS D'UNE SEANCE DE GROUPE
+-- =========================================================
+
+CREATE TABLE seance_participant (
+                                    id_seance INT NOT NULL,
+                                    id_etudiant INT NOT NULL,
+
+                                    PRIMARY KEY (id_seance, id_etudiant),
+
+                                    CONSTRAINT fk_participant_seance FOREIGN KEY (id_seance)
+                                        REFERENCES seance(id_seance) ON UPDATE CASCADE ON DELETE CASCADE,
+
+                                    CONSTRAINT fk_participant_etudiant FOREIGN KEY (id_etudiant)
+                                        REFERENCES etudiant(id_etudiant) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+
+-- =========================================================
+-- 14. TABLE EVALUATION
 -- =========================================================
 
 CREATE TABLE evaluation (
                             id_evaluation INT AUTO_INCREMENT PRIMARY KEY,
-
                             id_seance INT NOT NULL UNIQUE,
 
                             note TINYINT NOT NULL,
-
                             commentaire VARCHAR(500),
-
                             date_evaluation DATE NOT NULL,
 
-                            CONSTRAINT chk_note
-                                CHECK (note BETWEEN 1 AND 5),
+                            CONSTRAINT chk_note CHECK (note BETWEEN 1 AND 5),
 
-                            CONSTRAINT fk_evaluation_seance
-                                FOREIGN KEY (id_seance)
-                                    REFERENCES seance(id_seance)
-                                    ON UPDATE CASCADE
-                                    ON DELETE CASCADE
+                            CONSTRAINT fk_evaluation_seance FOREIGN KEY (id_seance)
+                                REFERENCES seance(id_seance) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 
 -- =========================================================
--- FIN DU SCHEMA
+-- 15. TABLE FICHIER (ressources partagées par un mentor)
+-- =========================================================
+
+CREATE TABLE fichier (
+                         id_fichier INT AUTO_INCREMENT PRIMARY KEY,
+                         id_mentor INT NOT NULL,
+                         id_matiere INT NULL,
+                         id_seance INT NULL,
+
+                         nom_fichier VARCHAR(255) NOT NULL,
+                         chemin VARCHAR(500) NOT NULL,
+                         date_upload DATE NOT NULL,
+
+                         CONSTRAINT fk_fichier_mentor FOREIGN KEY (id_mentor)
+                             REFERENCES mentor(id_mentor) ON UPDATE CASCADE ON DELETE CASCADE,
+
+                         CONSTRAINT fk_fichier_matiere FOREIGN KEY (id_matiere)
+                             REFERENCES matiere(id_matiere) ON UPDATE CASCADE ON DELETE CASCADE,
+
+                         CONSTRAINT fk_fichier_seance FOREIGN KEY (id_seance)
+                             REFERENCES seance(id_seance) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+
+-- =========================================================
+-- FIN DU SCHEMA (15 entités)
 -- =========================================================

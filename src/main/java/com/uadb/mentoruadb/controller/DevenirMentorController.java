@@ -1,7 +1,7 @@
 package com.uadb.mentoruadb.controller;
 
 import com.uadb.mentoruadb.dao.ExpertiseDao;
-import com.uadb.mentoruadb.dao.MatiereDao;
+import com.uadb.mentoruadb.dao.FiliereDao;
 import com.uadb.mentoruadb.dao.MentorDao;
 import com.uadb.mentoruadb.model.Etudiant;
 import com.uadb.mentoruadb.model.Expertise;
@@ -28,28 +28,34 @@ public class DevenirMentorController {
     @FXML private Label messageLabel;
     @FXML private Button retourButton;
 
-    private final MatiereDao matiereDao = new MatiereDao();
+    private final FiliereDao filiereDao = new FiliereDao();
     private final MentorDao mentorDao = new MentorDao();
     private final ExpertiseDao expertiseDao = new ExpertiseDao();
 
     private Etudiant etudiantConnecte;
     private String prenomConnecte;
+
     @FXML
     public void initialize() {
         matieresListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        try {
-            List<Matiere> matieres = matiereDao.findAll();
-            matieresListView.setItems(FXCollections.observableArrayList(matieres));
-        } catch (SQLException e) {
-            messageLabel.setText("Erreur de chargement des matières.");
-        }
     }
 
     /** Appelée manuellement depuis DashboardEtudiantController après le chargement de cet écran. */
     public void setEtudiantConnecte(Etudiant etudiant, String prenom) {
         this.etudiantConnecte = etudiant;
         this.prenomConnecte = prenom;
+
+        try {
+            List<Matiere> matieres = filiereDao.findMatieresByFiliere(etudiant.getIdFiliere());
+            matieresListView.setItems(FXCollections.observableArrayList(matieres));
+            if (matieres.isEmpty()) {
+                messageLabel.setText("Aucune matière n'est encore rattachée à ta filière — contacte un administrateur.");
+            }
+        } catch (SQLException e) {
+            messageLabel.setText("Erreur de chargement des matières.");
+        }
     }
+
     @FXML
     private void onCandidaterClick() {
         List<Matiere> matieresChoisies = matieresListView.getSelectionModel().getSelectedItems();

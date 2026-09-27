@@ -2,6 +2,8 @@ package com.uadb.mentoruadb.dao;
 
 import com.uadb.mentoruadb.config.DatabaseConnection;
 import com.uadb.mentoruadb.model.Filiere;
+import com.uadb.mentoruadb.model.Matiere;
+import com.uadb.mentoruadb.model.Niveau;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -44,9 +46,8 @@ public class FiliereDao implements Dao<Filiere, Integer> {
         }
     }
 
-    /** Utile pour la recherche de mentor : filtrer les filières d'une UFR. */
     public List<Filiere> findByUfr(int idUfr) throws SQLException {
-        String sql = "SELECT * FROM filiere WHERE id_ufr = ?";
+        String sql = "SELECT * FROM filiere WHERE id_ufr = ? ORDER BY nom";
         List<Filiere> resultats = new ArrayList<>();
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -62,9 +63,58 @@ public class FiliereDao implements Dao<Filiere, Integer> {
         return resultats;
     }
 
+    public List<Niveau> findNiveauxByFiliere(int idFiliere) throws SQLException {
+        String sql = """
+                SELECT n.id_niveau, n.libelle
+                FROM niveau n
+                JOIN filiere_niveau fn ON n.id_niveau = fn.id_niveau
+                WHERE fn.id_filiere = ?
+                ORDER BY n.id_niveau
+                """;
+
+        List<Niveau> resultats = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idFiliere);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    resultats.add(new Niveau(rs.getInt("id_niveau"), rs.getString("libelle")));
+                }
+            }
+        }
+        return resultats;
+    }
+
+    /** Matières rattachées à une filière (pour l'inscription, la suggestion de mentors, etc.). */
+    public List<Matiere> findMatieresByFiliere(int idFiliere) throws SQLException {
+        String sql = """
+                SELECT m.id_matiere, m.nom
+                FROM matiere m
+                JOIN filiere_matiere fm ON m.id_matiere = fm.id_matiere
+                WHERE fm.id_filiere = ?
+                ORDER BY m.nom
+                """;
+
+        List<Matiere> resultats = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idFiliere);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    resultats.add(new Matiere(rs.getInt("id_matiere"), rs.getString("nom")));
+                }
+            }
+        }
+        return resultats;
+    }
+
     @Override
     public List<Filiere> findAll() throws SQLException {
-        String sql = "SELECT * FROM filiere";
+        String sql = "SELECT * FROM filiere ORDER BY nom";
         List<Filiere> resultats = new ArrayList<>();
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -106,29 +156,5 @@ public class FiliereDao implements Dao<Filiere, Integer> {
 
     private Filiere mapRow(ResultSet rs) throws SQLException {
         return new Filiere(rs.getInt("id_filiere"), rs.getString("nom"), rs.getInt("id_ufr"));
-    }
-    /** Niveaux valides pour une filière donnée, via la table de jointure filiere_niveau. */
-    public List<com.uadb.mentoruadb.model.Niveau> findNiveauxByFiliere(int idFiliere) throws SQLException {
-        String sql = """
-                SELECT n.id_niveau, n.libelle
-                FROM niveau n
-                JOIN filiere_niveau fn ON n.id_niveau = fn.id_niveau
-                WHERE fn.id_filiere = ?
-                ORDER BY n.id_niveau
-                """;
-
-        List<com.uadb.mentoruadb.model.Niveau> resultats = new ArrayList<>();
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, idFiliere);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    resultats.add(new com.uadb.mentoruadb.model.Niveau(rs.getInt("id_niveau"), rs.getString("libelle")));
-                }
-            }
-        }
-        return resultats;
     }
 }

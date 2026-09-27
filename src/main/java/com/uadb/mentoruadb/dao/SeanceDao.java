@@ -1,6 +1,7 @@
 package com.uadb.mentoruadb.dao;
 
 import com.uadb.mentoruadb.config.DatabaseConnection;
+import com.uadb.mentoruadb.dto.SeanceGroupeVue;
 import com.uadb.mentoruadb.dto.SeanceMentorVue;
 import com.uadb.mentoruadb.dto.SeanceVue;
 import com.uadb.mentoruadb.model.Seance;
@@ -20,22 +21,10 @@ public class SeanceDao implements Dao<Seance, Integer> {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            if (s.getIdDemande() != null) {
-                stmt.setInt(1, s.getIdDemande());
-            } else {
-                stmt.setNull(1, Types.INTEGER);
-            }
+            if (s.getIdDemande() != null) stmt.setInt(1, s.getIdDemande()); else stmt.setNull(1, Types.INTEGER);
             stmt.setString(2, s.getTypeSeance());
-            if (s.getIdMentor() != null) {
-                stmt.setInt(3, s.getIdMentor());
-            } else {
-                stmt.setNull(3, Types.INTEGER);
-            }
-            if (s.getIdMatiere() != null) {
-                stmt.setInt(4, s.getIdMatiere());
-            } else {
-                stmt.setNull(4, Types.INTEGER);
-            }
+            if (s.getIdMentor() != null) stmt.setInt(3, s.getIdMentor()); else stmt.setNull(3, Types.INTEGER);
+            if (s.getIdMatiere() != null) stmt.setInt(4, s.getIdMatiere()); else stmt.setNull(4, Types.INTEGER);
             stmt.setDate(5, Date.valueOf(s.getDateSeance()));
             stmt.setTime(6, Time.valueOf(s.getHeureDebut()));
             stmt.setTime(7, Time.valueOf(s.getHeureFin()));
@@ -80,7 +69,6 @@ public class SeanceDao implements Dao<Seance, Integer> {
         }
     }
 
-    /** Séances de groupe créées par un mentor (pour son propre suivi). */
     public List<Seance> findGroupesByMentor(int idMentor) throws SQLException {
         String sql = "SELECT * FROM seance WHERE id_mentor = ? AND type_seance = 'GROUPE' ORDER BY date_seance DESC";
         List<Seance> resultats = new ArrayList<>();
@@ -98,7 +86,7 @@ public class SeanceDao implements Dao<Seance, Integer> {
         return resultats;
     }
 
-    /** Séances de groupe auxquelles un étudiant participe (JOIN via seance_participant). */
+    /** Séances de groupe d'un étudiant (hors celles qu'il a masquées de sa propre vue). */
     public List<SeanceVue> findGroupesByEtudiantAvecDetails(int idEtudiant) throws SQLException {
         String sql = """
                 SELECT s.id_seance, u.nom AS nom_mentor, u.prenom AS prenom_mentor,
@@ -110,7 +98,7 @@ public class SeanceDao implements Dao<Seance, Integer> {
                 JOIN etudiant e ON m.id_etudiant = e.id_etudiant
                 JOIN utilisateur u ON e.id_utilisateur = u.id_utilisateur
                 JOIN matiere mat ON s.id_matiere = mat.id_matiere
-                WHERE sp.id_etudiant = ?
+                WHERE sp.id_etudiant = ? AND sp.masque = 0
                 ORDER BY s.date_seance DESC
                 """;
 
@@ -129,7 +117,8 @@ public class SeanceDao implements Dao<Seance, Integer> {
                             rs.getDate("date_seance").toLocalDate(),
                             rs.getTime("heure_debut").toLocalTime(),
                             rs.getTime("heure_fin").toLocalTime(),
-                            rs.getString("statut") + " (" + rs.getString("modalite") + " - " + rs.getString("lieu") + ")"
+                            rs.getString("statut") + " (" + rs.getString("modalite") + " - " + rs.getString("lieu") + ")",
+                            "GROUPE"
                     ));
                 }
             }
@@ -137,7 +126,7 @@ public class SeanceDao implements Dao<Seance, Integer> {
         return resultats;
     }
 
-    /** Séances individuelles d'un étudiant (via sa demande), avec mentor et matière résolus (JOIN). */
+    /** Séances individuelles d'un étudiant (hors celles qu'il a masquées), avec mentor/matière résolus. */
     public List<SeanceVue> findByEtudiantAvecDetails(int idEtudiant) throws SQLException {
         String sql = """
                 SELECT s.id_seance, u.nom AS nom_mentor, u.prenom AS prenom_mentor,
@@ -148,7 +137,7 @@ public class SeanceDao implements Dao<Seance, Integer> {
                 JOIN etudiant e ON me.id_etudiant = e.id_etudiant
                 JOIN utilisateur u ON e.id_utilisateur = u.id_utilisateur
                 JOIN matiere mat ON d.id_matiere = mat.id_matiere
-                WHERE d.id_etudiant = ?
+                WHERE d.id_etudiant = ? AND s.masque_etudiant = 0
                 ORDER BY s.date_seance DESC
                 """;
 
@@ -167,7 +156,8 @@ public class SeanceDao implements Dao<Seance, Integer> {
                             rs.getDate("date_seance").toLocalDate(),
                             rs.getTime("heure_debut").toLocalTime(),
                             rs.getTime("heure_fin").toLocalTime(),
-                            rs.getString("statut")
+                            rs.getString("statut"),
+                            "INDIVIDUELLE"
                     ));
                 }
             }
@@ -175,7 +165,7 @@ public class SeanceDao implements Dao<Seance, Integer> {
         return resultats;
     }
 
-    /** Séances individuelles d'un mentor, avec étudiant et matière résolus (JOIN). */
+    /** Séances individuelles d'un mentor (hors celles qu'il a masquées), avec étudiant/matière résolus. */
     public List<SeanceMentorVue> findByMentorAvecDetails(int idMentor) throws SQLException {
         String sql = """
                 SELECT s.id_seance, u.nom AS nom_etudiant, u.prenom AS prenom_etudiant,
@@ -185,7 +175,7 @@ public class SeanceDao implements Dao<Seance, Integer> {
                 JOIN etudiant e ON d.id_etudiant = e.id_etudiant
                 JOIN utilisateur u ON e.id_utilisateur = u.id_utilisateur
                 JOIN matiere mat ON d.id_matiere = mat.id_matiere
-                WHERE d.id_mentor = ?
+                WHERE d.id_mentor = ? AND s.masque_mentor = 0
                 ORDER BY s.date_seance DESC
                 """;
 
@@ -210,6 +200,151 @@ public class SeanceDao implements Dao<Seance, Integer> {
             }
         }
         return resultats;
+    }
+
+    /** Séances de groupe non vues par l'étudiant (pour la notification cliquable). */
+    public List<SeanceVue> findGroupesAVenirByEtudiant(int idEtudiant) throws SQLException {
+        String sql = """
+                SELECT s.id_seance, u.nom AS nom_mentor, u.prenom AS prenom_mentor,
+                       mat.nom AS nom_matiere, s.date_seance, s.heure_debut, s.heure_fin, s.statut,
+                       s.modalite, s.lieu
+                FROM seance s
+                JOIN seance_participant sp ON sp.id_seance = s.id_seance
+                JOIN mentor m ON s.id_mentor = m.id_mentor
+                JOIN etudiant e ON m.id_etudiant = e.id_etudiant
+                JOIN utilisateur u ON e.id_utilisateur = u.id_utilisateur
+                JOIN matiere mat ON s.id_matiere = mat.id_matiere
+                WHERE sp.id_etudiant = ? AND sp.vu = 0 AND s.date_seance >= CURDATE() AND s.statut = 'PLANIFIEE'
+                ORDER BY s.date_seance ASC
+                """;
+
+        List<SeanceVue> resultats = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idEtudiant);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    resultats.add(new SeanceVue(
+                            rs.getInt("id_seance"),
+                            rs.getString("prenom_mentor") + " " + rs.getString("nom_mentor"),
+                            rs.getString("nom_matiere"),
+                            rs.getDate("date_seance").toLocalDate(),
+                            rs.getTime("heure_debut").toLocalTime(),
+                            rs.getTime("heure_fin").toLocalTime(),
+                            rs.getString("statut") + " (" + rs.getString("modalite") + " - " + rs.getString("lieu") + ")",
+                            "GROUPE"
+                    ));
+                }
+            }
+        }
+        return resultats;
+    }
+
+    /** Séances de groupe à venir pas encore confirmées par cet étudiant (pour le tableau "à confirmer"). */
+    public List<SeanceVue> findGroupesAConfirmerByEtudiant(int idEtudiant) throws SQLException {
+        String sql = """
+                SELECT s.id_seance, u.nom AS nom_mentor, u.prenom AS prenom_mentor,
+                       mat.nom AS nom_matiere, s.date_seance, s.heure_debut, s.heure_fin, s.statut
+                FROM seance s
+                JOIN seance_participant sp ON sp.id_seance = s.id_seance
+                JOIN mentor m ON s.id_mentor = m.id_mentor
+                JOIN etudiant e ON m.id_etudiant = e.id_etudiant
+                JOIN utilisateur u ON e.id_utilisateur = u.id_utilisateur
+                JOIN matiere mat ON s.id_matiere = mat.id_matiere
+                WHERE sp.id_etudiant = ? AND sp.confirme = 0 AND s.statut = 'PLANIFIEE'
+                ORDER BY s.date_seance ASC
+                """;
+
+        List<SeanceVue> resultats = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idEtudiant);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    resultats.add(new SeanceVue(
+                            rs.getInt("id_seance"),
+                            rs.getString("prenom_mentor") + " " + rs.getString("nom_mentor"),
+                            rs.getString("nom_matiere"),
+                            rs.getDate("date_seance").toLocalDate(),
+                            rs.getTime("heure_debut").toLocalTime(),
+                            rs.getTime("heure_fin").toLocalTime(),
+                            rs.getString("statut"),
+                            "GROUPE"
+                    ));
+                }
+            }
+        }
+        return resultats;
+    }
+
+    /** Séances de groupe créées par un mentor (hors celles qu'il a masquées), avec matière et confirmés. */
+    public List<SeanceGroupeVue> findGroupesByMentorAvecDetails(int idMentor) throws SQLException {
+        String sql = """
+                SELECT s.id_seance, mat.nom AS nom_matiere, s.date_seance, s.heure_debut, s.heure_fin,
+                       s.statut, s.modalite, s.lieu,
+                       (SELECT COUNT(*) FROM seance_participant sp WHERE sp.id_seance = s.id_seance) AS nombre_invites,
+                       (SELECT COUNT(*) FROM seance_participant sp WHERE sp.id_seance = s.id_seance AND sp.confirme = 1) AS nombre_confirmes
+                FROM seance s
+                JOIN matiere mat ON s.id_matiere = mat.id_matiere
+                WHERE s.id_mentor = ? AND s.type_seance = 'GROUPE' AND s.masque_mentor = 0
+                ORDER BY s.date_seance DESC
+                """;
+
+        List<SeanceGroupeVue> resultats = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idMentor);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    resultats.add(new SeanceGroupeVue(
+                            rs.getInt("id_seance"),
+                            rs.getString("nom_matiere"),
+                            rs.getDate("date_seance").toLocalDate(),
+                            rs.getTime("heure_debut").toLocalTime(),
+                            rs.getTime("heure_fin").toLocalTime(),
+                            rs.getString("statut"),
+                            rs.getString("modalite"),
+                            rs.getString("lieu"),
+                            rs.getInt("nombre_confirmes"),
+                            rs.getInt("nombre_invites")
+                    ));
+                }
+            }
+        }
+        return resultats;
+    }
+
+    public void masquerIndividuellePourEtudiant(int idSeance) throws SQLException {
+        String sql = "UPDATE seance SET masque_etudiant = 1 WHERE id_seance = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idSeance);
+            stmt.executeUpdate();
+        }
+    }
+
+    public void masquerIndividuellePourMentor(int idSeance) throws SQLException {
+        String sql = "UPDATE seance SET masque_mentor = 1 WHERE id_seance = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idSeance);
+            stmt.executeUpdate();
+        }
+    }
+
+    public void masquerGroupePourMentor(int idSeance) throws SQLException {
+        String sql = "UPDATE seance SET masque_mentor = 1 WHERE id_seance = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idSeance);
+            stmt.executeUpdate();
+        }
     }
 
     @Override
@@ -278,43 +413,5 @@ public class SeanceDao implements Dao<Seance, Integer> {
                 rs.getString("modalite"),
                 rs.getString("lieu")
         );
-    }
-    /** Séances de groupe à venir (à partir d'aujourd'hui) auxquelles un étudiant est invité — pour la notification. */
-    public List<SeanceVue> findGroupesAVenirByEtudiant(int idEtudiant) throws SQLException {
-        String sql = """
-                SELECT s.id_seance, u.nom AS nom_mentor, u.prenom AS prenom_mentor,
-                       mat.nom AS nom_matiere, s.date_seance, s.heure_debut, s.heure_fin, s.statut,
-                       s.modalite, s.lieu
-                FROM seance s
-                JOIN seance_participant sp ON sp.id_seance = s.id_seance
-                JOIN mentor m ON s.id_mentor = m.id_mentor
-                JOIN etudiant e ON m.id_etudiant = e.id_etudiant
-                JOIN utilisateur u ON e.id_utilisateur = u.id_utilisateur
-                JOIN matiere mat ON s.id_matiere = mat.id_matiere
-                WHERE sp.id_etudiant = ? AND s.date_seance >= CURDATE() AND s.statut = 'PLANIFIEE'
-                ORDER BY s.date_seance ASC
-                """;
-
-        List<SeanceVue> resultats = new ArrayList<>();
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, idEtudiant);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    resultats.add(new SeanceVue(
-                            rs.getInt("id_seance"),
-                            rs.getString("prenom_mentor") + " " + rs.getString("nom_mentor"),
-                            rs.getString("nom_matiere"),
-                            rs.getDate("date_seance").toLocalDate(),
-                            rs.getTime("heure_debut").toLocalTime(),
-                            rs.getTime("heure_fin").toLocalTime(),
-                            rs.getString("statut") + " (" + rs.getString("modalite") + " - " + rs.getString("lieu") + ")"
-                    ));
-                }
-            }
-        }
-        return resultats;
     }
 }

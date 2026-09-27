@@ -100,6 +100,7 @@ public class LoginController {
             Stage stage = (Stage) creerCompteButton.getScene().getWindow();
             SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/inscription.fxml", "MentorUADB - Inscription");
         } catch (IOException e) {
+            e.printStackTrace();
             messageLabel.setText("Impossible d'ouvrir l'écran d'inscription.");
         }
     }

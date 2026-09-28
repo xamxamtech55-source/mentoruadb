@@ -1,0 +1,7 @@
+# Copie ce fichier en "db.properties" (à la racine du projet) puis adapte les valeurs.
+# db.properties est ignoré par Git : ne le commite jamais.
+# Les variables d'environnement MENTORUADB_DB_URL / MENTORUADB_DB_USER / MENTORUADB_DB_PASSWORD
+# ont priorité sur ce fichier.
+db.url=jdbc:mysql://localhost:3306/mentoruadb?useSSL=false&serverTimezone=UTC
+db.user=root
+db.password=

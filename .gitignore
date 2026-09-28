@@ -22,3 +22,10 @@ Thumbs.db
 application.properties
 *.env
 uploads/
+
+# Configuration base de données locale (mots de passe) — voir db.properties.example
+db.properties
+
+# Espace de travail VS Code personnel
+*.code-workspace
+sauvegarde*.sql

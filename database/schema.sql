@@ -180,6 +180,10 @@ CREATE TABLE demande_mentorat (
 
                                   statut ENUM('EN_ATTENTE', 'ACCEPTEE', 'REFUSEE') NOT NULL DEFAULT 'EN_ATTENTE',
 
+    -- Masquage d'une demande dans l'historique de l'étudiant / du mentor (sans la supprimer)
+                                  masque_etudiant TINYINT(1) NOT NULL DEFAULT 0,
+                                  masque_mentor TINYINT(1) NOT NULL DEFAULT 0,
+
                                   CONSTRAINT fk_demande_etudiant FOREIGN KEY (id_etudiant)
                                       REFERENCES etudiant(id_etudiant) ON UPDATE CASCADE ON DELETE RESTRICT,
 
@@ -215,6 +219,10 @@ CREATE TABLE seance (
                         modalite ENUM('EN_LIGNE', 'PRESENTIEL') NOT NULL DEFAULT 'PRESENTIEL',
                         lieu VARCHAR(255) NULL,                                 -- salle ou lien visio
 
+    -- Masquage d'une séance dans l'historique de l'étudiant / du mentor (sans la supprimer)
+                        masque_etudiant TINYINT(1) NOT NULL DEFAULT 0,
+                        masque_mentor TINYINT(1) NOT NULL DEFAULT 0,
+
                         CONSTRAINT fk_seance_demande FOREIGN KEY (id_demande)
                             REFERENCES demande_mentorat(id_demande) ON UPDATE CASCADE ON DELETE RESTRICT,
 
@@ -236,6 +244,11 @@ CREATE TABLE seance_participant (
                                     id_seance INT NOT NULL,
                                     id_etudiant INT NOT NULL,
 
+    -- confirme : l'étudiant a confirmé sa présence ; vu : il a vu l'invitation ; masque : retirée de son historique
+                                    confirme TINYINT(1) NOT NULL DEFAULT 0,
+                                    vu TINYINT(1) NOT NULL DEFAULT 0,
+                                    masque TINYINT(1) NOT NULL DEFAULT 0,
+
                                     PRIMARY KEY (id_seance, id_etudiant),
 
                                     CONSTRAINT fk_participant_seance FOREIGN KEY (id_seance)
@@ -252,16 +265,44 @@ CREATE TABLE seance_participant (
 
 CREATE TABLE evaluation (
                             id_evaluation INT AUTO_INCREMENT PRIMARY KEY,
-                            id_seance INT NOT NULL UNIQUE,
+                            id_seance INT NOT NULL,
+                            id_etudiant INT NOT NULL,                              -- l'étudiant qui évalue
 
                             note TINYINT NOT NULL,
                             commentaire VARCHAR(500),
                             date_evaluation DATE NOT NULL,
 
+                            masque_mentor TINYINT(1) NOT NULL DEFAULT 0,           -- le mentor masque l'évaluation de sa vue
+
                             CONSTRAINT chk_note CHECK (note BETWEEN 1 AND 5),
 
+    -- Une évaluation par étudiant et par séance (indispensable pour les séances de groupe)
+                            CONSTRAINT uq_evaluation_seance_etudiant UNIQUE (id_seance, id_etudiant),
+
                             CONSTRAINT fk_evaluation_seance FOREIGN KEY (id_seance)
-                                REFERENCES seance(id_seance) ON UPDATE CASCADE ON DELETE CASCADE
+                                REFERENCES seance(id_seance) ON UPDATE CASCADE ON DELETE CASCADE,
+
+                            CONSTRAINT fk_evaluation_etudiant FOREIGN KEY (id_etudiant)
+                                REFERENCES etudiant(id_etudiant) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+
+-- =========================================================
+-- 14 bis. TABLE FILIERE_MATIERE (matières enseignées dans une filière)
+-- Utilisée pour suggérer des mentors et lister les matières d'une filière
+-- =========================================================
+
+CREATE TABLE filiere_matiere (
+                                 id_filiere INT NOT NULL,
+                                 id_matiere INT NOT NULL,
+
+                                 PRIMARY KEY (id_filiere, id_matiere),
+
+                                 CONSTRAINT fk_filiere_matiere_filiere FOREIGN KEY (id_filiere)
+                                     REFERENCES filiere(id_filiere) ON UPDATE CASCADE ON DELETE CASCADE,
+
+                                 CONSTRAINT fk_filiere_matiere_matiere FOREIGN KEY (id_matiere)
+                                     REFERENCES matiere(id_matiere) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 

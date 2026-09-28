@@ -2,14 +2,14 @@
 
 Application desktop de mise en relation et de gestion du mentorat étudiant à l'Université Alioune Diop de Bambey (UADB).
 
-**Stack** : Java 17 • JavaFX 21 • FXML • CSS • JDBC • MySQL 8
+**Stack** : Java 21 • JavaFX 21 • FXML • CSS • JDBC • MySQL 8
 **Architecture** : JavaFX/FXML/CSS → Controllers → Services → DAO → JDBC → MySQL
 
 ---
 
 ## 1. Prérequis
 
-- JDK 17 ou supérieur
+- JDK 21 ou supérieur
 - Maven 3.9+
 - MySQL 8 (serveur local ou distant)
 - Git
@@ -29,9 +29,21 @@ mysql -u root -p < database/schema.sql
 mysql -u root -p < database/data.sql
 ```
 
-Puis adapter si besoin les identifiants dans
-`src/main/java/com/uadb/mentoruadb/config/DatabaseConnection.java`
-(URL, utilisateur, mot de passe).
+**Base déjà créée avant la migration 001 ?** Sauvegarde-la (`mysqldump -u root -p mentoruadb > sauvegarde.sql`)
+puis exécute une seule fois (le script peut être relancé sans risque) :
+
+```bash
+mysql -u root -p < database/migration_001_alignement_code.sql
+```
+
+### Configuration de la connexion
+
+Aucun identifiant n'est écrit dans le code. La connexion se règle, par ordre de priorité :
+
+1. variables d'environnement `MENTORUADB_DB_URL`, `MENTORUADB_DB_USER`, `MENTORUADB_DB_PASSWORD` ;
+2. fichier `db.properties` à la racine du projet (copie `db.properties.example` en `db.properties`) —
+   ce fichier est ignoré par Git ;
+3. valeurs par défaut : MySQL local, utilisateur `root`, sans mot de passe.
 
 Tester la connexion JDBC seule :
 ```bash
@@ -44,10 +56,16 @@ mvn compile exec:java -Dexec.mainClass="com.uadb.mentoruadb.config.DatabaseConne
 mvn clean javafx:run
 ```
 
+## 3 bis. Lancer les tests
+
+```bash
+mvn test
+```
+
 ## 4. Structure du projet
 
 ```
-    src/main/java/.../Main.java              -> point d'entrée JavaFX
+src/main/java/.../Main.java              -> point d'entrée JavaFX
 src/main/java/.../config/                -> DatabaseConnection (JDBC)
 src/main/java/.../model/                 -> entités (11 classes, cf. MEA section 6)
 src/main/java/.../dao/                   -> accès aux données (JDBC, une classe par entité)
@@ -103,6 +121,16 @@ Chaque membre travaille sur une branche dédiée à sa fonctionnalité :
 | 2 | Authentification, inscription, utilisateurs, UFR, filières, niveaux, matières |
 | 3 | Recherche de mentor, demandes, validation/refus, séances |
 | 4 | Évaluation, corrections, tests globaux, préparation démonstration et rapport |
+
+## 8. Sécurité et limites connues
+
+- Les mots de passe sont stockés hachés (PBKDF2-HMAC-SHA256 avec sel, voir `util/PasswordUtil.java`).
+  Les comptes de test de `data.sql` sont en clair dans le fichier SQL : ils sont convertis en hash à leur
+  première connexion.
+- La réinitialisation du mot de passe (`MotDePasseOublieController`) ne vérifie pas l'identité de la personne :
+  il suffit de connaître l'email institutionnel. Une vraie version enverrait un lien ou un code par email.
+- `InscriptionService` n'est pas transactionnel : si la création du profil échoue après celle du compte,
+  le compte reste en base.
 
 ---
 

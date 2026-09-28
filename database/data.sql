@@ -888,12 +888,14 @@ WHERE u.email = 'awa.diop@uadb.edu.sn'
 INSERT INTO evaluation
 (
     id_seance,
+    id_etudiant,
     note,
     commentaire,
     date_evaluation
 )
 SELECT
     s.id_seance,
+    e.id_etudiant,
     5,
     'Séance très claire et bien expliquée.',
     '2026-09-05'

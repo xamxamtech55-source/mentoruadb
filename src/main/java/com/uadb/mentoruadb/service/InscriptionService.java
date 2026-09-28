@@ -6,6 +6,7 @@ import com.uadb.mentoruadb.dao.UtilisateurDao;
 import com.uadb.mentoruadb.model.Etudiant;
 import com.uadb.mentoruadb.model.Mentor;
 import com.uadb.mentoruadb.model.Utilisateur;
+import com.uadb.mentoruadb.util.PasswordUtil;
 
 import java.sql.SQLException;
 
@@ -34,7 +35,7 @@ public class InscriptionService {
             throw new IllegalArgumentException("Un compte existe déjà avec cet email.");
         }
 
-        Utilisateur utilisateur = new Utilisateur(0, nom, prenom, email, motDePasse, "ETUDIANT", "ACTIF", telephone, null);
+        Utilisateur utilisateur = new Utilisateur(0, nom, prenom, email, PasswordUtil.hacher(motDePasse), "ETUDIANT", "ACTIF", telephone, null);
         utilisateur = utilisateurDao.create(utilisateur);
 
         Etudiant etudiant = new Etudiant(0, utilisateur.getIdUtilisateur(), idFiliere, idNiveau, numeroCarte);

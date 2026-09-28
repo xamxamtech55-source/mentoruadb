@@ -15,11 +15,17 @@ public class SeanceDao implements Dao<Seance, Integer> {
 
     @Override
     public Seance create(Seance s) throws SQLException {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            return create(s, conn);
+        }
+    }
+
+    /** Variante transactionnelle : utilise la connexion fournie et NE la ferme PAS (c'est à l'appelant de le faire). */
+    public Seance create(Seance s, Connection conn) throws SQLException {
         String sql = "INSERT INTO seance (id_demande, type_seance, id_mentor, id_matiere, date_seance, " +
                 "heure_debut, heure_fin, statut, modalite, lieu) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             if (s.getIdDemande() != null) stmt.setInt(1, s.getIdDemande()); else stmt.setNull(1, Types.INTEGER);
             stmt.setString(2, s.getTypeSeance());

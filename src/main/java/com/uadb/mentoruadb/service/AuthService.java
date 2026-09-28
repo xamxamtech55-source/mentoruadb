@@ -2,15 +2,15 @@ package com.uadb.mentoruadb.service;
 
 import com.uadb.mentoruadb.dao.UtilisateurDao;
 import com.uadb.mentoruadb.model.Utilisateur;
+import com.uadb.mentoruadb.util.PasswordUtil;
 
 import java.sql.SQLException;
 import java.util.Optional;
 
 /**
  * Service d'authentification.
- * À compléter avec le hachage du mot de passe (ex. BCrypt) avant une
- * mise en production réelle — pour le projet universitaire, comparaison
- * en clair acceptée mais à mentionner comme limite dans le rapport.
+ * Les mots de passe sont stockés hachés (PBKDF2, voir PasswordUtil). Un compte encore en clair
+ * (données de test ou ancien compte) est accepté une dernière fois puis converti automatiquement.
  */
 public class AuthService {
 
@@ -24,8 +24,16 @@ public class AuthService {
         }
 
         Utilisateur utilisateur = resultat.get();
-        if (!utilisateur.getMotDePasse().equals(motDePasse)) {
+        String valeurStockee = utilisateur.getMotDePasse();
+
+        if (!PasswordUtil.verifier(motDePasse, valeurStockee)) {
             return null; // mot de passe incorrect
+        }
+
+        // Migration transparente : ancien mot de passe en clair -> hash.
+        if (PasswordUtil.doitEtreMisAJour(valeurStockee)) {
+            utilisateur.setMotDePasse(PasswordUtil.hacher(motDePasse));
+            utilisateurDao.update(utilisateur);
         }
 
         return utilisateur;

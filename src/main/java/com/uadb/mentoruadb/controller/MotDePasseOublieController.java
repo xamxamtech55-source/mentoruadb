@@ -2,6 +2,7 @@ package com.uadb.mentoruadb.controller;
 
 import com.uadb.mentoruadb.dao.UtilisateurDao;
 import com.uadb.mentoruadb.model.Utilisateur;
+import com.uadb.mentoruadb.util.PasswordUtil;
 import com.uadb.mentoruadb.util.SceneNavigator;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -52,7 +53,7 @@ public class MotDePasseOublieController {
             }
 
             Utilisateur utilisateur = resultat.get();
-            utilisateur.setMotDePasse(nouveauMotDePasse);
+            utilisateur.setMotDePasse(PasswordUtil.hacher(nouveauMotDePasse));
             utilisateurDao.update(utilisateur);
 
             messageLabel.setText("Mot de passe mis à jour ! Tu peux te connecter.");

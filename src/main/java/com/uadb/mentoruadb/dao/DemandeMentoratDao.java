@@ -208,10 +208,16 @@ public class DemandeMentoratDao implements Dao<DemandeMentorat, Integer> {
 
     @Override
     public void update(DemandeMentorat d) throws SQLException {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            update(d, conn);
+        }
+    }
+
+    /** Variante transactionnelle : utilise la connexion fournie et NE la ferme PAS (c'est à l'appelant de le faire). */
+    public void update(DemandeMentorat d, Connection conn) throws SQLException {
         String sql = "UPDATE demande_mentorat SET id_etudiant=?, id_mentor=?, id_matiere=?, date_demande=?, statut=? WHERE id_demande=?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, d.getIdEtudiant());
             stmt.setInt(2, d.getIdMentor());

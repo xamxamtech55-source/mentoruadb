@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.service;
 
+import com.uadb.mentoruadb.config.DatabaseConnection;
 import com.uadb.mentoruadb.dao.DemandeMentoratDao;
 import com.uadb.mentoruadb.dao.EvaluationDao;
 import com.uadb.mentoruadb.dao.SeanceDao;
@@ -7,6 +8,7 @@ import com.uadb.mentoruadb.model.DemandeMentorat;
 import com.uadb.mentoruadb.model.Evaluation;
 import com.uadb.mentoruadb.model.Seance;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -26,7 +28,11 @@ public class MentoratService {
         return demandeDao.create(demande);
     }
 
-    /** Accepter une demande crée automatiquement la séance individuelle planifiée correspondante. */
+    /**
+     * Accepter une demande crée automatiquement la séance individuelle planifiée correspondante.
+     * Les deux écritures (demande -> ACCEPTEE, création de la séance) sont dans UNE transaction :
+     * si l'une échoue, rien n'est enregistré.
+     */
     public Seance accepterDemande(int idDemande, LocalDate dateSeance, LocalTime heureDebut, LocalTime heureFin,
                                   String modalite, String lieu) throws SQLException {
 
@@ -36,11 +42,24 @@ public class MentoratService {
         }
 
         DemandeMentorat demande = resultat.get();
+        if (!"EN_ATTENTE".equals(demande.getStatut())) {
+            throw new IllegalStateException("Cette demande a déjà été traitée.");
+        }
         demande.setStatut("ACCEPTEE");
-        demandeDao.update(demande);
 
-        Seance seance = Seance.individuelle(0, idDemande, dateSeance, heureDebut, heureFin, "PLANIFIEE", modalite, lieu);
-        return seanceDao.create(seance);
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                demandeDao.update(demande, conn);
+                Seance seance = Seance.individuelle(0, idDemande, dateSeance, heureDebut, heureFin, "PLANIFIEE", modalite, lieu);
+                seance = seanceDao.create(seance, conn);
+                conn.commit();
+                return seance;
+            } catch (SQLException | RuntimeException e) {
+                conn.rollback();
+                throw e;
+            }
+        }
     }
 
     public void refuserDemande(int idDemande) throws SQLException {

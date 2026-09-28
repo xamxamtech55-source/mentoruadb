@@ -206,6 +206,8 @@ public class DashboardMentorController {
             rafraichir();
         } catch (java.time.format.DateTimeParseException e) {
             messageLabel.setText("Format d'heure invalide — utilise HH:mm (ex: 14:30).");
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            messageLabel.setText(e.getMessage());
         } catch (SQLException e) {
             messageLabel.setText("Erreur lors de l'acceptation.");
         }

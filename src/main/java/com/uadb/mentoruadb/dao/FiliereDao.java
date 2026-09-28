@@ -87,7 +87,7 @@ public class FiliereDao implements Dao<Filiere, Integer> {
         return resultats;
     }
 
-    /** Matières rattachées à une filière (pour l'inscription, la suggestion de mentors, etc.). */
+    /** Matières rattachées à une filière (inscription, recherche, candidature mentor, arbre admin). */
     public List<Matiere> findMatieresByFiliere(int idFiliere) throws SQLException {
         String sql = """
                 SELECT m.id_matiere, m.nom
@@ -110,6 +110,19 @@ public class FiliereDao implements Dao<Filiere, Integer> {
             }
         }
         return resultats;
+    }
+
+    /** Autorise un niveau pour une filière (table filiere_niveau). Sans ça, personne ne peut s'inscrire dans cette filière. */
+    public void associerNiveau(int idFiliere, int idNiveau) throws SQLException {
+        String sql = "INSERT IGNORE INTO filiere_niveau (id_filiere, id_niveau) VALUES (?, ?)";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idFiliere);
+            stmt.setInt(2, idNiveau);
+            stmt.executeUpdate();
+        }
     }
 
     @Override

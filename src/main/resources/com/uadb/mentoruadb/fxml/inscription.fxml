@@ -5,12 +5,12 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.ScrollPane?>
 
 <ScrollPane fitToWidth="true" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.uadb.mentoruadb.controller.InscriptionController">
@@ -40,12 +40,13 @@
                     styleClass="toggle-password-button" StackPane.alignment="CENTER_RIGHT" />
         </StackPane>
 
+        <ComboBox fx:id="ufrComboBox" promptText="UFR / Institut" prefWidth="280.0" maxWidth="280.0" />
         <ComboBox fx:id="filiereComboBox" promptText="Filière" prefWidth="280.0" maxWidth="280.0" />
         <ComboBox fx:id="niveauComboBox" promptText="Niveau" prefWidth="280.0" maxWidth="280.0" />
 
         <Button text="S'inscrire" onAction="#onInscriptionClick" prefWidth="280.0" maxWidth="280.0" />
         <Button fx:id="retourButton" text="J'ai déjà un compte" onAction="#onRetourConnexionClick" styleClass="lien-button" prefWidth="280.0" maxWidth="280.0" />
 
-        <Label fx:id="messageLabel" styleClass="message-label" />
+        <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" maxWidth="280.0" />
     </VBox>
 </ScrollPane>

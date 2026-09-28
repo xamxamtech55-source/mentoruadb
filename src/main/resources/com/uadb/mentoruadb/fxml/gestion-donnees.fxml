@@ -14,69 +14,70 @@
 
         <Label text="Gestion des données académiques" styleClass="title-label" />
 
-        <TabPane prefHeight="450.0">
-            <Tab text="UFR" closable="false">
-                <VBox spacing="10.0">
+        <TabPane prefHeight="540.0">
+            <Tab text="Organisation (UFR → Filières → Matières)" closable="false">
+                <HBox spacing="20.0">
                     <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0" /></padding>
-                    <TableView fx:id="ufrTable" prefHeight="250.0">
-                        <columns>
-                            <TableColumn fx:id="colUfrNom" text="Nom" prefWidth="300.0" />
-                        </columns>
-                    </TableView>
-                    <HBox spacing="10.0" alignment="CENTER_LEFT">
-                        <TextField fx:id="ufrNomField" promptText="Nom de l'UFR" HBox.hgrow="ALWAYS" />
-                        <Button text="Ajouter" onAction="#onAjouterUfrClick" />
-                        <Button text="Supprimer" onAction="#onSupprimerUfrClick" styleClass="lien-button" />
-                    </HBox>
-                </VBox>
+
+                    <VBox spacing="8.0">
+                        <Label text="Sélectionne une UFR ou une filière dans l'arbre" />
+                        <TreeView fx:id="organisationTree" prefWidth="430.0" prefHeight="440.0" />
+                    </VBox>
+
+                    <VBox spacing="10.0" prefWidth="380.0">
+                        <Label text="Ajouter une UFR" styleClass="subtitle-label" />
+                        <HBox spacing="8.0">
+                            <TextField fx:id="ufrNomField" promptText="Nom de l'UFR" prefWidth="250.0" />
+                            <Button text="Ajouter" onAction="#onAjouterUfrClick" />
+                        </HBox>
+
+                        <Label text="Ajouter une filière à l'UFR sélectionnée" styleClass="subtitle-label" />
+                        <TextField fx:id="filiereNomField" promptText="Nom de la filière" prefWidth="330.0" maxWidth="330.0" />
+                        <Label text="Niveaux proposés (Ctrl+clic pour en choisir plusieurs)" />
+                        <ListView fx:id="niveauxListView" prefHeight="105.0" prefWidth="330.0" maxWidth="330.0" />
+                        <Button text="Ajouter la filière" onAction="#onAjouterFiliereClick" />
+
+                        <Label text="Matières de la filière sélectionnée" styleClass="subtitle-label" />
+                        <HBox spacing="8.0">
+                            <ComboBox fx:id="matiereRattacherComboBox" promptText="Matière du catalogue" prefWidth="220.0" />
+                            <Button text="Rattacher" onAction="#onRattacherMatiereClick" />
+                        </HBox>
+                        <Button text="Détacher la matière sélectionnée" onAction="#onDetacherMatiereClick" />
+
+                        <Button text="Supprimer l'UFR / la filière sélectionnée" onAction="#onSupprimerSelectionClick" styleClass="lien-button" />
+                    </VBox>
+                </HBox>
             </Tab>
 
-            <Tab text="Filières" closable="false">
+            <Tab text="Catalogue des matières" closable="false">
                 <VBox spacing="10.0">
                     <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0" /></padding>
-                    <TableView fx:id="filiereTable" prefHeight="250.0">
+                    <TableView fx:id="matiereTable" prefHeight="330.0">
                         <columns>
-                            <TableColumn fx:id="colFiliereNom" text="Nom" prefWidth="200.0" />
-                            <TableColumn fx:id="colFiliereUfr" text="UFR" prefWidth="200.0" />
+                            <TableColumn fx:id="colMatiereNom" text="Nom" prefWidth="320.0" />
                         </columns>
                     </TableView>
                     <HBox spacing="10.0" alignment="CENTER_LEFT">
-                        <TextField fx:id="filiereNomField" promptText="Nom de la filière" HBox.hgrow="ALWAYS" />
-                        <ComboBox fx:id="filiereUfrComboBox" promptText="UFR" />
-                        <Button text="Ajouter" onAction="#onAjouterFiliereClick" />
-                        <Button text="Supprimer" onAction="#onSupprimerFiliereClick" styleClass="lien-button" />
+                        <TextField fx:id="matiereNomField" promptText="Nom de la nouvelle matière" prefWidth="300.0" />
+                        <Button text="Ajouter" onAction="#onAjouterMatiereClick" />
+                        <Button text="Supprimer" onAction="#onSupprimerMatiereClick" styleClass="lien-button" />
                     </HBox>
+                    <Label text="Pense à rattacher chaque nouvelle matière à une filière (onglet Organisation), sinon elle ne sera visible nulle part." wrapText="true" />
                 </VBox>
             </Tab>
 
             <Tab text="Niveaux" closable="false">
                 <VBox spacing="10.0">
                     <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0" /></padding>
-                    <TableView fx:id="niveauTable" prefHeight="250.0">
+                    <TableView fx:id="niveauTable" prefHeight="330.0">
                         <columns>
-                            <TableColumn fx:id="colNiveauLibelle" text="Libellé" prefWidth="300.0" />
+                            <TableColumn fx:id="colNiveauLibelle" text="Libellé" prefWidth="320.0" />
                         </columns>
                     </TableView>
                     <HBox spacing="10.0" alignment="CENTER_LEFT">
-                        <TextField fx:id="niveauLibelleField" promptText="Libellé (ex: Licence 3)" HBox.hgrow="ALWAYS" />
+                        <TextField fx:id="niveauLibelleField" promptText="Libellé (ex: Licence 3)" prefWidth="300.0" />
                         <Button text="Ajouter" onAction="#onAjouterNiveauClick" />
                         <Button text="Supprimer" onAction="#onSupprimerNiveauClick" styleClass="lien-button" />
-                    </HBox>
-                </VBox>
-            </Tab>
-
-            <Tab text="Matières" closable="false">
-                <VBox spacing="10.0">
-                    <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0" /></padding>
-                    <TableView fx:id="matiereTable" prefHeight="250.0">
-                        <columns>
-                            <TableColumn fx:id="colMatiereNom" text="Nom" prefWidth="300.0" />
-                        </columns>
-                    </TableView>
-                    <HBox spacing="10.0" alignment="CENTER_LEFT">
-                        <TextField fx:id="matiereNomField" promptText="Nom de la matière" HBox.hgrow="ALWAYS" />
-                        <Button text="Ajouter" onAction="#onAjouterMatiereClick" />
-                        <Button text="Supprimer" onAction="#onSupprimerMatiereClick" styleClass="lien-button" />
                     </HBox>
                 </VBox>
             </Tab>
@@ -86,6 +87,6 @@
             <Button fx:id="retourButton" text="Retour" onAction="#onRetourClick" styleClass="lien-button" />
         </HBox>
 
-        <Label fx:id="messageLabel" styleClass="message-label" />
+        <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />
     </VBox>
 </ScrollPane>

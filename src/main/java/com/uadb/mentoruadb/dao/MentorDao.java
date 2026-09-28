@@ -2,6 +2,7 @@ package com.uadb.mentoruadb.dao;
 
 import com.uadb.mentoruadb.config.DatabaseConnection;
 import com.uadb.mentoruadb.dto.CandidatMentorVue;
+import com.uadb.mentoruadb.dto.MentorSuggestionVue;
 import com.uadb.mentoruadb.model.Mentor;
 
 import java.sql.*;
@@ -80,6 +81,58 @@ public class MentorDao implements Dao<Mentor, Integer> {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     resultats.add(mapRow(rs));
+                }
+            }
+        }
+        return resultats;
+    }
+
+    /**
+     * Mentors validés suggérés pour une filière : ceux qui maîtrisent au moins une matière rattachée
+     * à cette filière, triés par note moyenne décroissante (les mentors sans note passent en dernier).
+     * L'étudiant qui consulte est exclu (s'il est lui-même mentor). Maximum 5 résultats.
+     */
+    public List<MentorSuggestionVue> findSuggestionsPourFiliere(int idFiliere, int idEtudiantExclu) throws SQLException {
+        String sql = """
+                SELECT me.id_mentor, u.prenom, u.nom, f.nom AS nom_filiere, n.libelle AS libelle_niveau,
+                       GROUP_CONCAT(DISTINCT mat.nom ORDER BY mat.nom SEPARATOR ', ') AS matieres,
+                       (SELECT ROUND(AVG(ev.note), 1)
+                        FROM evaluation ev
+                        JOIN seance s ON ev.id_seance = s.id_seance
+                        LEFT JOIN demande_mentorat d ON s.id_demande = d.id_demande
+                        WHERE COALESCE(s.id_mentor, d.id_mentor) = me.id_mentor) AS note_moyenne
+                FROM mentor me
+                JOIN etudiant e ON me.id_etudiant = e.id_etudiant
+                JOIN utilisateur u ON e.id_utilisateur = u.id_utilisateur
+                JOIN filiere f ON e.id_filiere = f.id_filiere
+                JOIN niveau n ON e.id_niveau = n.id_niveau
+                JOIN expertise ex ON ex.id_mentor = me.id_mentor
+                JOIN matiere mat ON ex.id_matiere = mat.id_matiere
+                JOIN filiere_matiere fm ON fm.id_matiere = mat.id_matiere AND fm.id_filiere = ?
+                WHERE me.statut_validation = 'VALIDE' AND me.id_etudiant <> ?
+                GROUP BY me.id_mentor, u.prenom, u.nom, f.nom, n.libelle
+                ORDER BY note_moyenne IS NULL, note_moyenne DESC, u.nom
+                LIMIT 5
+                """;
+
+        List<MentorSuggestionVue> resultats = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idFiliere);
+            stmt.setInt(2, idEtudiantExclu);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    String note = rs.getString("note_moyenne");
+                    resultats.add(new MentorSuggestionVue(
+                            rs.getInt("id_mentor"),
+                            rs.getString("prenom") + " " + rs.getString("nom"),
+                            rs.getString("nom_filiere"),
+                            rs.getString("libelle_niveau"),
+                            rs.getString("matieres"),
+                            note != null ? note + "/5" : "pas encore noté"
+                    ));
                 }
             }
         }

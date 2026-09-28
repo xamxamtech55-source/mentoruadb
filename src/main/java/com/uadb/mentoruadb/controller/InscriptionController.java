@@ -1,8 +1,10 @@
 package com.uadb.mentoruadb.controller;
 
 import com.uadb.mentoruadb.dao.FiliereDao;
+import com.uadb.mentoruadb.dao.UfrDao;
 import com.uadb.mentoruadb.model.Filiere;
 import com.uadb.mentoruadb.model.Niveau;
+import com.uadb.mentoruadb.model.Ufr;
 import com.uadb.mentoruadb.service.InscriptionService;
 import com.uadb.mentoruadb.util.SceneNavigator;
 import javafx.fxml.FXML;
@@ -17,7 +19,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-/** Contrôleur lié à fxml/inscription.fxml. */
+/** Contrôleur lié à fxml/inscription.fxml (choix en cascade : UFR → Filière → Niveau). */
 public class InscriptionController {
 
     @FXML private TextField nomField;
@@ -28,12 +30,14 @@ public class InscriptionController {
     @FXML private PasswordField motDePasseField;
     @FXML private TextField motDePasseVisibleField;
     @FXML private Button toggleMotDePasseButton;
+    @FXML private ComboBox<Ufr> ufrComboBox;
     @FXML private ComboBox<Filiere> filiereComboBox;
     @FXML private ComboBox<Niveau> niveauComboBox;
     @FXML private Label messageLabel;
     @FXML private Button retourButton;
 
     private final InscriptionService inscriptionService = new InscriptionService();
+    private final UfrDao ufrDao = new UfrDao();
     private final FiliereDao filiereDao = new FiliereDao();
 
     private boolean motDePasseVisible = false;
@@ -43,30 +47,56 @@ public class InscriptionController {
         motDePasseVisibleField.textProperty().bindBidirectional(motDePasseField.textProperty());
 
         try {
-            List<Filiere> filieres = filiereDao.findAll();
-            filiereComboBox.getItems().setAll(filieres);
+            ufrComboBox.getItems().setAll(ufrDao.findAll());
         } catch (SQLException e) {
-            e.printStackTrace();
-            messageLabel.setText("Erreur de chargement des filières.");
+            messageLabel.setText("Erreur de chargement des UFR.");
         }
 
+        filiereComboBox.setDisable(true);
         niveauComboBox.setDisable(true);
 
-        filiereComboBox.valueProperty().addListener((obs, ancienneFiliere, nouvelleFiliere) -> {
+        // Étape 1 : l'UFR choisie détermine les filières proposées
+        ufrComboBox.valueProperty().addListener((obs, ancienne, nouvelle) -> {
+            filiereComboBox.getItems().clear();
+            filiereComboBox.setValue(null);
+            niveauComboBox.getItems().clear();
+            niveauComboBox.setValue(null);
+            niveauComboBox.setDisable(true);
+            messageLabel.setText("");
+
+            if (nouvelle == null) {
+                filiereComboBox.setDisable(true);
+                return;
+            }
+
+            try {
+                List<Filiere> filieres = filiereDao.findByUfr(nouvelle.getIdUfr());
+                filiereComboBox.getItems().setAll(filieres);
+                filiereComboBox.setDisable(filieres.isEmpty());
+                if (filieres.isEmpty()) {
+                    messageLabel.setText("Aucune filière n'est encore enregistrée pour cette UFR.");
+                }
+            } catch (SQLException e) {
+                messageLabel.setText("Erreur de chargement des filières.");
+            }
+        });
+
+        // Étape 2 : la filière choisie détermine les niveaux proposés
+        filiereComboBox.valueProperty().addListener((obs, ancienne, nouvelle) -> {
             niveauComboBox.getItems().clear();
             niveauComboBox.setValue(null);
 
-            if (nouvelleFiliere == null) {
+            if (nouvelle == null) {
                 niveauComboBox.setDisable(true);
                 return;
             }
 
             try {
-                List<Niveau> niveaux = filiereDao.findNiveauxByFiliere(nouvelleFiliere.getIdFiliere());
+                List<Niveau> niveaux = filiereDao.findNiveauxByFiliere(nouvelle.getIdFiliere());
                 niveauComboBox.getItems().setAll(niveaux);
                 niveauComboBox.setDisable(niveaux.isEmpty());
                 if (niveaux.isEmpty()) {
-                    messageLabel.setText("Aucun niveau disponible pour cette filière pour le moment.");
+                    messageLabel.setText("Aucun niveau n'est disponible pour cette filière pour le moment.");
                 }
             } catch (SQLException e) {
                 messageLabel.setText("Erreur de chargement des niveaux.");
@@ -97,7 +127,7 @@ public class InscriptionController {
 
         if (nom.isBlank() || prenom.isBlank() || email.isBlank() || telephone.isBlank()
                 || numeroCarte.isBlank() || motDePasse.isBlank() || filiere == null || niveau == null) {
-            messageLabel.setText("Veuillez remplir tous les champs.");
+            messageLabel.setText("Veuillez remplir tous les champs (UFR, filière et niveau compris).");
             return;
         }
 

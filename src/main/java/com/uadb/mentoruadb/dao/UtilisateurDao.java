@@ -16,11 +16,17 @@ public class UtilisateurDao implements Dao<Utilisateur, Integer> {
 
     @Override
     public Utilisateur create(Utilisateur u) throws SQLException {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            return create(u, conn);
+        }
+    }
+
+    /** Variante transactionnelle : utilise la connexion fournie et NE la ferme PAS (c'est à l'appelant de le faire). */
+    public Utilisateur create(Utilisateur u, Connection conn) throws SQLException {
         String sql = "INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, role, statut, telephone, photo) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, u.getNom());
             stmt.setString(2, u.getPrenom());

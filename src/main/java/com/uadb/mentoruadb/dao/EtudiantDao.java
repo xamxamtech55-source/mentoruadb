@@ -12,10 +12,16 @@ public class EtudiantDao implements Dao<Etudiant, Integer> {
 
     @Override
     public Etudiant create(Etudiant e) throws SQLException {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            return create(e, conn);
+        }
+    }
+
+    /** Variante transactionnelle : utilise la connexion fournie et NE la ferme PAS (c'est à l'appelant de le faire). */
+    public Etudiant create(Etudiant e, Connection conn) throws SQLException {
         String sql = "INSERT INTO etudiant (id_utilisateur, id_filiere, id_niveau, numero_carte) VALUES (?, ?, ?, ?)";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setInt(1, e.getIdUtilisateur());
             stmt.setInt(2, e.getIdFiliere());

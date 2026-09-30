@@ -12,8 +12,8 @@ public class FichierDao implements Dao<Fichier, Integer> {
 
     @Override
     public Fichier create(Fichier f) throws SQLException {
-        String sql = "INSERT INTO fichier (id_mentor, id_matiere, id_seance, nom_fichier, chemin, date_upload) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO fichier (id_mentor, id_matiere, id_seance, id_etudiant, nom_fichier, chemin, date_upload) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -21,9 +21,10 @@ public class FichierDao implements Dao<Fichier, Integer> {
             stmt.setInt(1, f.getIdMentor());
             if (f.getIdMatiere() != null) stmt.setInt(2, f.getIdMatiere()); else stmt.setNull(2, Types.INTEGER);
             if (f.getIdSeance() != null) stmt.setInt(3, f.getIdSeance()); else stmt.setNull(3, Types.INTEGER);
-            stmt.setString(4, f.getNomFichier());
-            stmt.setString(5, f.getChemin());
-            stmt.setDate(6, Date.valueOf(f.getDateUpload()));
+            if (f.getIdEtudiant() != null) stmt.setInt(4, f.getIdEtudiant()); else stmt.setNull(4, Types.INTEGER);
+            stmt.setString(5, f.getNomFichier());
+            stmt.setString(6, f.getChemin());
+            stmt.setDate(7, Date.valueOf(f.getDateUpload()));
             stmt.executeUpdate();
 
             try (ResultSet keys = stmt.getGeneratedKeys()) {
@@ -49,7 +50,7 @@ public class FichierDao implements Dao<Fichier, Integer> {
         }
     }
 
-    /** Tous les fichiers partagés par un mentor (sa liste personnelle de gestion). */
+    /** Tous les fichiers partagés par un mentor (sa liste personnelle de gestion), diffusion et partages individuels confondus. */
     public List<Fichier> findByMentor(int idMentor) throws SQLException {
         String sql = "SELECT * FROM fichier WHERE id_mentor = ? ORDER BY date_upload DESC";
         List<Fichier> resultats = new ArrayList<>();
@@ -67,13 +68,20 @@ public class FichierDao implements Dao<Fichier, Integer> {
         return resultats;
     }
 
-    /** Fichiers visibles par un étudiant : ceux liés aux matières pour lesquelles il a une demande acceptée. */
+    /**
+     * Fichiers visibles par un étudiant : soit un fichier diffusé (id_etudiant NULL) lié à une
+     * matière pour laquelle il a une demande acceptée avec ce mentor, soit un fichier qui lui a
+     * été partagé individuellement (id_etudiant = lui), quel que soit le statut de sa demande.
+     */
     public List<Fichier> findVisiblesParEtudiant(int idEtudiant) throws SQLException {
         String sql = """
                 SELECT DISTINCT f.*
                 FROM fichier f
-                JOIN demande_mentorat d ON d.id_mentor = f.id_mentor AND d.id_matiere = f.id_matiere
-                WHERE d.id_etudiant = ? AND d.statut = 'ACCEPTEE'
+                LEFT JOIN demande_mentorat d
+                    ON d.id_mentor = f.id_mentor AND d.id_matiere = f.id_matiere
+                    AND d.id_etudiant = ? AND d.statut = 'ACCEPTEE'
+                WHERE (f.id_etudiant IS NULL AND d.id_demande IS NOT NULL)
+                   OR f.id_etudiant = ?
                 ORDER BY f.date_upload DESC
                 """;
         List<Fichier> resultats = new ArrayList<>();
@@ -82,6 +90,7 @@ public class FichierDao implements Dao<Fichier, Integer> {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, idEtudiant);
+            stmt.setInt(2, idEtudiant);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     resultats.add(mapRow(rs));
@@ -140,11 +149,15 @@ public class FichierDao implements Dao<Fichier, Integer> {
         int idSeanceRaw = rs.getInt("id_seance");
         Integer idSeance = rs.wasNull() ? null : idSeanceRaw;
 
+        int idEtudiantRaw = rs.getInt("id_etudiant");
+        Integer idEtudiant = rs.wasNull() ? null : idEtudiantRaw;
+
         return new Fichier(
                 rs.getInt("id_fichier"),
                 rs.getInt("id_mentor"),
                 idMatiere,
                 idSeance,
+                idEtudiant,
                 rs.getString("nom_fichier"),
                 rs.getString("chemin"),
                 rs.getDate("date_upload").toLocalDate()

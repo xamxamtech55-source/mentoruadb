@@ -92,6 +92,7 @@
         <Label text="Mes fichiers partagés" styleClass="subtitle-label" />
         <HBox spacing="10.0" alignment="CENTER_LEFT">
             <ComboBox fx:id="matiereFichierComboBox" promptText="Matière du fichier" />
+            <ComboBox fx:id="destinataireFichierComboBox" promptText="Partager avec" />
             <Button text="Choisir un fichier..." onAction="#onChoisirFichierClick" />
             <Label fx:id="fichierSelectionneLabel" text="Aucun fichier choisi" />
             <Button text="Partager" onAction="#onUploaderClick" />

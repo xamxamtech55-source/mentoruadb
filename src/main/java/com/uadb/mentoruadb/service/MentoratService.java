@@ -3,6 +3,7 @@ package com.uadb.mentoruadb.service;
 import com.uadb.mentoruadb.config.DatabaseConnection;
 import com.uadb.mentoruadb.dao.DemandeMentoratDao;
 import com.uadb.mentoruadb.dao.EvaluationDao;
+import com.uadb.mentoruadb.dao.ExpertiseDao;
 import com.uadb.mentoruadb.dao.SeanceDao;
 import com.uadb.mentoruadb.model.DemandeMentorat;
 import com.uadb.mentoruadb.model.Evaluation;
@@ -20,8 +21,21 @@ public class MentoratService {
     private final DemandeMentoratDao demandeDao = new DemandeMentoratDao();
     private final SeanceDao seanceDao = new SeanceDao();
     private final EvaluationDao evaluationDao = new EvaluationDao();
+    private final ExpertiseDao expertiseDao = new ExpertiseDao();
 
+    /**
+     * Une demande ne peut porter que sur une matière que le mentor maîtrise (table expertise).
+     * Ce contrôle existait déjà côté écran (RechercheMentorController) mais uniquement là :
+     * il est maintenant fait ici aussi, pour qu'aucun autre chemin de création d'une demande ne
+     * puisse le contourner.
+     */
     public DemandeMentorat creerDemande(int idEtudiant, int idMentor, int idMatiere) throws SQLException {
+        boolean maitriseLaMatiere = expertiseDao.findByMentor(idMentor).stream()
+                .anyMatch(e -> e.getIdMatiere() == idMatiere);
+        if (!maitriseLaMatiere) {
+            throw new IllegalArgumentException("Ce mentor ne maîtrise pas cette matière.");
+        }
+
         DemandeMentorat demande = new DemandeMentorat(
                 0, idEtudiant, idMentor, idMatiere, LocalDate.now(), "EN_ATTENTE"
         );

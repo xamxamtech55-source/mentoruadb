@@ -7,6 +7,7 @@ import com.uadb.mentoruadb.dao.FichierDao;
 import com.uadb.mentoruadb.dao.SeanceDao;
 import com.uadb.mentoruadb.dao.SeanceParticipantDao;
 import com.uadb.mentoruadb.dto.DemandeRecueVue;
+import com.uadb.mentoruadb.dto.DestinataireVue;
 import com.uadb.mentoruadb.dto.EvaluationVue;
 import com.uadb.mentoruadb.dto.SeanceGroupeVue;
 import com.uadb.mentoruadb.dto.SeanceMentorVue;
@@ -77,6 +78,7 @@ public class DashboardMentorController {
     @FXML private TableColumn<EvaluationVue, String> colEvalDate;
 
     @FXML private ComboBox<Matiere> matiereFichierComboBox;
+    @FXML private ComboBox<DestinataireVue> destinataireFichierComboBox;
     @FXML private Label fichierSelectionneLabel;
     @FXML private TableView<Fichier> fichiersTable;
     @FXML private TableColumn<Fichier, String> colFichierNom;
@@ -131,6 +133,10 @@ public class DashboardMentorController {
         colFichierDate.setCellValueFactory(new PropertyValueFactory<>("dateUpload"));
 
         modaliteComboBox.setItems(FXCollections.observableArrayList("EN_LIGNE", "PRESENTIEL"));
+
+        // Recharge la liste "Partager avec" à chaque changement de matière (elle dépend des
+        // étudiants qui ont une demande acceptée pour CETTE matière avec ce mentor).
+        matiereFichierComboBox.valueProperty().addListener((obs, ancienne, nouvelle) -> rafraichirDestinataires(nouvelle));
     }
 
     /** Appelée manuellement après le chargement de cet écran, pour lui transmettre le mentor connecté. */
@@ -365,9 +371,27 @@ public class DashboardMentorController {
         fichierSelectionneLabel.setText(fichierChoisi != null ? fichierChoisi.getName() : "Aucun fichier choisi");
     }
 
+    /** Recharge la liste "Partager avec" pour la matière choisie : "Tous les étudiants" + chaque étudiant accepté sur cette matière. */
+    private void rafraichirDestinataires(Matiere matiere) {
+        destinataireFichierComboBox.getItems().clear();
+        destinataireFichierComboBox.getItems().add(new DestinataireVue(null, "Tous les étudiants"));
+        if (matiere == null || mentorConnecte == null) {
+            destinataireFichierComboBox.getSelectionModel().selectFirst();
+            return;
+        }
+        try {
+            destinataireFichierComboBox.getItems().addAll(
+                    demandeDao.findDestinatairesAcceptesAvecNoms(mentorConnecte.getIdMentor(), matiere.getIdMatiere()));
+        } catch (SQLException e) {
+            messageLabel.setText("Erreur de chargement des destinataires.");
+        }
+        destinataireFichierComboBox.getSelectionModel().selectFirst();
+    }
+
     @FXML
     private void onUploaderClick() {
         Matiere matiere = matiereFichierComboBox.getValue();
+        DestinataireVue destinataire = destinataireFichierComboBox.getValue();
         if (fichierChoisi == null) {
             messageLabel.setText("Choisis d'abord un fichier.");
             return;
@@ -385,11 +409,13 @@ public class DashboardMentorController {
             Path destination = dossierDestination.resolve(nomUnique);
             Files.copy(fichierChoisi.toPath(), destination, StandardCopyOption.REPLACE_EXISTING);
 
+            Integer idEtudiantDestinataire = (destinataire == null) ? null : destinataire.getIdEtudiant();
             Fichier fichier = new Fichier(0, mentorConnecte.getIdMentor(), matiere.getIdMatiere(), null,
-                    fichierChoisi.getName(), destination.toString(), LocalDate.now());
+                    idEtudiantDestinataire, fichierChoisi.getName(), destination.toString(), LocalDate.now());
             fichierDao.create(fichier);
 
-            messageLabel.setText("Fichier « " + fichierChoisi.getName() + " » partagé avec succès.");
+            String cible = idEtudiantDestinataire == null ? "tous les étudiants" : destinataire.toString();
+            messageLabel.setText("Fichier « " + fichierChoisi.getName() + " » partagé avec " + cible + ".");
             fichierChoisi = null;
             fichierSelectionneLabel.setText("Aucun fichier choisi");
             rafraichir();

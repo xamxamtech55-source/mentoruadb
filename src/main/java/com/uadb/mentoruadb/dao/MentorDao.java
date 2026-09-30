@@ -14,11 +14,17 @@ public class MentorDao implements Dao<Mentor, Integer> {
 
     @Override
     public Mentor create(Mentor m) throws SQLException {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            return create(m, conn);
+        }
+    }
+
+    /** Variante transactionnelle : utilise la connexion fournie et NE la ferme PAS (c'est à l'appelant de le faire). */
+    public Mentor create(Mentor m, Connection conn) throws SQLException {
         String sql = "INSERT INTO mentor (id_etudiant, statut_validation, biographie, experience, " +
                 "mode_preference, nombre_max_mentores) VALUES (?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setInt(1, m.getIdEtudiant());
             stmt.setString(2, m.getStatutValidation());

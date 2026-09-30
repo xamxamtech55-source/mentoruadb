@@ -151,6 +151,33 @@ public class DemandeMentoratDao implements Dao<DemandeMentorat, Integer> {
         }
         return resultats;
     }
+    /** Étudiants ayant une demande acceptée pour ce mentor + cette matière, avec leur nom — pour la liste "Partager avec". */
+    public List<com.uadb.mentoruadb.dto.DestinataireVue> findDestinatairesAcceptesAvecNoms(int idMentor, int idMatiere) throws SQLException {
+        String sql = """
+                SELECT DISTINCT e.id_etudiant, u.prenom, u.nom
+                FROM demande_mentorat d
+                JOIN etudiant e ON e.id_etudiant = d.id_etudiant
+                JOIN utilisateur u ON u.id_utilisateur = e.id_utilisateur
+                WHERE d.id_mentor = ? AND d.id_matiere = ? AND d.statut = 'ACCEPTEE'
+                ORDER BY u.nom
+                """;
+        List<com.uadb.mentoruadb.dto.DestinataireVue> resultats = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idMentor);
+            stmt.setInt(2, idMatiere);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    resultats.add(new com.uadb.mentoruadb.dto.DestinataireVue(
+                            rs.getInt("id_etudiant"), rs.getString("prenom") + " " + rs.getString("nom")));
+                }
+            }
+        }
+        return resultats;
+    }
+
 
     public List<Integer> findEtudiantsAcceptesByMentorEtMatiere(int idMentor, int idMatiere) throws SQLException {
         String sql = "SELECT DISTINCT id_etudiant FROM demande_mentorat WHERE id_mentor = ? AND id_matiere = ? AND statut = 'ACCEPTEE'";

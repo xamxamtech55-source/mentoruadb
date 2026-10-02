@@ -1,12 +1,15 @@
 package com.uadb.mentoruadb.controller;
 
 import com.uadb.mentoruadb.dao.DemandeMentoratDao;
+import com.uadb.mentoruadb.dao.DemandeSeanceDao;
 import com.uadb.mentoruadb.dao.FichierDao;
 import com.uadb.mentoruadb.dao.MatiereDao;
 import com.uadb.mentoruadb.dao.MentorDao;
 import com.uadb.mentoruadb.dao.NiveauDao;
+import com.uadb.mentoruadb.dao.NotificationDao;
 import com.uadb.mentoruadb.dao.SeanceDao;
 import com.uadb.mentoruadb.dao.SeanceParticipantDao;
+import com.uadb.mentoruadb.dto.DemandeSeanceVue;
 import com.uadb.mentoruadb.dto.DemandeVue;
 import com.uadb.mentoruadb.dto.SeanceVue;
 import com.uadb.mentoruadb.model.Etudiant;
@@ -14,12 +17,14 @@ import com.uadb.mentoruadb.model.Fichier;
 import com.uadb.mentoruadb.model.Matiere;
 import com.uadb.mentoruadb.model.Mentor;
 import com.uadb.mentoruadb.model.Niveau;
+import com.uadb.mentoruadb.model.Notification;
 import com.uadb.mentoruadb.service.MentoratService;
 import com.uadb.mentoruadb.util.SceneNavigator;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
@@ -43,6 +48,7 @@ public class DashboardEtudiantController {
 
     @FXML private Label bienvenueLabel;
     @FXML private Button notificationButton;
+    @FXML private Button notificationsGeneriquesButton;
     @FXML private Button rechercherMentorButton;
     @FXML private Button tableauMentorButton;
     @FXML private Button deconnexionButton;
@@ -60,6 +66,16 @@ public class DashboardEtudiantController {
     @FXML private TableColumn<DemandeVue, String> colDemandeMatiere;
     @FXML private TableColumn<DemandeVue, String> colDemandeDate;
     @FXML private TableColumn<DemandeVue, String> colDemandeStatut;
+
+    @FXML private DatePicker dateSouhaiteePicker;
+    @FXML private TextField messageSeanceField;
+
+    @FXML private TableView<DemandeSeanceVue> demandeSeanceTable;
+    @FXML private TableColumn<DemandeSeanceVue, String> colDsMentor;
+    @FXML private TableColumn<DemandeSeanceVue, String> colDsMatiere;
+    @FXML private TableColumn<DemandeSeanceVue, String> colDsDateSouhaitee;
+    @FXML private TableColumn<DemandeSeanceVue, String> colDsStatut;
+    @FXML private TableColumn<DemandeSeanceVue, String> colDsDatePlanifiee;
 
     @FXML private TableView<SeanceVue> seancesTable;
     @FXML private TableColumn<SeanceVue, String> colSeanceMentor;
@@ -80,11 +96,13 @@ public class DashboardEtudiantController {
 
     private final MentorDao mentorDao = new MentorDao();
     private final DemandeMentoratDao demandeDao = new DemandeMentoratDao();
+    private final DemandeSeanceDao demandeSeanceDao = new DemandeSeanceDao();
     private final SeanceDao seanceDao = new SeanceDao();
     private final SeanceParticipantDao seanceParticipantDao = new SeanceParticipantDao();
     private final NiveauDao niveauDao = new NiveauDao();
     private final FichierDao fichierDao = new FichierDao();
     private final MatiereDao matiereDao = new MatiereDao();
+    private final NotificationDao notificationDao = new NotificationDao();
     private final MentoratService mentoratService = new MentoratService();
 
     private Etudiant etudiantConnecte;
@@ -104,6 +122,13 @@ public class DashboardEtudiantController {
         colDemandeDate.setCellValueFactory(new PropertyValueFactory<>("dateDemande"));
         colDemandeStatut.setCellValueFactory(new PropertyValueFactory<>("statut"));
         demandesTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+        colDsMentor.setCellValueFactory(new PropertyValueFactory<>("nomMentor"));
+        colDsMatiere.setCellValueFactory(new PropertyValueFactory<>("nomMatiere"));
+        colDsDateSouhaitee.setCellValueFactory(new PropertyValueFactory<>("dateSouhaitee"));
+        colDsStatut.setCellValueFactory(new PropertyValueFactory<>("statut"));
+        colDsDatePlanifiee.setCellValueFactory(new PropertyValueFactory<>("dateSeance"));
+        demandeSeanceTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         colSeanceMentor.setCellValueFactory(new PropertyValueFactory<>("nomMentor"));
         colSeanceMatiere.setCellValueFactory(new PropertyValueFactory<>("nomMatiere"));
@@ -149,6 +174,10 @@ public class DashboardEtudiantController {
                     demandeDao.findByEtudiantAvecDetails(etudiant.getIdEtudiant())
             ));
 
+            demandeSeanceTable.setItems(FXCollections.observableArrayList(
+                    demandeSeanceDao.findByEtudiantAvecDetails(etudiant.getIdEtudiant())
+            ));
+
             List<SeanceVue> toutesLesSeances = new ArrayList<>();
             toutesLesSeances.addAll(seanceDao.findByEtudiantAvecDetails(etudiant.getIdEtudiant()));
             toutesLesSeances.addAll(seanceDao.findGroupesByEtudiantAvecDetails(etudiant.getIdEtudiant()));
@@ -166,6 +195,16 @@ public class DashboardEtudiantController {
             } else {
                 notificationButton.setVisible(false);
                 notificationButton.setManaged(false);
+            }
+
+            int nbNotifsGeneriques = notificationDao.findNonLuesByUtilisateur(etudiant.getIdUtilisateur()).size();
+            if (nbNotifsGeneriques > 0) {
+                notificationsGeneriquesButton.setText("📩 " + nbNotifsGeneriques + " notification(s) — clique pour voir");
+                notificationsGeneriquesButton.setVisible(true);
+                notificationsGeneriquesButton.setManaged(true);
+            } else {
+                notificationsGeneriquesButton.setVisible(false);
+                notificationsGeneriquesButton.setManaged(false);
             }
 
             Optional<Niveau> niveauOpt = niveauDao.findById(etudiant.getIdNiveau());
@@ -207,6 +246,23 @@ public class DashboardEtudiantController {
     }
 
     @FXML
+    private void onNotificationsGeneriquesClick() {
+        try {
+            List<Notification> notifications = notificationDao.findNonLuesByUtilisateur(etudiantConnecte.getIdUtilisateur());
+            StringBuilder details = new StringBuilder();
+            for (Notification n : notifications) {
+                details.append("• ").append(n.getMessage()).append("\n");
+            }
+            messageLabel.setText(details.toString());
+            notificationDao.marquerToutesLuesPourUtilisateur(etudiantConnecte.getIdUtilisateur());
+            notificationsGeneriquesButton.setVisible(false);
+            notificationsGeneriquesButton.setManaged(false);
+        } catch (SQLException e) {
+            messageLabel.setText("Erreur lors du chargement des notifications.");
+        }
+    }
+
+    @FXML
     private void onConfirmerPresenceClick() {
         SeanceVue seance = seancesAConfirmerTable.getSelectionModel().getSelectedItem();
         if (seance == null) {
@@ -238,6 +294,50 @@ public class DashboardEtudiantController {
             rafraichir(etudiantConnecte);
         } catch (SQLException e) {
             bienvenueLabel.setText("Erreur lors de l'effacement.");
+        }
+    }
+
+    /** Demande une séance sur la demande de mentorat sélectionnée (doit être ACCEPTEE). Date souhaitée et message sont facultatifs. */
+    @FXML
+    private void onDemanderSeanceClick() {
+        DemandeVue demande = demandesTable.getSelectionModel().getSelectedItem();
+        if (demande == null) {
+            messageLabel.setText("Sélectionne une demande de mentorat acceptée dans le tableau ci-dessus.");
+            return;
+        }
+        if (!"ACCEPTEE".equals(demande.getStatut())) {
+            messageLabel.setText("Cette demande de mentorat n'est pas (encore) acceptée.");
+            return;
+        }
+
+        try {
+            mentoratService.demanderSeance(demande.getIdDemande(), dateSouhaiteePicker.getValue(), messageSeanceField.getText());
+            messageLabel.setText("Demande de séance envoyée à " + demande.getNomMentor() + ".");
+            dateSouhaiteePicker.setValue(null);
+            messageSeanceField.clear();
+            rafraichir(etudiantConnecte);
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            messageLabel.setText(e.getMessage());
+        } catch (SQLException e) {
+            messageLabel.setText("Erreur lors de l'envoi de la demande de séance.");
+        }
+    }
+
+    @FXML
+    private void onEffacerDemandeSeanceClick() {
+        List<DemandeSeanceVue> selection = new ArrayList<>(demandeSeanceTable.getSelectionModel().getSelectedItems());
+        if (selection.isEmpty()) {
+            messageLabel.setText("Sélectionne au moins une demande de séance à effacer.");
+            return;
+        }
+        try {
+            for (DemandeSeanceVue demandeSeance : selection) {
+                demandeSeanceDao.masquerPourEtudiant(demandeSeance.getIdDemandeSeance());
+            }
+            messageLabel.setText(selection.size() + " demande(s) de séance effacée(s) de ta vue.");
+            rafraichir(etudiantConnecte);
+        } catch (SQLException e) {
+            messageLabel.setText("Erreur lors de l'effacement.");
         }
     }
 

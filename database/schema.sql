@@ -307,6 +307,54 @@ CREATE TABLE filiere_matiere (
 
 
 -- =========================================================
+-- 12 bis. TABLE DEMANDE_SEANCE
+-- Une fois une demande_mentorat ACCEPTEE, l'étudiant peut demander une séance quand il en a
+-- besoin. Le mentor l'accepte (il choisit alors date/heure/modalité/lieu selon sa disponibilité,
+-- ce qui crée la séance) ou la refuse.
+-- =========================================================
+
+CREATE TABLE demande_seance (
+                                id_demande_seance INT AUTO_INCREMENT PRIMARY KEY,
+                                id_demande INT NOT NULL,                                 -- la demande_mentorat (doit être ACCEPTEE)
+
+                                date_souhaitee DATE NULL,                                -- suggestion optionnelle de l'étudiant
+                                message VARCHAR(500) NULL,                               -- motif, disponibilités, etc.
+
+                                statut ENUM('EN_ATTENTE', 'ACCEPTEE', 'REFUSEE') NOT NULL DEFAULT 'EN_ATTENTE',
+                                date_creation DATE NOT NULL,
+
+                                id_seance INT NULL,                                      -- rempli quand ACCEPTEE : la séance créée
+
+                                masque_etudiant TINYINT(1) NOT NULL DEFAULT 0,
+                                masque_mentor TINYINT(1) NOT NULL DEFAULT 0,
+
+                                CONSTRAINT fk_demandeseance_demande FOREIGN KEY (id_demande)
+                                    REFERENCES demande_mentorat(id_demande) ON UPDATE CASCADE ON DELETE CASCADE,
+
+                                CONSTRAINT fk_demandeseance_seance FOREIGN KEY (id_seance)
+                                    REFERENCES seance(id_seance) ON UPDATE CASCADE ON DELETE SET NULL
+);
+
+
+-- =========================================================
+-- 12 ter. TABLE NOTIFICATION
+-- Notification générique adressée à un compte utilisateur (étudiant ou mentor).
+-- =========================================================
+
+CREATE TABLE notification (
+                              id_notification INT AUTO_INCREMENT PRIMARY KEY,
+                              id_utilisateur INT NOT NULL,
+
+                              message VARCHAR(500) NOT NULL,
+                              lue TINYINT(1) NOT NULL DEFAULT 0,
+                              date_creation DATETIME NOT NULL,
+
+                              CONSTRAINT fk_notification_utilisateur FOREIGN KEY (id_utilisateur)
+                                  REFERENCES utilisateur(id_utilisateur) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+
+-- =========================================================
 -- 15. TABLE FICHIER (ressources partagées par un mentor)
 -- =========================================================
 
@@ -315,6 +363,13 @@ CREATE TABLE fichier (
                          id_mentor INT NOT NULL,
                          id_matiere INT NULL,
                          id_seance INT NULL,
+
+    -- id_etudiant NULL      : fichier partagé avec TOUS les étudiants ayant une demande acceptée
+    --                         pour ce mentor + cette matière (comportement historique).
+    -- id_etudiant renseigné : fichier partagé avec CET étudiant précis uniquement (par exemple un
+    --                         étudiant arrivé en retard, à qui on renvoie une ressource déjà
+    --                         partagée aux autres, sans redéranger ceux qui l'ont déjà reçue).
+                         id_etudiant INT NULL,
 
                          nom_fichier VARCHAR(255) NOT NULL,
                          chemin VARCHAR(500) NOT NULL,
@@ -327,7 +382,10 @@ CREATE TABLE fichier (
                              REFERENCES matiere(id_matiere) ON UPDATE CASCADE ON DELETE CASCADE,
 
                          CONSTRAINT fk_fichier_seance FOREIGN KEY (id_seance)
-                             REFERENCES seance(id_seance) ON UPDATE CASCADE ON DELETE CASCADE
+                             REFERENCES seance(id_seance) ON UPDATE CASCADE ON DELETE CASCADE,
+
+                         CONSTRAINT fk_fichier_etudiant FOREIGN KEY (id_etudiant)
+                             REFERENCES etudiant(id_etudiant) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 

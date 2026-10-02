@@ -21,8 +21,11 @@
             <Button fx:id="deconnexionButton" text="Déconnexion" onAction="#onDeconnexionClick" styleClass="deconnexion-button" />
         </HBox>
 
-        <Label text="Demandes reçues" styleClass="subtitle-label" />
-        <TableView fx:id="demandesTable" prefHeight="150.0" maxHeight="180.0">
+        <Button fx:id="notificationsButton" styleClass="notification-label" wrapText="true" visible="false" managed="false"
+                onAction="#onNotificationsClick" maxWidth="Infinity" alignment="BASELINE_LEFT" />
+
+        <Label text="Demandes de mentorat reçues" styleClass="subtitle-label" />
+        <TableView fx:id="demandesTable" prefHeight="130.0" maxHeight="160.0">
             <columns>
                 <TableColumn fx:id="colDemandeEtudiant" text="Étudiant" prefWidth="150.0" />
                 <TableColumn fx:id="colDemandeMatiere" text="Matière" prefWidth="120.0" />
@@ -30,9 +33,23 @@
                 <TableColumn fx:id="colDemandeStatut" text="Statut" prefWidth="100.0" />
             </columns>
         </TableView>
-        <Button text="Effacer la demande sélectionnée" onAction="#onEffacerDemandeClick" />
+        <HBox spacing="10.0">
+            <Button text="Accepter" onAction="#onAccepterClick" />
+            <Button text="Refuser" onAction="#onRefuserClick" styleClass="lien-button" />
+            <Button text="Effacer la demande sélectionnée" onAction="#onEffacerDemandeClick" />
+        </HBox>
 
-        <Label text="Accepter la demande sélectionnée (planifier une séance)" />
+        <Label text="Demandes de séance reçues (sur une relation déjà acceptée)" styleClass="subtitle-label" wrapText="true" />
+        <TableView fx:id="demandeSeanceTable" prefHeight="130.0" maxHeight="160.0">
+            <columns>
+                <TableColumn fx:id="colDsEtudiant" text="Étudiant" prefWidth="140.0" />
+                <TableColumn fx:id="colDsMatiere" text="Matière" prefWidth="110.0" />
+                <TableColumn fx:id="colDsDateSouhaitee" text="Date souhaitée" prefWidth="110.0" />
+                <TableColumn fx:id="colDsMessage" text="Message" prefWidth="180.0" />
+                <TableColumn fx:id="colDsStatut" text="Statut" prefWidth="100.0" />
+            </columns>
+        </TableView>
+        <Label text="Planifier la séance sélectionnée (selon ta disponibilité)" />
         <HBox spacing="10.0" alignment="CENTER_LEFT">
             <DatePicker fx:id="dateSeancePicker" promptText="Date" />
             <TextField fx:id="heureDebutField" promptText="Début (HH:mm)" prefWidth="90.0" />
@@ -41,8 +58,9 @@
             <TextField fx:id="lieuField" promptText="Salle ou lien" prefWidth="160.0" />
         </HBox>
         <HBox spacing="10.0">
-            <Button text="Accepter" onAction="#onAccepterClick" />
-            <Button text="Refuser" onAction="#onRefuserClick" styleClass="lien-button" />
+            <Button text="Planifier (accepter)" onAction="#onPlanifierSeanceClick" />
+            <Button text="Refuser" onAction="#onRefuserSeanceClick" styleClass="lien-button" />
+            <Button text="Effacer la demande de séance sélectionnée" onAction="#onEffacerDemandeSeanceClick" />
         </HBox>
 
         <Label text="Mes séances individuelles" styleClass="subtitle-label" />

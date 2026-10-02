@@ -1,12 +1,15 @@
 package com.uadb.mentoruadb.controller;
 
 import com.uadb.mentoruadb.dao.DemandeMentoratDao;
+import com.uadb.mentoruadb.dao.DemandeSeanceDao;
 import com.uadb.mentoruadb.dao.EvaluationDao;
 import com.uadb.mentoruadb.dao.ExpertiseDao;
 import com.uadb.mentoruadb.dao.FichierDao;
+import com.uadb.mentoruadb.dao.NotificationDao;
 import com.uadb.mentoruadb.dao.SeanceDao;
 import com.uadb.mentoruadb.dao.SeanceParticipantDao;
 import com.uadb.mentoruadb.dto.DemandeRecueVue;
+import com.uadb.mentoruadb.dto.DemandeSeanceRecueVue;
 import com.uadb.mentoruadb.dto.DestinataireVue;
 import com.uadb.mentoruadb.dto.EvaluationVue;
 import com.uadb.mentoruadb.dto.SeanceGroupeVue;
@@ -15,6 +18,7 @@ import com.uadb.mentoruadb.model.Etudiant;
 import com.uadb.mentoruadb.model.Fichier;
 import com.uadb.mentoruadb.model.Matiere;
 import com.uadb.mentoruadb.model.Mentor;
+import com.uadb.mentoruadb.model.Notification;
 import com.uadb.mentoruadb.service.MentoratService;
 import com.uadb.mentoruadb.util.SceneNavigator;
 import javafx.collections.FXCollections;
@@ -42,12 +46,20 @@ public class DashboardMentorController {
     @FXML private Button deconnexionButton;
     @FXML private Button retourEtudiantButton;
     @FXML private Button seanceGroupeButton;
+    @FXML private Button notificationsButton;
 
     @FXML private TableView<DemandeRecueVue> demandesTable;
     @FXML private TableColumn<DemandeRecueVue, String> colDemandeEtudiant;
     @FXML private TableColumn<DemandeRecueVue, String> colDemandeMatiere;
     @FXML private TableColumn<DemandeRecueVue, String> colDemandeDate;
     @FXML private TableColumn<DemandeRecueVue, String> colDemandeStatut;
+
+    @FXML private TableView<DemandeSeanceRecueVue> demandeSeanceTable;
+    @FXML private TableColumn<DemandeSeanceRecueVue, String> colDsEtudiant;
+    @FXML private TableColumn<DemandeSeanceRecueVue, String> colDsMatiere;
+    @FXML private TableColumn<DemandeSeanceRecueVue, String> colDsDateSouhaitee;
+    @FXML private TableColumn<DemandeSeanceRecueVue, String> colDsMessage;
+    @FXML private TableColumn<DemandeSeanceRecueVue, String> colDsStatut;
 
     @FXML private DatePicker dateSeancePicker;
     @FXML private TextField heureDebutField;
@@ -87,12 +99,14 @@ public class DashboardMentorController {
     @FXML private Label messageLabel;
 
     private final DemandeMentoratDao demandeDao = new DemandeMentoratDao();
+    private final DemandeSeanceDao demandeSeanceDao = new DemandeSeanceDao();
     private final SeanceDao seanceDao = new SeanceDao();
     private final SeanceParticipantDao seanceParticipantDao = new SeanceParticipantDao();
     private final EvaluationDao evaluationDao = new EvaluationDao();
     private final MentoratService mentoratService = new MentoratService();
     private final FichierDao fichierDao = new FichierDao();
     private final ExpertiseDao expertiseDao = new ExpertiseDao();
+    private final NotificationDao notificationDao = new NotificationDao();
 
     private Etudiant etudiantConnecte;
     private Mentor mentorConnecte;
@@ -106,6 +120,13 @@ public class DashboardMentorController {
         colDemandeDate.setCellValueFactory(new PropertyValueFactory<>("dateDemande"));
         colDemandeStatut.setCellValueFactory(new PropertyValueFactory<>("statut"));
         demandesTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+        colDsEtudiant.setCellValueFactory(new PropertyValueFactory<>("nomEtudiant"));
+        colDsMatiere.setCellValueFactory(new PropertyValueFactory<>("nomMatiere"));
+        colDsDateSouhaitee.setCellValueFactory(new PropertyValueFactory<>("dateSouhaitee"));
+        colDsMessage.setCellValueFactory(new PropertyValueFactory<>("message"));
+        colDsStatut.setCellValueFactory(new PropertyValueFactory<>("statut"));
+        demandeSeanceTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         colSeanceEtudiant.setCellValueFactory(new PropertyValueFactory<>("nomEtudiant"));
         colSeanceMatiere.setCellValueFactory(new PropertyValueFactory<>("nomMatiere"));
@@ -160,6 +181,9 @@ public class DashboardMentorController {
             demandesTable.setItems(FXCollections.observableArrayList(
                     demandeDao.findByMentorAvecDetails(mentorConnecte.getIdMentor())
             ));
+            demandeSeanceTable.setItems(FXCollections.observableArrayList(
+                    demandeSeanceDao.findByMentorAvecDetails(mentorConnecte.getIdMentor())
+            ));
             seancesTable.setItems(FXCollections.observableArrayList(
                     seanceDao.findByMentorAvecDetails(mentorConnecte.getIdMentor())
             ));
@@ -172,8 +196,35 @@ public class DashboardMentorController {
             fichiersTable.setItems(FXCollections.observableArrayList(
                     fichierDao.findByMentor(mentorConnecte.getIdMentor())
             ));
+
+            int nbNonLues = notificationDao.findNonLuesByUtilisateur(etudiantConnecte.getIdUtilisateur()).size();
+            if (nbNonLues > 0) {
+                notificationsButton.setText("🔔 " + nbNonLues + " notification(s) — clique pour voir");
+                notificationsButton.setVisible(true);
+                notificationsButton.setManaged(true);
+            } else {
+                notificationsButton.setVisible(false);
+                notificationsButton.setManaged(false);
+            }
         } catch (SQLException e) {
             messageLabel.setText("Erreur de chargement des données.");
+        }
+    }
+
+    @FXML
+    private void onNotificationsClick() {
+        try {
+            List<Notification> notifications = notificationDao.findNonLuesByUtilisateur(etudiantConnecte.getIdUtilisateur());
+            StringBuilder details = new StringBuilder();
+            for (Notification n : notifications) {
+                details.append("• ").append(n.getMessage()).append("\n");
+            }
+            messageLabel.setText(details.toString());
+            notificationDao.marquerToutesLuesPourUtilisateur(etudiantConnecte.getIdUtilisateur());
+            notificationsButton.setVisible(false);
+            notificationsButton.setManaged(false);
+        } catch (SQLException e) {
+            messageLabel.setText("Erreur lors du chargement des notifications.");
         }
     }
 
@@ -184,8 +235,61 @@ public class DashboardMentorController {
             messageLabel.setText("Sélectionne une demande dans le tableau d'abord.");
             return;
         }
-        if (!"EN_ATTENTE".equals(demande.getStatut())) {
-            messageLabel.setText("Cette demande a déjà été traitée.");
+
+        try {
+            mentoratService.accepterDemande(demande.getIdDemande());
+            messageLabel.setText("Demande de mentorat acceptée. L'étudiant peut maintenant demander une séance.");
+            rafraichir();
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            messageLabel.setText(e.getMessage());
+        } catch (SQLException e) {
+            messageLabel.setText("Erreur lors de l'acceptation.");
+        }
+    }
+
+    @FXML
+    private void onRefuserClick() {
+        DemandeRecueVue demande = demandesTable.getSelectionModel().getSelectedItem();
+        if (demande == null) {
+            messageLabel.setText("Sélectionne une demande dans le tableau d'abord.");
+            return;
+        }
+
+        try {
+            mentoratService.refuserDemande(demande.getIdDemande());
+            messageLabel.setText("Demande refusée.");
+            rafraichir();
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            messageLabel.setText(e.getMessage());
+        } catch (SQLException e) {
+            messageLabel.setText("Erreur lors du refus.");
+        }
+    }
+
+    @FXML
+    private void onEffacerDemandeClick() {
+        List<DemandeRecueVue> selection = new ArrayList<>(demandesTable.getSelectionModel().getSelectedItems());
+        if (selection.isEmpty()) {
+            messageLabel.setText("Sélectionne au moins une demande à effacer.");
+            return;
+        }
+        try {
+            for (DemandeRecueVue demande : selection) {
+                demandeDao.masquerPourMentor(demande.getIdDemande());
+            }
+            messageLabel.setText(selection.size() + " demande(s) effacée(s) de ta vue.");
+            rafraichir();
+        } catch (SQLException e) {
+            messageLabel.setText("Erreur lors de l'effacement.");
+        }
+    }
+
+    /** Planifie la séance (date/heure/modalité/lieu saisis ci-dessous) pour la demande de séance sélectionnée. */
+    @FXML
+    private void onPlanifierSeanceClick() {
+        DemandeSeanceRecueVue demandeSeance = demandeSeanceTable.getSelectionModel().getSelectedItem();
+        if (demandeSeance == null) {
+            messageLabel.setText("Sélectionne une demande de séance dans le tableau d'abord.");
             return;
         }
         String modalite = modaliteComboBox.getValue();
@@ -206,37 +310,53 @@ public class DashboardMentorController {
                 return;
             }
 
-            mentoratService.accepterDemande(demande.getIdDemande(), dateSeancePicker.getValue(),
+            mentoratService.accepterDemandeSeance(demandeSeance.getIdDemandeSeance(), dateSeancePicker.getValue(),
                     heureDebut, heureFin, modalite, lieu);
-            messageLabel.setText("Demande acceptée, séance planifiée.");
+            messageLabel.setText("Séance planifiée pour " + demandeSeance.getNomEtudiant() + ".");
             rafraichir();
         } catch (java.time.format.DateTimeParseException e) {
             messageLabel.setText("Format d'heure invalide — utilise HH:mm (ex: 14:30).");
         } catch (IllegalStateException | IllegalArgumentException e) {
             messageLabel.setText(e.getMessage());
         } catch (SQLException e) {
-            messageLabel.setText("Erreur lors de l'acceptation.");
+            messageLabel.setText("Erreur lors de la planification.");
         }
     }
 
     @FXML
-    private void onRefuserClick() {
-        DemandeRecueVue demande = demandesTable.getSelectionModel().getSelectedItem();
-        if (demande == null) {
-            messageLabel.setText("Sélectionne une demande dans le tableau d'abord.");
-            return;
-        }
-        if (!"EN_ATTENTE".equals(demande.getStatut())) {
-            messageLabel.setText("Cette demande a déjà été traitée.");
+    private void onRefuserSeanceClick() {
+        DemandeSeanceRecueVue demandeSeance = demandeSeanceTable.getSelectionModel().getSelectedItem();
+        if (demandeSeance == null) {
+            messageLabel.setText("Sélectionne une demande de séance dans le tableau d'abord.");
             return;
         }
 
         try {
-            mentoratService.refuserDemande(demande.getIdDemande());
-            messageLabel.setText("Demande refusée.");
+            mentoratService.refuserDemandeSeance(demandeSeance.getIdDemandeSeance());
+            messageLabel.setText("Demande de séance refusée.");
             rafraichir();
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            messageLabel.setText(e.getMessage());
         } catch (SQLException e) {
             messageLabel.setText("Erreur lors du refus.");
+        }
+    }
+
+    @FXML
+    private void onEffacerDemandeSeanceClick() {
+        List<DemandeSeanceRecueVue> selection = new ArrayList<>(demandeSeanceTable.getSelectionModel().getSelectedItems());
+        if (selection.isEmpty()) {
+            messageLabel.setText("Sélectionne au moins une demande de séance à effacer.");
+            return;
+        }
+        try {
+            for (DemandeSeanceRecueVue demandeSeance : selection) {
+                demandeSeanceDao.masquerPourMentor(demandeSeance.getIdDemandeSeance());
+            }
+            messageLabel.setText(selection.size() + " demande(s) de séance effacée(s) de ta vue.");
+            rafraichir();
+        } catch (SQLException e) {
+            messageLabel.setText("Erreur lors de l'effacement.");
         }
     }
 
@@ -288,24 +408,6 @@ public class DashboardMentorController {
             messageLabel.setText(noms.isEmpty() ? titre + "aucun pour l'instant." : titre + String.join(", ", noms));
         } catch (SQLException e) {
             messageLabel.setText("Erreur lors du chargement des confirmations.");
-        }
-    }
-
-    @FXML
-    private void onEffacerDemandeClick() {
-        List<DemandeRecueVue> selection = new ArrayList<>(demandesTable.getSelectionModel().getSelectedItems());
-        if (selection.isEmpty()) {
-            messageLabel.setText("Sélectionne au moins une demande à effacer.");
-            return;
-        }
-        try {
-            for (DemandeRecueVue demande : selection) {
-                demandeDao.masquerPourMentor(demande.getIdDemande());
-            }
-            messageLabel.setText(selection.size() + " demande(s) effacée(s) de ta vue.");
-            rafraichir();
-        } catch (SQLException e) {
-            messageLabel.setText("Erreur lors de l'effacement.");
         }
     }
 

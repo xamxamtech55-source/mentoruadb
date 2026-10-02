@@ -909,7 +909,398 @@ FROM seance s
 WHERE u.email = 'awa.diop@uadb.edu.sn'
   AND s.date_seance = '2026-09-05';
 
+-- =========================================================
+-- RATTACHEMENT FILIERE <-> MATIERE
+-- Nécessaire pour : la recherche de mentor par matière de l'étudiant, et les
+-- suggestions automatiques de mentors sur l'écran "Rechercher un mentor".
+-- =========================================================
 
+-- ---------------------------------------------------------
+-- Statistiques et Informatique Décisionnelle
+-- ---------------------------------------------------------
+
+INSERT INTO filiere_matiere (id_filiere, id_matiere)
+SELECT f.id_filiere, m.id_matiere
+FROM filiere f
+         CROSS JOIN matiere m
+WHERE f.nom = 'Statistiques et Informatique Décisionnelle'
+  AND m.nom IN (
+                'Statistiques',
+                'Bases de données',
+                'Algorithmique',
+                'Analyse'
+    );
+
+
+-- ---------------------------------------------------------
+-- Mathématiques
+-- ---------------------------------------------------------
+
+INSERT INTO filiere_matiere (id_filiere, id_matiere)
+SELECT f.id_filiere, m.id_matiere
+FROM filiere f
+         CROSS JOIN matiere m
+WHERE f.nom = 'Mathématiques'
+  AND m.nom IN (
+                'Mathématiques',
+                'Analyse',
+                'Statistiques'
+    );
+
+
+-- ---------------------------------------------------------
+-- Chimie Appliquée
+-- ---------------------------------------------------------
+
+INSERT INTO filiere_matiere (id_filiere, id_matiere)
+SELECT f.id_filiere, m.id_matiere
+FROM filiere f
+         CROSS JOIN matiere m
+WHERE f.nom = 'Chimie Appliquée'
+  AND m.nom IN (
+                'Chimie',
+                'Physique'
+    );
+
+
+-- ---------------------------------------------------------
+-- Physique-Chimie
+-- ---------------------------------------------------------
+
+INSERT INTO filiere_matiere (id_filiere, id_matiere)
+SELECT f.id_filiere, m.id_matiere
+FROM filiere f
+         CROSS JOIN matiere m
+WHERE f.nom = 'Physique-Chimie'
+  AND m.nom IN (
+                'Physique',
+                'Chimie',
+                'Mathématiques'
+    );
+
+
+-- ---------------------------------------------------------
+-- Systèmes, Réseaux et Télécoms
+-- ---------------------------------------------------------
+
+INSERT INTO filiere_matiere (id_filiere, id_matiere)
+SELECT f.id_filiere, m.id_matiere
+FROM filiere f
+         CROSS JOIN matiere m
+WHERE f.nom = 'Systèmes, Réseaux et Télécoms'
+  AND m.nom IN (
+                'Réseaux',
+                'Systèmes d''exploitation',
+                'Algorithmique',
+                'Programmation'
+    );
+
+
+-- ---------------------------------------------------------
+-- Développement et Administration d'Applications
+-- ---------------------------------------------------------
+
+INSERT INTO filiere_matiere (id_filiere, id_matiere)
+SELECT f.id_filiere, m.id_matiere
+FROM filiere f
+         CROSS JOIN matiere m
+WHERE f.nom = 'Développement et Administration d''Applications'
+  AND m.nom IN (
+                'Algorithmique',
+                'Java',
+                'Bases de données',
+                'Développement Web',
+                'Programmation',
+                'Systèmes d''exploitation'
+    );
+
+
+-- ---------------------------------------------------------
+-- Création Multimédia
+-- ---------------------------------------------------------
+
+INSERT INTO filiere_matiere (id_filiere, id_matiere)
+SELECT f.id_filiere, m.id_matiere
+FROM filiere f
+         CROSS JOIN matiere m
+WHERE f.nom = 'Création Multimédia'
+  AND m.nom IN (
+                'Développement Web',
+                'Programmation'
+    );
+
+
+-- ---------------------------------------------------------
+-- Médecine
+-- ---------------------------------------------------------
+
+INSERT INTO filiere_matiere (id_filiere, id_matiere)
+SELECT f.id_filiere, m.id_matiere
+FROM filiere f
+         CROSS JOIN matiere m
+WHERE f.nom = 'Médecine'
+  AND m.nom IN (
+    'Statistiques'
+    );
+
+
+-- ---------------------------------------------------------
+-- Santé Communautaire
+-- ---------------------------------------------------------
+
+INSERT INTO filiere_matiere (id_filiere, id_matiere)
+SELECT f.id_filiere, m.id_matiere
+FROM filiere f
+         CROSS JOIN matiere m
+WHERE f.nom = 'Santé Communautaire'
+  AND m.nom IN (
+                'Statistiques',
+                'Gestion'
+    );
+
+
+-- ---------------------------------------------------------
+-- Agriculture et Développement Durable
+-- ---------------------------------------------------------
+
+INSERT INTO filiere_matiere (id_filiere, id_matiere)
+SELECT f.id_filiere, m.id_matiere
+FROM filiere f
+         CROSS JOIN matiere m
+WHERE f.nom = 'Agriculture et Développement Durable'
+  AND m.nom IN (
+                'Agronomie',
+                'Environnement',
+                'Gestion'
+    );
+
+
+-- ---------------------------------------------------------
+-- Environnement
+-- ---------------------------------------------------------
+
+INSERT INTO filiere_matiere (id_filiere, id_matiere)
+SELECT f.id_filiere, m.id_matiere
+FROM filiere f
+         CROSS JOIN matiere m
+WHERE f.nom = 'Environnement'
+  AND m.nom IN (
+                'Environnement',
+                'Chimie',
+                'Statistiques'
+    );
+
+
+-- ---------------------------------------------------------
+-- Économie Appliquée
+-- ---------------------------------------------------------
+
+INSERT INTO filiere_matiere (id_filiere, id_matiere)
+SELECT f.id_filiere, m.id_matiere
+FROM filiere f
+         CROSS JOIN matiere m
+WHERE f.nom = 'Économie Appliquée'
+  AND m.nom IN (
+                'Économie',
+                'Statistiques',
+                'Gestion',
+                'Mathématiques'
+    );
+
+
+-- ---------------------------------------------------------
+-- Finance-Comptabilité
+-- ---------------------------------------------------------
+
+INSERT INTO filiere_matiere (id_filiere, id_matiere)
+SELECT f.id_filiere, m.id_matiere
+FROM filiere f
+         CROSS JOIN matiere m
+WHERE f.nom = 'Finance-Comptabilité'
+  AND m.nom IN (
+                'Gestion',
+                'Économie',
+                'Statistiques',
+                'Mathématiques'
+    );
+
+
+-- ---------------------------------------------------------
+-- Management des Organisations
+-- ---------------------------------------------------------
+
+INSERT INTO filiere_matiere (id_filiere, id_matiere)
+SELECT f.id_filiere, m.id_matiere
+FROM filiere f
+         CROSS JOIN matiere m
+WHERE f.nom = 'Management des Organisations'
+  AND m.nom IN (
+                'Gestion',
+                'Économie',
+                'Droit'
+    );
+
+
+-- ---------------------------------------------------------
+-- Administration Publique
+-- ---------------------------------------------------------
+
+INSERT INTO filiere_matiere (id_filiere, id_matiere)
+SELECT f.id_filiere, m.id_matiere
+FROM filiere f
+         CROSS JOIN matiere m
+WHERE f.nom = 'Administration Publique'
+  AND m.nom IN (
+                'Droit',
+                'Gestion',
+                'Économie'
+    );
+
+
+-- ---------------------------------------------------------
+-- Juriste d'Affaires
+-- ---------------------------------------------------------
+
+INSERT INTO filiere_matiere (id_filiere, id_matiere)
+SELECT f.id_filiere, m.id_matiere
+FROM filiere f
+         CROSS JOIN matiere m
+WHERE f.nom = 'Juriste d''Affaires'
+  AND m.nom IN (
+                'Droit',
+                'Gestion'
+    );
+
+
+-- ---------------------------------------------------------
+-- Commerce Électronique et Cybersécurité
+-- ---------------------------------------------------------
+
+INSERT INTO filiere_matiere (id_filiere, id_matiere)
+SELECT f.id_filiere, m.id_matiere
+FROM filiere f
+         CROSS JOIN matiere m
+WHERE f.nom = 'Commerce Électronique et Cybersécurité'
+  AND m.nom IN (
+                'Développement Web',
+                'Réseaux',
+                'Algorithmique',
+                'Droit',
+                'Gestion'
+    );
+
+
+-- ---------------------------------------------------------
+-- Management Juridique Environnemental et Foncier
+-- ---------------------------------------------------------
+
+INSERT INTO filiere_matiere (id_filiere, id_matiere)
+SELECT f.id_filiere, m.id_matiere
+FROM filiere f
+         CROSS JOIN matiere m
+WHERE f.nom = 'Management Juridique Environnemental et Foncier'
+  AND m.nom IN (
+                'Droit',
+                'Environnement',
+                'Gestion'
+    );
+
+
+-- ---------------------------------------------------------
+-- Agriculture
+-- ---------------------------------------------------------
+
+INSERT INTO filiere_matiere (id_filiere, id_matiere)
+SELECT f.id_filiere, m.id_matiere
+FROM filiere f
+         CROSS JOIN matiere m
+WHERE f.nom = 'Agriculture'
+  AND m.nom IN (
+                'Agronomie',
+                'Environnement',
+                'Chimie'
+    );
+
+
+-- ---------------------------------------------------------
+-- Élevage
+-- ---------------------------------------------------------
+
+INSERT INTO filiere_matiere (id_filiere, id_matiere)
+SELECT f.id_filiere, m.id_matiere
+FROM filiere f
+         CROSS JOIN matiere m
+WHERE f.nom = 'Élevage'
+  AND m.nom IN (
+                'Agronomie',
+                'Environnement',
+                'Statistiques'
+    );
+
+
+-- ---------------------------------------------------------
+-- Eaux et Forêts
+-- ---------------------------------------------------------
+
+INSERT INTO filiere_matiere (id_filiere, id_matiere)
+SELECT f.id_filiere, m.id_matiere
+FROM filiere f
+         CROSS JOIN matiere m
+WHERE f.nom = 'Eaux et Forêts'
+  AND m.nom IN (
+                'Environnement',
+                'Agronomie',
+                'Chimie'
+    );
+
+
+-- ---------------------------------------------------------
+-- Conseil Agricole et Rural
+-- ---------------------------------------------------------
+
+INSERT INTO filiere_matiere (id_filiere, id_matiere)
+SELECT f.id_filiere, m.id_matiere
+FROM filiere f
+         CROSS JOIN matiere m
+WHERE f.nom = 'Conseil Agricole et Rural'
+  AND m.nom IN (
+                'Agronomie',
+                'Gestion',
+                'Économie'
+    );
+
+
+-- ---------------------------------------------------------
+-- Développement Agricole et Rural
+-- ---------------------------------------------------------
+
+INSERT INTO filiere_matiere (id_filiere, id_matiere)
+SELECT f.id_filiere, m.id_matiere
+FROM filiere f
+         CROSS JOIN matiere m
+WHERE f.nom = 'Développement Agricole et Rural'
+  AND m.nom IN (
+                'Agronomie',
+                'Environnement',
+                'Gestion',
+                'Économie'
+    );
+
+
+-- ---------------------------------------------------------
+-- Gestion des Aires Protégées et de la Faune
+-- ---------------------------------------------------------
+
+INSERT INTO filiere_matiere (id_filiere, id_matiere)
+SELECT f.id_filiere, m.id_matiere
+FROM filiere f
+         CROSS JOIN matiere m
+WHERE f.nom = 'Gestion des Aires Protégées et de la Faune'
+  AND m.nom IN (
+                'Environnement',
+                'Agronomie',
+                'Statistiques'
+    );
 -- =========================================================
 -- FIN DES DONNÉES
 -- =========================================================

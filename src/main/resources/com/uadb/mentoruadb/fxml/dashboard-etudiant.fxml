@@ -24,6 +24,8 @@
 
         <Button fx:id="notificationButton" styleClass="notification-label" wrapText="true" visible="false" managed="false"
                 onAction="#onNotificationClick" maxWidth="Infinity" alignment="BASELINE_LEFT" />
+        <Button fx:id="notificationsGeneriquesButton" styleClass="notification-label" wrapText="true" visible="false" managed="false"
+                onAction="#onNotificationsGeneriquesClick" maxWidth="Infinity" alignment="BASELINE_LEFT" />
 
         <Button fx:id="rechercherMentorButton" text="Rechercher un mentor" onAction="#onRechercherMentorClick" />
 
@@ -39,7 +41,7 @@
         <Button text="Confirmer ma présence" onAction="#onConfirmerPresenceClick" />
 
         <Label text="Mes demandes de mentorat" styleClass="subtitle-label" />
-        <TableView fx:id="demandesTable" prefHeight="150.0" maxHeight="200.0">
+        <TableView fx:id="demandesTable" prefHeight="130.0" maxHeight="160.0">
             <columns>
                 <TableColumn fx:id="colDemandeMentor" text="Mentor" prefWidth="150.0" />
                 <TableColumn fx:id="colDemandeMatiere" text="Matière" prefWidth="120.0" />
@@ -48,6 +50,25 @@
             </columns>
         </TableView>
         <Button text="Effacer la demande sélectionnée" onAction="#onEffacerDemandeClick" />
+
+        <Label text="Demander une séance (sur une demande de mentorat ACCEPTEE, sélectionnée ci-dessus)" wrapText="true" />
+        <HBox spacing="10.0" alignment="CENTER_LEFT">
+            <DatePicker fx:id="dateSouhaiteePicker" promptText="Date souhaitée (facultatif)" />
+            <TextField fx:id="messageSeanceField" promptText="Message pour le mentor (facultatif)" HBox.hgrow="ALWAYS" />
+            <Button text="Demander une séance" onAction="#onDemanderSeanceClick" />
+        </HBox>
+
+        <Label text="Mes demandes de séance" styleClass="subtitle-label" />
+        <TableView fx:id="demandeSeanceTable" prefHeight="130.0" maxHeight="160.0">
+            <columns>
+                <TableColumn fx:id="colDsMentor" text="Mentor" prefWidth="140.0" />
+                <TableColumn fx:id="colDsMatiere" text="Matière" prefWidth="110.0" />
+                <TableColumn fx:id="colDsDateSouhaitee" text="Date souhaitée" prefWidth="110.0" />
+                <TableColumn fx:id="colDsStatut" text="Statut" prefWidth="100.0" />
+                <TableColumn fx:id="colDsDatePlanifiee" text="Date planifiée" prefWidth="110.0" />
+            </columns>
+        </TableView>
+        <Button text="Effacer la demande de séance sélectionnée" onAction="#onEffacerDemandeSeanceClick" />
 
         <Label text="Mes séances" styleClass="subtitle-label" />
         <TableView fx:id="seancesTable" prefHeight="150.0" maxHeight="200.0">

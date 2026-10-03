@@ -1,5 +1,10 @@
 package com.uadb.mentoruadb.controller;
 
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Optional;
+
 import com.uadb.mentoruadb.dao.ExpertiseDao;
 import com.uadb.mentoruadb.dao.FiliereDao;
 import com.uadb.mentoruadb.dao.MentorDao;
@@ -8,6 +13,7 @@ import com.uadb.mentoruadb.model.Expertise;
 import com.uadb.mentoruadb.model.Matiere;
 import com.uadb.mentoruadb.model.Mentor;
 import com.uadb.mentoruadb.util.SceneNavigator;
+
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -15,11 +21,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.stage.Stage;
-
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Optional;
 
 /** Contrôleur lié à fxml/devenir-mentor.fxml. */
 public class DevenirMentorController {

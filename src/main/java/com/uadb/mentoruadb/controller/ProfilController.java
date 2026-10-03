@@ -35,6 +35,7 @@ public class ProfilController {
     @FXML private ComboBox<String> modePreferenceComboBox;
     @FXML private TextField nombreMaxMentoresField;
 
+    @FXML private Label statutCandidatureLabel;
     @FXML private Label messageLabel;
     @FXML private Button retourButton;
 
@@ -72,7 +73,18 @@ public class ProfilController {
             numeroCarteField.setText(etudiant.getNumeroCarte());
 
             Optional<Mentor> mentorOpt = mentorDao.findByEtudiant(etudiant.getIdEtudiant());
-            boolean estMentor = mentorOpt.isPresent();
+            // La section mentor n'apparaît que pour un mentor VALIDÉ.
+            // Un candidat (en attente / refusé) n'y a pas accès : ses infos sont saisies dans « Devenir mentor ».
+            boolean estMentor = mentorOpt.isPresent() && "VALIDE".equals(mentorOpt.get().getStatutValidation());
+            boolean candidatureEnCours = mentorOpt.isPresent() && !estMentor;
+
+            statutCandidatureLabel.setVisible(candidatureEnCours);
+            statutCandidatureLabel.setManaged(candidatureEnCours);
+            if (candidatureEnCours) {
+                statutCandidatureLabel.setText("EN_ATTENTE".equals(mentorOpt.get().getStatutValidation())
+                        ? "Candidature mentor en attente de validation par un administrateur."
+                        : "Ta candidature mentor a été refusée.");
+            }
 
             separateurMentor.setVisible(estMentor);
             separateurMentor.setManaged(estMentor);

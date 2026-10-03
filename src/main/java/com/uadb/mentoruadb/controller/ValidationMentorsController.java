@@ -10,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
@@ -25,6 +26,9 @@ public class ValidationMentorsController {
     @FXML private TableColumn<CandidatMentorVue, String> colFiliere;
     @FXML private TableColumn<CandidatMentorVue, String> colNiveau;
     @FXML private TableColumn<CandidatMentorVue, String> colMatieres;
+    @FXML private TableColumn<CandidatMentorVue, String> colExperience;
+    @FXML private TableColumn<CandidatMentorVue, String> colMode;
+    @FXML private TextArea biographieArea;
     @FXML private Label messageLabel;
     @FXML private Button retourButton;
 
@@ -36,12 +40,20 @@ public class ValidationMentorsController {
         colFiliere.setCellValueFactory(new PropertyValueFactory<>("nomFiliere"));
         colNiveau.setCellValueFactory(new PropertyValueFactory<>("libelleNiveau"));
         colMatieres.setCellValueFactory(new PropertyValueFactory<>("matieres"));
+        colExperience.setCellValueFactory(new PropertyValueFactory<>("experience"));
+        colMode.setCellValueFactory(new PropertyValueFactory<>("modePreference"));
+
+        // La biographie (texte long) s'affiche sous le tableau pour la candidature sélectionnée.
+        candidatsTable.getSelectionModel().selectedItemProperty().addListener((obs, ancien, candidat) ->
+                biographieArea.setText(candidat != null && candidat.getBiographie() != null ? candidat.getBiographie() : ""));
+
         rafraichir();
     }
 
     private void rafraichir() {
         try {
             candidatsTable.setItems(FXCollections.observableArrayList(mentorDao.findEnAttenteAvecDetails()));
+            biographieArea.clear();
         } catch (SQLException e) {
             e.printStackTrace();
             messageLabel.setText("Erreur de chargement des candidatures.");

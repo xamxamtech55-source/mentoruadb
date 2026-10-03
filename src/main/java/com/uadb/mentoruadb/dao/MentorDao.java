@@ -149,7 +149,8 @@ public class MentorDao implements Dao<Mentor, Integer> {
     public List<CandidatMentorVue> findEnAttenteAvecDetails() throws SQLException {
         String sql = """
                 SELECT me.id_mentor, u.nom, u.prenom, f.nom AS nom_filiere, n.libelle AS libelle_niveau,
-                       GROUP_CONCAT(mat.nom SEPARATOR ', ') AS matieres, me.statut_validation
+                       GROUP_CONCAT(mat.nom SEPARATOR ', ') AS matieres, me.statut_validation,
+                       me.biographie, me.experience, me.mode_preference
                 FROM mentor me
                 JOIN etudiant e ON me.id_etudiant = e.id_etudiant
                 JOIN utilisateur u ON e.id_utilisateur = u.id_utilisateur
@@ -158,7 +159,8 @@ public class MentorDao implements Dao<Mentor, Integer> {
                 LEFT JOIN expertise ex ON me.id_mentor = ex.id_mentor
                 LEFT JOIN matiere mat ON ex.id_matiere = mat.id_matiere
                 WHERE me.statut_validation = 'EN_ATTENTE'
-                GROUP BY me.id_mentor, u.nom, u.prenom, f.nom, n.libelle, me.statut_validation
+                GROUP BY me.id_mentor, u.nom, u.prenom, f.nom, n.libelle, me.statut_validation,
+                         me.biographie, me.experience, me.mode_preference
                 ORDER BY u.nom
                 """;
 
@@ -175,7 +177,10 @@ public class MentorDao implements Dao<Mentor, Integer> {
                         rs.getString("nom_filiere"),
                         rs.getString("libelle_niveau"),
                         rs.getString("matieres"),
-                        rs.getString("statut_validation")
+                        rs.getString("statut_validation"),
+                        rs.getString("biographie"),
+                        rs.getString("experience"),
+                        rs.getString("mode_preference")
                 ));
             }
         }

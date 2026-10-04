@@ -26,6 +26,7 @@ public class LoginController {
     @FXML private Label messageLabel;
     @FXML private Button creerCompteButton;
     @FXML private Button motDePasseOublieButton;
+    @FXML private Button retourAccueilButton;
 
     private final AuthService authService = new AuthService();
     private final EtudiantDao etudiantDao = new EtudiantDao();
@@ -52,7 +53,7 @@ public class LoginController {
         String motDePasse = motDePasseField.getText();
 
         if (email.isBlank() || motDePasse.isBlank()) {
-            messageLabel.setText("Veuillez renseigner l'email et le mot de passe.");
+            messageLabel.setText("Renseigne l'email et le mot de passe.");
             return;
         }
 
@@ -72,13 +73,13 @@ public class LoginController {
 
                 Stage stage = (Stage) emailField.getScene().getWindow();
                 DashboardEtudiantController controller = SceneNavigator.switchToAndGetController(
-                        stage, "/com/uadb/mentoruadb/fxml/dashboard-etudiant.fxml", "MentorUADB - Tableau de bord"
+                        stage, "/com/uadb/mentoruadb/fxml/dashboard-etudiant.fxml", "Mentor-UADB - Tableau de bord"
                 );
                 controller.chargerDonnees(etudiantOpt.get(), utilisateur.getPrenom());
             } else if ("ADMIN".equals(utilisateur.getRole())) {
                 Stage stage = (Stage) emailField.getScene().getWindow();
                 DashboardAdminController controller = SceneNavigator.switchToAndGetController(
-                        stage, "/com/uadb/mentoruadb/fxml/dashboard-admin.fxml", "MentorUADB - Administration"
+                        stage, "/com/uadb/mentoruadb/fxml/dashboard-admin.fxml", "Mentor-UADB - Administration"
                 );
                 controller.chargerDonnees(utilisateur.getPrenom());
             } else {
@@ -98,7 +99,7 @@ public class LoginController {
     private void onCreerCompteClick() {
         try {
             Stage stage = (Stage) creerCompteButton.getScene().getWindow();
-            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/inscription.fxml", "MentorUADB - Inscription");
+            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/inscription.fxml", "Mentor-UADB - Inscription");
         } catch (IOException e) {
             e.printStackTrace();
             messageLabel.setText("Impossible d'ouvrir l'écran d'inscription.");
@@ -109,9 +110,19 @@ public class LoginController {
     private void onMotDePasseOublieClick() {
         try {
             Stage stage = (Stage) motDePasseOublieButton.getScene().getWindow();
-            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/mot-de-passe-oublie.fxml", "MentorUADB - Mot de passe oublié");
+            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/mot-de-passe-oublie.fxml", "Mentor-UADB - Mot de passe oublié");
         } catch (IOException e) {
             messageLabel.setText("Impossible d'ouvrir cet écran.");
+        }
+    }
+
+    @FXML
+    private void onRetourAccueilClick() {
+        try {
+            Stage stage = (Stage) retourAccueilButton.getScene().getWindow();
+            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/bienvenue.fxml", "Mentor-UADB");
+        } catch (IOException e) {
+            messageLabel.setText("Impossible d'ouvrir l'écran d'accueil.");
         }
     }
 }

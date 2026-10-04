@@ -15,51 +15,53 @@
 
 <ScrollPane fitToWidth="true" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.uadb.mentoruadb.controller.RechercheMentorController">
-    <VBox spacing="12.0">
-        <padding>
-            <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
-        </padding>
+    <HBox alignment="CENTER">
+        <VBox spacing="12.0" prefWidth="860.0" maxWidth="860.0">
+            <padding>
+                <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+            </padding>
 
-        <Label text="Rechercher un mentor" styleClass="title-label" />
+            <Label text="Rechercher un mentor" styleClass="title-label" />
 
-        <Label text="Mentors suggérés pour ta filière" styleClass="subtitle-label" />
-        <TableView fx:id="suggestionsTable" prefHeight="150.0" maxHeight="170.0">
-            <columns>
-                <TableColumn fx:id="colSuggNom" text="Mentor" prefWidth="150.0" />
-                <TableColumn fx:id="colSuggNiveau" text="Niveau" prefWidth="90.0" />
-                <TableColumn fx:id="colSuggMatieres" text="Matières" prefWidth="250.0" />
-                <TableColumn fx:id="colSuggNote" text="Note" prefWidth="110.0" />
-            </columns>
-        </TableView>
+            <Label text="Mentors suggérés pour ta filière" styleClass="subtitle-label" />
+            <TableView fx:id="suggestionsTable" prefHeight="150.0" maxHeight="170.0">
+                <columns>
+                    <TableColumn fx:id="colSuggNom" text="Mentor" prefWidth="150.0" />
+                    <TableColumn fx:id="colSuggNiveau" text="Niveau" prefWidth="90.0" />
+                    <TableColumn fx:id="colSuggMatieres" text="Matières" prefWidth="250.0" />
+                    <TableColumn fx:id="colSuggNote" text="Note" prefWidth="110.0" />
+                </columns>
+            </TableView>
 
-        <Label text="Ou recherche par matière" styleClass="subtitle-label" />
-        <HBox spacing="10.0" alignment="CENTER_LEFT">
-            <ComboBox fx:id="matiereComboBox" promptText="Choisir une matière" prefWidth="260.0" />
-            <Button text="Rechercher" onAction="#onRechercherClick" />
-        </HBox>
+            <Label text="Ou recherche par matière" styleClass="subtitle-label" />
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <ComboBox fx:id="matiereComboBox" promptText="Choisir une matière" prefWidth="260.0" />
+                <Button text="Rechercher" onAction="#onRechercherClick" />
+            </HBox>
 
-        <TableView fx:id="mentorsTable" prefHeight="150.0" maxHeight="170.0">
-            <columns>
-                <TableColumn fx:id="colMentorNom" text="Mentor" prefWidth="180.0" />
-                <TableColumn fx:id="colMentorFiliere" text="Filière" prefWidth="150.0" />
-                <TableColumn fx:id="colMentorNiveau" text="Niveau" prefWidth="100.0" />
-            </columns>
-        </TableView>
+            <TableView fx:id="mentorsTable" prefHeight="150.0" maxHeight="170.0">
+                <columns>
+                    <TableColumn fx:id="colMentorNom" text="Mentor" prefWidth="180.0" />
+                    <TableColumn fx:id="colMentorFiliere" text="Filière" prefWidth="150.0" />
+                    <TableColumn fx:id="colMentorNiveau" text="Niveau" prefWidth="100.0" />
+                </columns>
+            </TableView>
 
-        <HBox spacing="15.0" alignment="CENTER_LEFT">
-            <StackPane styleClass="photo-frame" maxWidth="100.0" maxHeight="100.0" minWidth="100.0" minHeight="100.0">
-                <ImageView fx:id="photoMentorImageView" fitWidth="100.0" fitHeight="100.0" preserveRatio="true" />
-            </StackPane>
-            <TextArea fx:id="profilTextArea" editable="false" wrapText="true" prefRowCount="5" HBox.hgrow="ALWAYS"
-                      promptText="Sélectionne un mentor (suggéré ou trouvé par recherche) puis clique sur « Voir le profil »" />
-        </HBox>
+            <HBox spacing="15.0" alignment="CENTER_LEFT">
+                <StackPane styleClass="photo-frame" maxWidth="100.0" maxHeight="100.0" minWidth="100.0" minHeight="100.0">
+                    <ImageView fx:id="photoMentorImageView" fitWidth="100.0" fitHeight="100.0" preserveRatio="true" />
+                </StackPane>
+                <TextArea fx:id="profilTextArea" editable="false" wrapText="true" prefRowCount="5" HBox.hgrow="ALWAYS"
+                          promptText="Sélectionne un mentor (suggéré ou trouvé par recherche) puis clique sur « Voir le profil »" />
+            </HBox>
 
-        <HBox spacing="10.0" alignment="CENTER_LEFT">
-            <Button text="Voir le profil" onAction="#onVoirProfilClick" />
-            <Button text="Envoyer une demande" onAction="#onDemanderClick" />
-            <Button fx:id="retourButton" text="Retour au tableau de bord" onAction="#onRetourClick" styleClass="lien-button" />
-        </HBox>
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <Button text="Voir le profil" onAction="#onVoirProfilClick" />
+                <Button text="Envoyer une demande" onAction="#onDemanderClick" />
+                <Button fx:id="retourButton" text="Retour au tableau de bord" onAction="#onRetourClick" styleClass="lien-button" />
+            </HBox>
 
-        <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />
-    </VBox>
+            <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />
+        </VBox>
+    </HBox>
 </ScrollPane>

@@ -103,7 +103,7 @@ public class GestionUtilisateursController {
     private void onRetourClick() {
         try {
             Stage stage = (Stage) retourButton.getScene().getWindow();
-            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/dashboard-admin.fxml", "MentorUADB - Administration");
+            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/dashboard-admin.fxml", "Mentor-UADB - Administration");
         } catch (IOException e) {
             messageLabel.setText("Impossible de revenir au tableau de bord admin.");
         }

@@ -1,7 +1,7 @@
 package com.uadb.mentoruadb.dao;
 
 import com.uadb.mentoruadb.config.DatabaseConnection;
-import com.uadb.mentoruadb.dto.CandidatMentorVue;
+import com.uadb.mentoruadb.dto.MentorDetailVue;
 import com.uadb.mentoruadb.dto.MentorSuggestionVue;
 import com.uadb.mentoruadb.model.Mentor;
 
@@ -145,42 +145,62 @@ public class MentorDao implements Dao<Mentor, Integer> {
         return resultats;
     }
 
-    /** Candidatures mentor en attente, avec étudiant/filière/niveau/matières résolus (JOIN + GROUP_CONCAT). */
-    public List<CandidatMentorVue> findEnAttenteAvecDetails() throws SQLException {
-        String sql = """
-                SELECT me.id_mentor, u.nom, u.prenom, f.nom AS nom_filiere, n.libelle AS libelle_niveau,
-                       GROUP_CONCAT(mat.nom SEPARATOR ', ') AS matieres, me.statut_validation,
-                       me.biographie, me.experience, me.mode_preference
-                FROM mentor me
-                JOIN etudiant e ON me.id_etudiant = e.id_etudiant
-                JOIN utilisateur u ON e.id_utilisateur = u.id_utilisateur
-                JOIN filiere f ON e.id_filiere = f.id_filiere
-                JOIN niveau n ON e.id_niveau = n.id_niveau
-                LEFT JOIN expertise ex ON me.id_mentor = ex.id_mentor
-                LEFT JOIN matiere mat ON ex.id_matiere = mat.id_matiere
-                WHERE me.statut_validation = 'EN_ATTENTE'
-                GROUP BY me.id_mentor, u.nom, u.prenom, f.nom, n.libelle, me.statut_validation,
-                         me.biographie, me.experience, me.mode_preference
-                ORDER BY u.nom
-                """;
+    /**
+     * Requête commune aux écrans admin : mentors avec identité, formation et matières résolus.
+     * Le seul paramètre variable est le filtre de statut (placeholder %s).
+     */
+    private static final String SQL_MENTORS_AVEC_DETAILS = """
+            SELECT me.id_mentor, u.nom, u.prenom, u.email, u.telephone, e.numero_carte,
+                   f.nom AS nom_filiere, n.libelle AS libelle_niveau,
+                   GROUP_CONCAT(mat.nom SEPARATOR ', ') AS matieres, me.statut_validation,
+                   me.biographie, me.experience, me.mode_preference, me.nombre_max_mentores
+            FROM mentor me
+            JOIN etudiant e ON me.id_etudiant = e.id_etudiant
+            JOIN utilisateur u ON e.id_utilisateur = u.id_utilisateur
+            JOIN filiere f ON e.id_filiere = f.id_filiere
+            JOIN niveau n ON e.id_niveau = n.id_niveau
+            LEFT JOIN expertise ex ON me.id_mentor = ex.id_mentor
+            LEFT JOIN matiere mat ON ex.id_matiere = mat.id_matiere
+            %s
+            GROUP BY me.id_mentor, u.nom, u.prenom, u.email, u.telephone, e.numero_carte,
+                     f.nom, n.libelle, me.statut_validation, me.biographie, me.experience,
+                     me.mode_preference, me.nombre_max_mentores
+            ORDER BY u.nom, u.prenom
+            """;
 
-        List<CandidatMentorVue> resultats = new ArrayList<>();
+    /** Candidatures mentor en attente, avec étudiant/filière/niveau/matières résolus (JOIN + GROUP_CONCAT). */
+    public List<MentorDetailVue> findEnAttenteAvecDetails() throws SQLException {
+        return chargerMentorsAvecDetails(
+                SQL_MENTORS_AVEC_DETAILS.formatted("WHERE me.statut_validation = 'EN_ATTENTE'"));
+    }
+
+    /** Tous les mentors, quel que soit leur statut de validation (pour la liste admin). */
+    public List<MentorDetailVue> findTousAvecDetails() throws SQLException {
+        return chargerMentorsAvecDetails(SQL_MENTORS_AVEC_DETAILS.formatted(""));
+    }
+
+    private List<MentorDetailVue> chargerMentorsAvecDetails(String sql) throws SQLException {
+        List<MentorDetailVue> resultats = new ArrayList<>();
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                resultats.add(new CandidatMentorVue(
+                resultats.add(new MentorDetailVue(
                         rs.getInt("id_mentor"),
                         rs.getString("prenom") + " " + rs.getString("nom"),
+                        rs.getString("email"),
+                        rs.getString("telephone"),
+                        rs.getString("numero_carte"),
                         rs.getString("nom_filiere"),
                         rs.getString("libelle_niveau"),
                         rs.getString("matieres"),
                         rs.getString("statut_validation"),
                         rs.getString("biographie"),
                         rs.getString("experience"),
-                        rs.getString("mode_preference")
+                        rs.getString("mode_preference"),
+                        (Integer) rs.getObject("nombre_max_mentores")
                 ));
             }
         }

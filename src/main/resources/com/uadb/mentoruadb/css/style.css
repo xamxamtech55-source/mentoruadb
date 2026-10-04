@@ -17,6 +17,10 @@
     -fx-text-fill: #c0392b;
 }
 
+.succes-label {
+    -fx-text-fill: #1e8449;
+}
+
 .text-field, .password-field {
     -fx-pref-width: 260px;
 }
@@ -50,6 +54,7 @@
     -fx-text-fill: white;
     -fx-background-radius: 3;
     -fx-cursor: hand;
+    -fx-pref-width: 120px;
 }
 .notification-label {
     -fx-background-color: #fff3cd;
@@ -59,17 +64,208 @@
     -fx-border-color: #ffeeba;
     -fx-border-radius: 4;
 }
-.deconnexion-button {
-    -fx-font-size: 11px;
-    -fx-padding: 4 10 4 10;
-    -fx-background-color: #c0392b;
-    -fx-text-fill: white;
-    -fx-background-radius: 3;
-    -fx-cursor: hand;
-}
 
 .photo-frame {
     -fx-border-color: #b0b0b0;
     -fx-border-width: 1.5;
     -fx-background-color: #f0f0f0;
+}
+
+.statut-candidature-label {
+    -fx-background-color: #fff3cd;
+    -fx-text-fill: #856404;
+    -fx-padding: 8 12 8 12;
+    -fx-background-radius: 4;
+    -fx-border-color: #ffeeba;
+    -fx-border-radius: 4;
+    -fx-max-width: 420px;
+}
+
+/* Boutons d'action des écrans (largeur fixe, sinon .button impose 260px) */
+.action-button {
+    -fx-pref-width: 140px;
+    -fx-min-width: 140px;
+    -fx-max-width: 140px;
+}
+
+.refuser-button {
+    -fx-background-color: #c0392b;
+    -fx-text-fill: white;
+}
+
+.refuser-button:hover {
+    -fx-background-color: #96281b;
+}
+
+/* ---------- Page d'accueil ---------- */
+
+.bienvenue-root {
+    -fx-background-color:
+        linear-gradient(to bottom right, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.0) 45%),
+        linear-gradient(to bottom right, #1d4e79 0%, #142c46 55%, #0c1a2a 100%);
+}
+
+.bienvenue-contenu {
+    -fx-background-color: transparent;
+}
+
+.bienvenue-titre {
+    -fx-font-size: 46px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.bienvenue-sous-titre {
+    -fx-font-size: 15px;
+    -fx-text-fill: rgba(255, 255, 255, 0.78);
+}
+
+.bienvenue-carte {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.18);
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+}
+
+.bienvenue-carte:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.17);
+    -fx-border-color: #64b5f6;
+}
+
+.bienvenue-carte-titre {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.bienvenue-carte-texte {
+    -fx-font-size: 13px;
+    -fx-text-fill: rgba(255, 255, 255, 0.86);
+    -fx-line-spacing: 3px;
+}
+
+.bienvenue-accent-bleu {
+    -fx-text-fill: #64b5f6;
+}
+
+.bienvenue-bouton-principal {
+    -fx-pref-width: 210px;
+    -fx-min-width: 210px;
+    -fx-max-width: 210px;
+    -fx-pref-height: 46px;
+    -fx-background-color: #3498db;
+    -fx-background-radius: 23;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.bienvenue-bouton-principal:hover {
+    -fx-background-color: #5dade2;
+}
+
+.bienvenue-bouton-principal:pressed {
+    -fx-background-color: #2e86c1;
+}
+
+.bienvenue-bouton-secondaire {
+    -fx-pref-width: 210px;
+    -fx-min-width: 210px;
+    -fx-max-width: 210px;
+    -fx-pref-height: 46px;
+    -fx-background-color: transparent;
+    -fx-background-radius: 23;
+    -fx-border-color: rgba(255, 255, 255, 0.55);
+    -fx-border-width: 1.4;
+    -fx-border-radius: 23;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.bienvenue-bouton-secondaire:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.16);
+}
+
+.bienvenue-bouton-secondaire:pressed {
+    -fx-background-color: rgba(255, 255, 255, 0.28);
+}
+
+.bienvenue-message {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-text-alignment: center;
+}
+
+.lien-discret {
+    -fx-background-color: transparent;
+    -fx-background-radius: 6;
+    -fx-text-fill: #2980b9;
+    -fx-font-size: 13px;
+    -fx-padding: 5 8 5 8;
+    -fx-cursor: hand;
+}
+
+.lien-discret:hover {
+    -fx-background-color: rgba(41, 128, 185, 0.12);
+}
+
+.lien-discret:pressed {
+    -fx-background-color: rgba(41, 128, 185, 0.22);
+}
+
+.admin-menu-button {
+    -fx-pref-width: 320px;
+    -fx-min-width: 320px;
+    -fx-max-width: 320px;
+    -fx-font-size: 13px;
+}
+
+.button.nav-button {
+    -fx-pref-width: auto;
+    -fx-min-width: 90px;
+    -fx-padding: 7 14 7 14;
+}
+
+.dossier-candidat {
+    -fx-background-color: #f7f9fb;
+    -fx-border-color: #d5dce3;
+    -fx-border-radius: 6;
+    -fx-padding: 12;
+}
+
+.dossier-titre {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.dossier-libelle {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #7f8c8d;
+}
+
+.dossier-valeur {
+    -fx-font-size: 12px;
+    -fx-text-fill: #2c3e50;
+}
+
+.statut-valide {
+    -fx-text-fill: #1e8449;
+    -fx-font-weight: bold;
+}
+
+.statut-attente {
+    -fx-text-fill: #b9770e;
+    -fx-font-weight: bold;
+}
+
+.statut-refuse {
+    -fx-text-fill: #c0392b;
+    -fx-font-weight: bold;
 }

@@ -10,33 +10,44 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="12.0" styleClass="login-container"
-      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.uadb.mentoruadb.controller.LoginController">
-    <padding>
-        <Insets top="40.0" right="40.0" bottom="40.0" left="40.0" />
-    </padding>
+<StackPane styleClass="login-container"
+           xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.uadb.mentoruadb.controller.LoginController">
+    <children>
+        <VBox alignment="CENTER" spacing="12.0">
+            <padding>
+                <Insets top="40.0" right="40.0" bottom="40.0" left="40.0" />
+            </padding>
 
-    <ImageView fitHeight="90.0" preserveRatio="true">
-        <Image url="@../images/logo-uadb.png" />
-    </ImageView>
-    <Label text="Mentor UADB" styleClass="title-label" />
-    <Label text="Connexion" styleClass="subtitle-label" />
+            <ImageView fitHeight="108.0" preserveRatio="true">
+                <Image url="@../images/logo-uadb.png" />
+            </ImageView>
+            <Label text="Mentor-UADB" styleClass="title-label" />
+            <Label text="Connexion" styleClass="subtitle-label" />
 
-    <TextField fx:id="emailField" promptText="Email institutionnel" prefWidth="280.0" maxWidth="280.0" />
+            <TextField fx:id="emailField" promptText="Email institutionnel" prefWidth="280.0" maxWidth="280.0" />
 
-    <StackPane prefWidth="280.0" maxWidth="280.0">
-        <PasswordField fx:id="motDePasseField" promptText="Mot de passe" prefWidth="280.0" maxWidth="280.0"
-                       style="-fx-padding: 8 42 8 10;" />
-        <TextField fx:id="motDePasseVisibleField" promptText="Mot de passe" prefWidth="280.0" maxWidth="280.0"
-                   style="-fx-padding: 8 42 8 10;" visible="false" managed="false" />
-        <Button fx:id="toggleMotDePasseButton" text="👁" onAction="#onToggleMotDePasseClick"
-                styleClass="toggle-password-button" StackPane.alignment="CENTER_RIGHT" />
-    </StackPane>
+            <StackPane prefWidth="280.0" maxWidth="280.0">
+                <PasswordField fx:id="motDePasseField" promptText="Mot de passe" prefWidth="280.0" maxWidth="280.0"
+                               style="-fx-padding: 8 42 8 10;" />
+                <TextField fx:id="motDePasseVisibleField" promptText="Mot de passe" prefWidth="280.0" maxWidth="280.0"
+                           style="-fx-padding: 8 42 8 10;" visible="false" managed="false" />
+                <Button fx:id="toggleMotDePasseButton" text="👁" onAction="#onToggleMotDePasseClick"
+                        styleClass="toggle-password-button" StackPane.alignment="CENTER_RIGHT" />
+            </StackPane>
 
-    <Button text="Se connecter" onAction="#onConnexionClick" prefWidth="280.0" maxWidth="280.0" />
-    <Button fx:id="creerCompteButton" text="Créer un compte" onAction="#onCreerCompteClick" styleClass="lien-button" prefWidth="280.0" maxWidth="280.0" />
-    <Button fx:id="motDePasseOublieButton" text="Mot de passe oublié ?" onAction="#onMotDePasseOublieClick" styleClass="lien-button" prefWidth="280.0" maxWidth="280.0" />
+            <Button text="Se connecter" onAction="#onConnexionClick" prefWidth="280.0" maxWidth="280.0" />
+            <Button fx:id="creerCompteButton" text="Créer un compte" onAction="#onCreerCompteClick" styleClass="lien-button" prefWidth="280.0" maxWidth="280.0" />
+            <Button fx:id="motDePasseOublieButton" text="Mot de passe oublié ?" onAction="#onMotDePasseOublieClick" styleClass="lien-button" prefWidth="280.0" maxWidth="280.0" />
 
-    <Label fx:id="messageLabel" styleClass="message-label" />
-</VBox>
+            <Label fx:id="messageLabel" styleClass="message-label" />
+        </VBox>
+
+        <Button fx:id="retourAccueilButton" text="← Retour à l'accueil" onAction="#onRetourAccueilClick"
+                styleClass="lien-discret" StackPane.alignment="TOP_LEFT">
+            <StackPane.margin>
+                <Insets top="8.0" right="0.0" bottom="0.0" left="8.0" />
+            </StackPane.margin>
+        </Button>
+    </children>
+</StackPane>

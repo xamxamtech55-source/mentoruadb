@@ -9,15 +9,15 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 /**
- * Point d'entrée de l'application MentorUADB.
- * Charge l'écran de connexion au démarrage.
+ * Point d'entrée de l'application Mentor-UADB.
+ * Charge l'écran d'accueil au démarrage, qui mène ensuite à la connexion.
  */
 public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
         Parent root = FXMLLoader.load(
-                getClass().getResource("/com/uadb/mentoruadb/fxml/login.fxml")
+                getClass().getResource("/com/uadb/mentoruadb/fxml/bienvenue.fxml")
         );
 
         Scene scene = new Scene(root, 950, 700);
@@ -25,7 +25,7 @@ public class Main extends Application {
                 getClass().getResource("/com/uadb/mentoruadb/css/style.css").toExternalForm()
         );
 
-        stage.setTitle("MentorUADB");
+        stage.setTitle("Mentor-UADB");
         stage.setScene(scene);
         stage.show();
     }

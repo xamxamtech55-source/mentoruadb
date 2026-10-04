@@ -7,36 +7,41 @@
 
 <ScrollPane fitToWidth="true" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.uadb.mentoruadb.controller.ProfilController">
-    <VBox spacing="12.0">
-        <padding>
-            <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
-        </padding>
+    <HBox alignment="CENTER">
+        <VBox spacing="12.0" prefWidth="860.0" maxWidth="860.0">
+            <padding>
+                <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+            </padding>
 
-        <Label text="Mon profil" styleClass="title-label" />
+            <Label text="Mon profil" styleClass="title-label" />
 
-        <Label fx:id="emailLabel" />
-        <TextField fx:id="telephoneField" promptText="Téléphone" maxWidth="300.0" />
+            <Label fx:id="emailLabel" />
+            <TextField fx:id="telephoneField" promptText="Téléphone" maxWidth="300.0" />
 
-        <HBox spacing="10.0" alignment="CENTER_LEFT">
-            <Button text="Choisir une photo..." onAction="#onChoisirPhotoClick" />
-            <Label fx:id="photoLabel" text="Aucune photo" />
-        </HBox>
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <Button text="Choisir une photo..." onAction="#onChoisirPhotoClick" />
+                <Label fx:id="photoLabel" text="Aucune photo" />
+            </HBox>
 
-        <TextField fx:id="numeroCarteField" promptText="Numéro de carte d'étudiant" maxWidth="300.0" />
+            <TextField fx:id="numeroCarteField" promptText="Numéro de carte d'étudiant" maxWidth="300.0" />
 
-        <Separator fx:id="separateurMentor" />
-        <Label fx:id="titreMentorLabel" text="Profil mentor" styleClass="subtitle-label" />
+            <Label fx:id="statutCandidatureLabel" styleClass="statut-candidature-label" wrapText="true"
+                   visible="false" managed="false" />
 
-        <TextArea fx:id="biographieField" promptText="Biographie" prefRowCount="3" wrapText="true" />
-        <TextField fx:id="experienceField" promptText="Expérience (ex: 2 ans de tutorat)" maxWidth="300.0" />
-        <ComboBox fx:id="modePreferenceComboBox" promptText="Mode de préférence" />
-        <TextField fx:id="nombreMaxMentoresField" promptText="Nombre max de mentorés" maxWidth="200.0" />
+            <Separator fx:id="separateurMentor" />
+            <Label fx:id="titreMentorLabel" text="Profil mentor" styleClass="subtitle-label" />
 
-        <HBox spacing="10.0">
-            <Button text="Enregistrer" onAction="#onEnregistrerClick" />
-            <Button fx:id="retourButton" text="Retour" onAction="#onRetourClick" styleClass="lien-button" />
-        </HBox>
+            <TextArea fx:id="biographieField" promptText="Biographie" prefRowCount="3" wrapText="true" />
+            <TextField fx:id="experienceField" promptText="Expérience (ex: 2 ans de tutorat)" maxWidth="300.0" />
+            <ComboBox fx:id="modePreferenceComboBox" promptText="Mode de préférence" maxWidth="300.0" />
+            <TextField fx:id="nombreMaxMentoresField" promptText="Nombre max de mentorés" maxWidth="300.0" />
 
-        <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />
-    </VBox>
+            <HBox spacing="10.0">
+                <Button text="Enregistrer" onAction="#onEnregistrerClick" />
+                <Button fx:id="retourButton" text="Retour" onAction="#onRetourClick" styleClass="lien-button" />
+            </HBox>
+
+            <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />
+        </VBox>
+    </HBox>
 </ScrollPane>

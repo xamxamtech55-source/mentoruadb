@@ -23,7 +23,7 @@ public class DashboardAdminController {
     private void onValiderMentorsClick() {
         try {
             Stage stage = (Stage) deconnexionButton.getScene().getWindow();
-            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/validation-mentors.fxml", "MentorUADB - Validation des mentors");
+            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/validation-mentors.fxml", "Mentor-UADB - Validation des mentors");
         } catch (IOException e) {
             messageLabel.setText("Impossible d'ouvrir l'écran de validation.");
         }
@@ -33,7 +33,17 @@ public class DashboardAdminController {
     private void onGestionDonneesClick() {
         try {
             Stage stage = (Stage) deconnexionButton.getScene().getWindow();
-            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/gestion-donnees.fxml", "MentorUADB - Gestion des données");
+            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/gestion-donnees.fxml", "Mentor-UADB - Gestion des données");
+        } catch (IOException e) {
+            messageLabel.setText("Impossible d'ouvrir cet écran.");
+        }
+    }
+
+    @FXML
+    private void onListeMentorsClick() {
+        try {
+            Stage stage = (Stage) deconnexionButton.getScene().getWindow();
+            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/liste-mentors.fxml", "Mentor-UADB - Liste des mentors");
         } catch (IOException e) {
             messageLabel.setText("Impossible d'ouvrir cet écran.");
         }
@@ -43,7 +53,7 @@ public class DashboardAdminController {
     private void onDeconnexionClick() {
         try {
             Stage stage = (Stage) deconnexionButton.getScene().getWindow();
-            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/login.fxml", "MentorUADB - Connexion");
+            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/login.fxml", "Mentor-UADB - Connexion");
         } catch (IOException e) {
             messageLabel.setText("Impossible de revenir à l'écran de connexion.");
         }
@@ -52,7 +62,7 @@ public class DashboardAdminController {
     private void onGestionUtilisateursClick() {
         try {
             Stage stage = (Stage) deconnexionButton.getScene().getWindow();
-            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/gestion-utilisateurs.fxml", "MentorUADB - Gestion des utilisateurs");
+            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/gestion-utilisateurs.fxml", "Mentor-UADB - Gestion des utilisateurs");
         } catch (IOException e) {
             messageLabel.setText("Impossible d'ouvrir cet écran.");
         }

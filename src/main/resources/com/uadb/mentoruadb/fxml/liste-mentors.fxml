@@ -9,27 +9,33 @@
 <?import javafx.scene.layout.VBox?>
 
 <ScrollPane fitToWidth="true" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.uadb.mentoruadb.controller.ValidationMentorsController">
+            fx:controller="com.uadb.mentoruadb.controller.ListeMentorsController">
     <HBox alignment="CENTER">
         <VBox spacing="12.0" prefWidth="860.0" maxWidth="860.0">
             <padding>
                 <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
             </padding>
 
-            <Label text="Candidatures « devenir mentor » en attente" styleClass="title-label" />
-            <Label text="Vérifie l'identité et le dossier du candidat avant de valider ou de refuser." styleClass="subtitle-label" />
+            <Label text="Liste des mentors" styleClass="title-label" />
+            <Label text="Tous les mentors déclarés, avec leur statut de validation." styleClass="subtitle-label" />
 
-            <TableView fx:id="candidatsTable" prefHeight="165.0">
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <Label text="Filtrer par statut :" />
+                <ChoiceBox fx:id="filtreStatut" prefWidth="220.0" />
+            </HBox>
+
+            <TableView fx:id="mentorsTable" prefHeight="180.0">
                 <columns>
-                    <TableColumn fx:id="colEtudiant" text="Candidat" prefWidth="190.0" />
+                    <TableColumn fx:id="colMentor" text="Mentor" prefWidth="180.0" />
                     <TableColumn fx:id="colFiliere" text="Filière" prefWidth="150.0" />
-                    <TableColumn fx:id="colNiveau" text="Niveau" prefWidth="120.0" />
-                    <TableColumn fx:id="colMatieres" text="Matières déclarées" prefWidth="360.0" />
+                    <TableColumn fx:id="colNiveau" text="Niveau" prefWidth="110.0" />
+                    <TableColumn fx:id="colMatieres" text="Matières" prefWidth="240.0" />
+                    <TableColumn fx:id="colStatut" text="Statut" prefWidth="140.0" />
                 </columns>
             </TableView>
 
             <VBox spacing="8.0" styleClass="dossier-candidat">
-                <Label text="Dossier du candidat" styleClass="dossier-titre" />
+                <Label text="Fiche du mentor" styleClass="dossier-titre" />
                 <GridPane hgap="10.0" vgap="5.0">
                     <columnConstraints>
                         <ColumnConstraints minWidth="150.0" prefWidth="150.0" maxWidth="150.0" />
@@ -45,20 +51,20 @@
                     <Label fx:id="carteValue" styleClass="dossier-valeur" wrapText="true" GridPane.rowIndex="3" GridPane.columnIndex="1" />
                     <Label text="Filière / niveau" styleClass="dossier-libelle" GridPane.rowIndex="4" GridPane.columnIndex="0" />
                     <Label fx:id="formationValue" styleClass="dossier-valeur" wrapText="true" GridPane.rowIndex="4" GridPane.columnIndex="1" />
-                    <Label text="Expérience" styleClass="dossier-libelle" GridPane.rowIndex="5" GridPane.columnIndex="0" />
-                    <Label fx:id="experienceDetailValue" styleClass="dossier-valeur" wrapText="true" GridPane.rowIndex="5" GridPane.columnIndex="1" />
-                    <Label text="Mode préféré" styleClass="dossier-libelle" GridPane.rowIndex="6" GridPane.columnIndex="0" />
-                    <Label fx:id="modeValue" styleClass="dossier-valeur" wrapText="true" GridPane.rowIndex="6" GridPane.columnIndex="1" />
-                    <Label text="Capacité annoncée" styleClass="dossier-libelle" GridPane.rowIndex="7" GridPane.columnIndex="0" />
-                    <Label fx:id="capaciteValue" styleClass="dossier-valeur" wrapText="true" GridPane.rowIndex="7" GridPane.columnIndex="1" />
-                    <Label text="Biographie" styleClass="dossier-libelle" GridPane.rowIndex="8" GridPane.columnIndex="0" />
-                    <Label fx:id="biographieArea" styleClass="dossier-valeur" wrapText="true" GridPane.rowIndex="8" GridPane.columnIndex="1" />
+                    <Label text="Matières" styleClass="dossier-libelle" GridPane.rowIndex="5" GridPane.columnIndex="0" />
+                    <Label fx:id="matieresValue" styleClass="dossier-valeur" wrapText="true" GridPane.rowIndex="5" GridPane.columnIndex="1" />
+                    <Label text="Expérience" styleClass="dossier-libelle" GridPane.rowIndex="6" GridPane.columnIndex="0" />
+                    <Label fx:id="experienceValue" styleClass="dossier-valeur" wrapText="true" GridPane.rowIndex="6" GridPane.columnIndex="1" />
+                    <Label text="Mode préféré" styleClass="dossier-libelle" GridPane.rowIndex="7" GridPane.columnIndex="0" />
+                    <Label fx:id="modeValue" styleClass="dossier-valeur" wrapText="true" GridPane.rowIndex="7" GridPane.columnIndex="1" />
+                    <Label text="Capacité annoncée" styleClass="dossier-libelle" GridPane.rowIndex="8" GridPane.columnIndex="0" />
+                    <Label fx:id="capaciteValue" styleClass="dossier-valeur" wrapText="true" GridPane.rowIndex="8" GridPane.columnIndex="1" />
+                    <Label text="Biographie" styleClass="dossier-libelle" GridPane.rowIndex="9" GridPane.columnIndex="0" />
+                    <Label fx:id="biographieValue" styleClass="dossier-valeur" wrapText="true" GridPane.rowIndex="9" GridPane.columnIndex="1" />
                 </GridPane>
             </VBox>
 
             <HBox spacing="10.0" alignment="CENTER_LEFT">
-                <Button fx:id="validerButton" text="Valider le candidat" onAction="#onValiderClick" styleClass="action-button" />
-                <Button fx:id="refuserButton" text="Refuser" onAction="#onRefuserClick" styleClass="action-button,refuser-button" />
                 <Button fx:id="retourButton" text="Retour" onAction="#onRetourClick" styleClass="action-button" />
             </HBox>
 

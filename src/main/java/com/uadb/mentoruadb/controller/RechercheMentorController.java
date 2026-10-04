@@ -611,7 +611,7 @@ public class RechercheMentorController {
                     SceneNavigator.switchToAndGetController(
                             stage,
                             "/com/uadb/mentoruadb/fxml/dashboard-etudiant.fxml",
-                            "MentorUADB - Tableau de bord"
+                            "Mentor-UADB - Tableau de bord"
                     );
 
             controller.chargerDonnees(
@@ -622,7 +622,7 @@ public class RechercheMentorController {
         } catch (IOException e) {
 
             messageLabel.setText(
-                    "Impossible de revenir au tableau de bord."
+                    "Impossible de revenir au tableau de bord étudiant."
             );
 
             e.printStackTrace();

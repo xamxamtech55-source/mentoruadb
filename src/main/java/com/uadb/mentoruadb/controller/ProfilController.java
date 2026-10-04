@@ -175,11 +175,11 @@ public class ProfilController {
         try {
             Stage stage = (Stage) retourButton.getScene().getWindow();
             DashboardEtudiantController controller = SceneNavigator.switchToAndGetController(
-                    stage, "/com/uadb/mentoruadb/fxml/dashboard-etudiant.fxml", "MentorUADB - Tableau de bord"
+                    stage, "/com/uadb/mentoruadb/fxml/dashboard-etudiant.fxml", "Mentor-UADB - Tableau de bord"
             );
             controller.chargerDonnees(etudiantConnecte, prenomConnecte);
         } catch (IOException e) {
-            messageLabel.setText("Impossible de revenir au tableau de bord.");
+            messageLabel.setText("Impossible de revenir au tableau de bord étudiant.");
         }
     }
 }

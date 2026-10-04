@@ -368,7 +368,7 @@ public class DashboardEtudiantController {
         try {
             Stage stage = (Stage) rechercherMentorButton.getScene().getWindow();
             RechercheMentorController controller = SceneNavigator.switchToAndGetController(
-                    stage, "/com/uadb/mentoruadb/fxml/recherche-mentor.fxml", "MentorUADB - Recherche de mentor"
+                    stage, "/com/uadb/mentoruadb/fxml/recherche-mentor.fxml", "Mentor-UADB - Recherche de mentor"
             );
             controller.setEtudiantConnecte(etudiantConnecte, prenomConnecte);
         } catch (IOException e) {
@@ -396,7 +396,7 @@ public class DashboardEtudiantController {
 
             Stage stage = (Stage) tableauMentorButton.getScene().getWindow();
             DashboardMentorController controller = SceneNavigator.switchToAndGetController(
-                    stage, "/com/uadb/mentoruadb/fxml/dashboard-mentor.fxml", "MentorUADB - Espace mentor"
+                    stage, "/com/uadb/mentoruadb/fxml/dashboard-mentor.fxml", "Mentor-UADB - Espace mentor"
             );
             controller.chargerDonnees(etudiantConnecte, mentorOpt.get(), prenomConnecte);
         } catch (SQLException e) {
@@ -410,7 +410,7 @@ public class DashboardEtudiantController {
     private void onDeconnexionClick() {
         try {
             Stage stage = (Stage) deconnexionButton.getScene().getWindow();
-            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/login.fxml", "MentorUADB - Connexion");
+            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/login.fxml", "Mentor-UADB - Connexion");
         } catch (IOException e) {
             bienvenueLabel.setText("Impossible de revenir à l'écran de connexion.");
         }
@@ -425,7 +425,7 @@ public class DashboardEtudiantController {
         try {
             Stage stage = (Stage) devenirMentorButton.getScene().getWindow();
             DevenirMentorController controller = SceneNavigator.switchToAndGetController(
-                    stage, "/com/uadb/mentoruadb/fxml/devenir-mentor.fxml", "MentorUADB - Devenir mentor"
+                    stage, "/com/uadb/mentoruadb/fxml/devenir-mentor.fxml", "Mentor-UADB - Devenir mentor"
             );
             controller.setEtudiantConnecte(etudiantConnecte, prenomConnecte);
         } catch (IOException e) {
@@ -438,7 +438,7 @@ public class DashboardEtudiantController {
         try {
             Stage stage = (Stage) profilButton.getScene().getWindow();
             ProfilController controller = SceneNavigator.switchToAndGetController(
-                    stage, "/com/uadb/mentoruadb/fxml/profil.fxml", "MentorUADB - Mon profil"
+                    stage, "/com/uadb/mentoruadb/fxml/profil.fxml", "Mentor-UADB - Mon profil"
             );
             controller.setContexte(etudiantConnecte, prenomConnecte);
         } catch (IOException e) {

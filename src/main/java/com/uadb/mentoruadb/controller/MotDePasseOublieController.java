@@ -91,9 +91,9 @@ public class MotDePasseOublieController {
     private void onRetourClick() {
         try {
             Stage stage = (Stage) retourButton.getScene().getWindow();
-            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/login.fxml", "MentorUADB - Connexion");
+            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/login.fxml", "Mentor-UADB - Connexion");
         } catch (IOException e) {
-            messageLabel.setText("Impossible de revenir à la connexion.");
+            messageLabel.setText("Impossible de revenir à l'écran de connexion.");
         }
     }
 }

@@ -532,7 +532,7 @@ public class DashboardMentorController {
     private void onDeconnexionClick() {
         try {
             Stage stage = (Stage) deconnexionButton.getScene().getWindow();
-            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/login.fxml", "MentorUADB - Connexion");
+            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/login.fxml", "Mentor-UADB - Connexion");
         } catch (IOException e) {
             messageLabel.setText("Impossible de revenir à l'écran de connexion.");
         }
@@ -543,7 +543,7 @@ public class DashboardMentorController {
         try {
             Stage stage = (Stage) retourEtudiantButton.getScene().getWindow();
             DashboardEtudiantController controller = SceneNavigator.switchToAndGetController(
-                    stage, "/com/uadb/mentoruadb/fxml/dashboard-etudiant.fxml", "MentorUADB - Tableau de bord"
+                    stage, "/com/uadb/mentoruadb/fxml/dashboard-etudiant.fxml", "Mentor-UADB - Tableau de bord"
             );
             controller.chargerDonnees(etudiantConnecte, prenomConnecte);
         } catch (IOException e) {
@@ -556,7 +556,7 @@ public class DashboardMentorController {
         try {
             Stage stage = (Stage) seanceGroupeButton.getScene().getWindow();
             SeanceGroupeController controller = SceneNavigator.switchToAndGetController(
-                    stage, "/com/uadb/mentoruadb/fxml/seance-groupe.fxml", "MentorUADB - Séance de groupe"
+                    stage, "/com/uadb/mentoruadb/fxml/seance-groupe.fxml", "Mentor-UADB - Séance de groupe"
             );
             controller.setContexte(etudiantConnecte, mentorConnecte, prenomConnecte);
         } catch (IOException e) {

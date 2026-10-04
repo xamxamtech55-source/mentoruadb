@@ -113,7 +113,7 @@ public class SeanceGroupeController {
         try {
             Stage stage = (Stage) retourButton.getScene().getWindow();
             DashboardMentorController controller = SceneNavigator.switchToAndGetController(
-                    stage, "/com/uadb/mentoruadb/fxml/dashboard-mentor.fxml", "MentorUADB - Espace mentor"
+                    stage, "/com/uadb/mentoruadb/fxml/dashboard-mentor.fxml", "Mentor-UADB - Espace mentor"
             );
             controller.chargerDonnees(etudiantConnecte, mentorConnecte, prenomConnecte);
         } catch (IOException e) {

@@ -19,10 +19,10 @@
             <Insets top="30.0" right="40.0" bottom="30.0" left="40.0" />
         </padding>
 
-        <ImageView fitHeight="80.0" preserveRatio="true">
+        <ImageView fitHeight="96.0" preserveRatio="true">
             <Image url="@../images/logo-uadb.png" />
         </ImageView>
-        <Label text="Mentor UADB" styleClass="title-label" />
+        <Label text="Mentor-UADB" styleClass="title-label" />
         <Label text="Créer un compte étudiant" styleClass="subtitle-label" />
 
         <TextField fx:id="nomField" promptText="Nom" prefWidth="280.0" maxWidth="280.0" />

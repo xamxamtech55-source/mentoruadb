@@ -127,7 +127,7 @@ public class InscriptionController {
 
         if (nom.isBlank() || prenom.isBlank() || email.isBlank() || telephone.isBlank()
                 || numeroCarte.isBlank() || motDePasse.isBlank() || filiere == null || niveau == null) {
-            messageLabel.setText("Veuillez remplir tous les champs (UFR, filière et niveau compris).");
+            messageLabel.setText("Remplis tous les champs (UFR, filière et niveau compris).");
             return;
         }
 
@@ -141,7 +141,7 @@ public class InscriptionController {
             pause.setOnFinished(event -> {
                 try {
                     Stage stage = (Stage) retourButton.getScene().getWindow();
-                    SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/login.fxml", "MentorUADB - Connexion");
+                    SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/login.fxml", "Mentor-UADB - Connexion");
                 } catch (IOException e) {
                     messageLabel.setText("Compte créé — retourne manuellement à la connexion.");
                 }
@@ -158,7 +158,7 @@ public class InscriptionController {
     private void onRetourConnexionClick() {
         try {
             Stage stage = (Stage) retourButton.getScene().getWindow();
-            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/login.fxml", "MentorUADB - Connexion");
+            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/login.fxml", "Mentor-UADB - Connexion");
         } catch (IOException e) {
             messageLabel.setText("Impossible de revenir à l'écran de connexion.");
         }

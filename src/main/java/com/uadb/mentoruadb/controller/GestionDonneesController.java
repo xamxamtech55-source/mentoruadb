@@ -304,7 +304,7 @@ public class GestionDonneesController {
             }
             rafraichirTout();
         } catch (SQLException e) {
-            messageLabel.setText("Suppression impossible : des filières ou des étudiants y sont encore rattachés.");
+            messageLabel.setText("Impossible de supprimer : des filières ou des étudiants y sont encore rattachés.");
         }
     }
 
@@ -390,7 +390,7 @@ public class GestionDonneesController {
     private void onRetourClick() {
         try {
             Stage stage = (Stage) retourButton.getScene().getWindow();
-            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/dashboard-admin.fxml", "MentorUADB - Administration");
+            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/dashboard-admin.fxml", "Mentor-UADB - Administration");
         } catch (IOException e) {
             messageLabel.setText("Impossible de revenir au tableau de bord admin.");
         }

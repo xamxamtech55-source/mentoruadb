@@ -691,7 +691,7 @@ VALUES
     (
         'Fall',
         'Mame',
-        'mame.fall@uadb.edu.sn',
+        'admin.sy@uadb.edu.sn',
         'password123',
         'ADMIN',
         'ACTIF'

@@ -17,13 +17,13 @@
     <Label text="Mot de passe oublié" styleClass="title-label" />
     <Label text="Renseigne ton email institutionnel, ton numéro de carte d'étudiant et ton nouveau mot de passe" wrapText="true" />
 
-    <TextField fx:id="emailField" promptText="Email institutionnel" />
-    <TextField fx:id="numeroCarteField" promptText="Numéro de carte d'étudiant" />
-    <PasswordField fx:id="nouveauMotDePasseField" promptText="Nouveau mot de passe" />
-    <PasswordField fx:id="confirmationField" promptText="Confirmer le mot de passe" />
+    <TextField fx:id="emailField" promptText="Email institutionnel" prefWidth="280.0" maxWidth="280.0" />
+    <TextField fx:id="numeroCarteField" promptText="Numéro de carte d'étudiant" prefWidth="280.0" maxWidth="280.0" />
+    <PasswordField fx:id="nouveauMotDePasseField" promptText="Nouveau mot de passe" prefWidth="280.0" maxWidth="280.0" />
+    <PasswordField fx:id="confirmationField" promptText="Confirmer le mot de passe" prefWidth="280.0" maxWidth="280.0" />
 
-    <Button text="Réinitialiser" onAction="#onReinitialiserClick" />
-    <Button fx:id="retourButton" text="Retour à la connexion" onAction="#onRetourClick" styleClass="lien-button" />
+    <Button text="Réinitialiser" onAction="#onReinitialiserClick" prefWidth="280.0" maxWidth="280.0" />
+    <Button fx:id="retourButton" text="Retour à la connexion" onAction="#onRetourClick" styleClass="lien-button" prefWidth="280.0" maxWidth="280.0" />
 
     <Label fx:id="messageLabel" styleClass="message-label" />
 </VBox>

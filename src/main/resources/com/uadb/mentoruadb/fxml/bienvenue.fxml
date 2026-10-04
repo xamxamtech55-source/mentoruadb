@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.uadb.mentoruadb.controller.BienvenueController"
+           styleClass="bienvenue-root">
+    <children>
+        <VBox fx:id="contenu" alignment="CENTER" spacing="24.0" maxWidth="920.0" styleClass="bienvenue-contenu">
+            <padding>
+                <Insets top="34.0" right="46.0" bottom="30.0" left="46.0" />
+            </padding>
+
+            <VBox alignment="CENTER" spacing="8.0">
+                <ImageView fitHeight="120.0" preserveRatio="true">
+                    <Image url="@../images/logo-uadb.png" />
+                </ImageView>
+                <Label text="Mentor-UADB" styleClass="bienvenue-titre" />
+                <Label text="La plateforme de mentorat de l'UADB" wrapText="true"
+                       textAlignment="CENTER" styleClass="bienvenue-sous-titre" />
+            </VBox>
+
+            <HBox alignment="CENTER" spacing="18.0">
+                <VBox spacing="8.0" prefWidth="272.0" maxWidth="272.0" styleClass="bienvenue-carte"
+                      onMouseClicked="#onCarteTrouverMentorClick">
+                    <padding>
+                        <Insets top="18.0" right="18.0" bottom="18.0" left="18.0" />
+                    </padding>
+                    <Label text="TROUVER UN MENTOR" styleClass="bienvenue-carte-titre,bienvenue-accent-bleu" />
+                    <Label text="Recherche un mentor par filière, niveau et matière, puis envoie-lui ta demande."
+                           wrapText="true" styleClass="bienvenue-carte-texte" />
+                </VBox>
+
+                <VBox spacing="8.0" prefWidth="272.0" maxWidth="272.0" styleClass="bienvenue-carte"
+                      onMouseClicked="#onCarteDevenirMentorClick">
+                    <padding>
+                        <Insets top="18.0" right="18.0" bottom="18.0" left="18.0" />
+                    </padding>
+                    <Label text="DEVENIR MENTOR" styleClass="bienvenue-carte-titre,bienvenue-accent-bleu" />
+                    <Label text="Propose tes compétences à l'administration, qui valide ton profil."
+                           wrapText="true" styleClass="bienvenue-carte-texte" />
+                </VBox>
+
+                <VBox spacing="8.0" prefWidth="272.0" maxWidth="272.0" styleClass="bienvenue-carte"
+                      onMouseClicked="#onCarteSuiviMentoratClick">
+                    <padding>
+                        <Insets top="18.0" right="18.0" bottom="18.0" left="18.0" />
+                    </padding>
+                    <Label text="SUIVRE LE MENTORAT" styleClass="bienvenue-carte-titre,bienvenue-accent-bleu" />
+                    <Label text="Organise tes séances, garde l'historique et mesure ta progression semestre par semestre."
+                           wrapText="true" styleClass="bienvenue-carte-texte" />
+                </VBox>
+            </HBox>
+
+            <HBox alignment="CENTER" spacing="14.0">
+                <Button text="Se connecter" onAction="#onConnexionClick"
+                        styleClass="bienvenue-bouton-principal" />
+                <Button text="Créer un compte" onAction="#onInscriptionClick"
+                        styleClass="bienvenue-bouton-secondaire" />
+            </HBox>
+
+            <Label fx:id="messageLabel" styleClass="bienvenue-message" />
+        </VBox>
+    </children>
+</StackPane>

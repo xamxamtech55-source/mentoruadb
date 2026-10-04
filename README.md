@@ -1,4 +1,4 @@
-# MentorUADB
+# Mentor-UADB
 
 Application desktop de mise en relation et de gestion du mentorat étudiant à l'Université Alioune Diop de Bambey (UADB).
 

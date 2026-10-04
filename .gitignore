@@ -29,3 +29,6 @@ db.properties
 # Espace de travail VS Code personnel
 *.code-workspace
 sauvegarde*.sql
+
+# Docs générées par Qoder
+.qoder/

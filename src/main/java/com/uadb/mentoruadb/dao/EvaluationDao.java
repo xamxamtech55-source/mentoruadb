@@ -1,6 +1,7 @@
 package com.uadb.mentoruadb.dao;
 
 import com.uadb.mentoruadb.config.DatabaseConnection;
+import com.uadb.mentoruadb.dto.EvaluationEtudiantVue;
 import com.uadb.mentoruadb.dto.EvaluationVue;
 import com.uadb.mentoruadb.model.Evaluation;
 
@@ -91,6 +92,46 @@ public class EvaluationDao implements Dao<Evaluation, Integer> {
                     resultats.add(new EvaluationVue(
                             rs.getInt("id_evaluation"),
                             rs.getString("prenom_etudiant") + " " + rs.getString("nom_etudiant"),
+                            rs.getString("nom_matiere"),
+                            rs.getInt("note"),
+                            rs.getString("commentaire"),
+                            rs.getDate("date_evaluation").toLocalDate()
+                    ));
+                }
+            }
+        }
+        return resultats;
+    }
+
+    /** Évaluations données par un étudiant, individuelles ET de groupe (COALESCE sur les deux chemins possibles). */
+    public List<EvaluationEtudiantVue> findByEtudiantAvecDetails(int idEtudiant) throws SQLException {
+        String sql = """
+                SELECT ev.id_evaluation, u.nom AS nom_mentor, u.prenom AS prenom_mentor,
+                       ev.note, ev.commentaire, ev.date_evaluation,
+                       COALESCE(matg.nom, matd.nom) AS nom_matiere
+                FROM evaluation ev
+                JOIN seance s ON ev.id_seance = s.id_seance
+                LEFT JOIN demande_mentorat d ON s.id_demande = d.id_demande
+                LEFT JOIN matiere matd ON d.id_matiere = matd.id_matiere
+                LEFT JOIN matiere matg ON s.id_matiere = matg.id_matiere
+                JOIN mentor m ON COALESCE(s.id_mentor, d.id_mentor) = m.id_mentor
+                JOIN etudiant e ON m.id_etudiant = e.id_etudiant
+                JOIN utilisateur u ON e.id_utilisateur = u.id_utilisateur
+                WHERE ev.id_etudiant = ?
+                ORDER BY ev.date_evaluation DESC
+                """;
+
+        List<EvaluationEtudiantVue> resultats = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idEtudiant);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    resultats.add(new EvaluationEtudiantVue(
+                            rs.getInt("id_evaluation"),
+                            rs.getString("prenom_mentor") + " " + rs.getString("nom_mentor"),
                             rs.getString("nom_matiere"),
                             rs.getInt("note"),
                             rs.getString("commentaire"),

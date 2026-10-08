@@ -1,0 +1,12 @@
+# Copie ce fichier en "mail.properties" (à la racine du projet) puis adapte les valeurs.
+# mail.properties est ignoré par Git : ne le commite jamais.
+# Les variables d'environnement MENTORUADB_MAIL_HOST / MENTORUADB_MAIL_PORT /
+# MENTORUADB_MAIL_USER / MENTORUADB_MAIL_PASSWORD / MENTORUADB_MAIL_FROM ont priorité.
+#
+# Gmail : active la validation en 2 étapes, puis crée un « mot de passe d'application »
+# sur https://myaccount.google.com/apppasswords (le mot de passe normal ne fonctionne pas).
+mail.host=smtp.gmail.com
+mail.port=587
+mail.user=ton.adresse@gmail.com
+mail.password=
+mail.from=ton.adresse@gmail.com

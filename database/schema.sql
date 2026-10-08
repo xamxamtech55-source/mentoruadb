@@ -390,5 +390,26 @@ CREATE TABLE fichier (
 
 
 -- =========================================================
--- FIN DU SCHEMA (15 entités)
+-- 16. TABLE REINITIALISATION MOT DE PASSE (codes envoyés par mail)
 -- =========================================================
+
+CREATE TABLE reinitialisation_mot_de_passe (
+                                                id_reinitialisation INT AUTO_INCREMENT PRIMARY KEY,
+                                                id_utilisateur INT NOT NULL,
+
+    -- Le code à 6 chiffres n'est jamais stocké en clair : hachage PBKDF2 (PasswordUtil).
+                                                code_hash VARCHAR(255) NOT NULL,
+
+                                                date_expiration DATETIME NOT NULL,
+                                                tentatives TINYINT NOT NULL DEFAULT 0,
+                                                utilise TINYINT(1) NOT NULL DEFAULT 0,
+                                                date_creation DATETIME NOT NULL,
+
+                                                CONSTRAINT fk_reinit_utilisateur FOREIGN KEY (id_utilisateur)
+                                                    REFERENCES utilisateur(id_utilisateur) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+
+-- =========================================================
+-- FIN DU SCHEMA (18 tables)
+-- =============================================================

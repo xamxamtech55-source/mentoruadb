@@ -3,7 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.VBox?>
 
@@ -15,15 +14,13 @@
     </padding>
 
     <Label text="Mot de passe oublié" styleClass="title-label" />
-    <Label text="Renseigne ton email institutionnel, ton numéro de carte d'étudiant et ton nouveau mot de passe" wrapText="true" />
+    <Label text="Renseigne ton email institutionnel et ton numéro de carte d'étudiant : un code de réinitialisation te sera envoyé par mail" wrapText="true" />
 
     <TextField fx:id="emailField" promptText="Email institutionnel" prefWidth="280.0" maxWidth="280.0" />
     <TextField fx:id="numeroCarteField" promptText="Numéro de carte d'étudiant" prefWidth="280.0" maxWidth="280.0" />
-    <PasswordField fx:id="nouveauMotDePasseField" promptText="Nouveau mot de passe" prefWidth="280.0" maxWidth="280.0" />
-    <PasswordField fx:id="confirmationField" promptText="Confirmer le mot de passe" prefWidth="280.0" maxWidth="280.0" />
 
-    <Button text="Réinitialiser" onAction="#onReinitialiserClick" prefWidth="280.0" maxWidth="280.0" />
+    <Button fx:id="envoyerCodeButton" text="Envoyer le code" onAction="#onEnvoyerCodeClick" prefWidth="280.0" maxWidth="280.0" />
     <Button fx:id="retourButton" text="Retour à la connexion" onAction="#onRetourClick" styleClass="lien-button" prefWidth="280.0" maxWidth="280.0" />
 
-    <Label fx:id="messageLabel" styleClass="message-label" />
+    <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />
 </VBox>

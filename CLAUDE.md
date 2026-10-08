@@ -1,0 +1,71 @@
+# CLAUDE.md — MentorUADB
+
+Fichier de mémoire du projet. Claude Code le lit au début de chaque session : on le met à jour à la fin de chaque session (section « Journal »).
+
+## Projet
+
+MentorUADB : application desktop de mentorat étudiant pour l'Université Alioune Diop de Bambey (UADB). Projet universitaire (cours de Java avancé), mené seul par Aly. Dépôt : xamxamtech55-source/mentoruadb, branche `main`.
+
+Stack : Java 21, JavaFX 21.0.2 (FXML + CSS), JDBC, MySQL 8 (Connector/J 8.3.0), JUnit 5.10.2, Maven 3.9+.
+
+## Architecture (à respecter)
+
+JavaFX/FXML/CSS → Controllers → Services → DAO → JDBC → MySQL
+
+- Aucun SQL dans les contrôleurs. Requêtes paramétrées (PreparedStatement) uniquement dans les DAO.
+- Règles métier et transactions dans les services (InscriptionService, MentoratService).
+- Un DAO par entité, un contrôleur par scène FXML.
+- Fermeture des ressources JDBC avec try-with-resources, pas de e.printStackTrace dans le code livré.
+- Configuration BDD externalisée (db.properties ignoré par Git ou variables d'environnement).
+- Mots de passe : PBKDF2-HMAC-SHA256 avec sel.
+
+## Domaine
+
+Rôles : ETUDIANT, MENTOR, ADMIN (statut ACTIF/INACTIF). Un mentor reste un étudiant : ETUDIANT et MENTOR vont dans l'espace étudiant, seul ADMIN a l'espace admin.
+
+Flux : demande de mentorat (EN_ATTENTE → ACCEPTEE/REFUSEE) puis demande de séance (seulement après mentorat accepté) → séance (PLANIFIEE/REALISEE/ANNULEE), individuelle ou de groupe → évaluation 1 à 5.
+
+Règles clés : email @uadb.edu.sn (RG19) ; Licence 1 ne peut pas être mentor (RG20) ; infos mentor (biographie, expérience, mode) seulement à la candidature (RG21) ; capacité max informative (RG22) ; matière demandée ∈ expertises du mentor (RG23) ; heure_fin > heure_debut (RG11) ; une évaluation par étudiant et séance (RG15) ; historiques masqués (colonnes masque_*), jamais supprimés (RG17, RG26) ; notification à chaque changement de statut (RG27).
+
+Schéma : 17 tables (utilisateur, ufr, filiere, niveau, filiere_niveau, etudiant, matiere, filiere_matiere, mentor, expertise, demande_mentorat, demande_seance, seance, seance_participant, evaluation, notification, fichier). `database/schema.sql` fait foi.
+
+Cahier des charges V1.1 (avec conception) : doc partagé dans Claude ; à finaliser après les changements d'écrans.
+
+## Chantier en cours : refonte des écrans étudiant/mentor
+
+Constat sur le dépôt (08/10/2026) : l'admin n'a pas de menu latéral ; `dashboard-admin.fxml` est un menu de boutons qui ouvre des écrans dédiés, dont `gestion-donnees.fxml` (TabPane + TreeView UFR → filières → matières). Les dashboards étudiant et mentor étaient de longues pages à défiler avec 6 à 8 tableaux empilés.
+
+Décision : reprendre le modèle à onglets de `gestion-donnees.fxml` (TabPane dans le dashboard, même en-tête, notifications au-dessus des onglets). Les `fx:id` et les `onAction` ne changent pas : les contrôleurs restent inchangés.
+
+Dashboard étudiant : onglets « Mes demandes » (recherche de mentor, demandes de mentorat, demandes de séance), « Mes séances » (à confirmer, séances, évaluation), « Ressources ».
+Dashboard mentor : onglets « Demandes reçues » (mentorat + séances, planification), « Mes séances » (individuelles + groupe), « Évaluations », « Fichiers ».
+
+Fait : nouveaux `dashboard-etudiant.fxml` et `dashboard-mentor.fxml` fournis (à tester).
+
+Reste à faire (une branche `feature/...` par étape, test manuel avant fusion) :
+1. Tester les deux dashboards (compilation, JavaFX, enchaînement des actions).
+2. Écran de recherche de mentor : arbre UFR → filière → matière comme filtre (même principe que l'admin) ; actuellement `recherche-mentor.fxml` est une page à défiler avec un ComboBox de matières.
+3. Faire basculer l'onglet actif depuis les notifications (optionnel).
+4. Faire respecter RG20 (Licence 1 non mentor) côté service : aujourd'hui seul le bouton est masqué dans DashboardEtudiantController.
+5. Faire respecter RG22 si souhaité (capacité max non appliquée).
+6. Mettre à jour la section 9.8 du cahier des charges.
+
+## Conventions UI
+
+- Fenêtre de taille fixe 950 × 700, logo UADB, titre « Mentor UADB ».
+- Garder le style CSS de l'admin (couleurs, boutons, tableaux) ; couleurs de statut homogènes.
+- Confirmer les actions sensibles (refus, annulation, masquage).
+- Navigation par une classe utilitaire unique de changement de scène.
+
+## Façon de travailler
+
+- Langue : français (code et noms de classes en cohérence avec l'existant).
+- Avant de modifier un écran, lire son FXML, son CSS et son contrôleur ; ne pas deviner les noms existants.
+- Petites étapes, une fonctionnalité à la fois ; le code doit compiler à chaque étape.
+- Ne jamais pousser sur `main` directement : branche, test, Pull Request, fusion.
+
+## Journal des sessions
+
+À compléter à la fin de chaque session : date, ce qui est fait, ce qui reste, décisions prises.
+
+- 2026-10-08 : cahier des charges V1.1 rédigé (règles RG19-RG28, recette T01-T30, conception). Dépôt relu : écran admin = menu + écrans à onglets. Nouveaux dashboards étudiant et mentor à onglets fournis (fx:id et actions inchangés). Prochaine étape : tester, puis écran de recherche avec arbre UFR → filière → matière.

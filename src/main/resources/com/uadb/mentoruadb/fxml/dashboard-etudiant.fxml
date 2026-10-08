@@ -14,6 +14,7 @@
                 <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
             </padding>
 
+            <!-- En-tête (inchangé) -->
             <HBox spacing="10.0" alignment="CENTER_LEFT">
                 <Label fx:id="bienvenueLabel" styleClass="title-label" />
                 <Region HBox.hgrow="ALWAYS" />
@@ -28,78 +29,103 @@
             <Button fx:id="notificationsGeneriquesButton" styleClass="notification-label" wrapText="true" visible="false" managed="false"
                     onAction="#onNotificationsGeneriquesClick" maxWidth="Infinity" alignment="BASELINE_LEFT" />
 
-            <Button fx:id="rechercherMentorButton" text="Rechercher un mentor" onAction="#onRechercherMentorClick" />
+            <!-- Rubriques en onglets, comme l'écran « Gestion des données » de l'admin -->
+            <TabPane prefHeight="520.0" tabClosingPolicy="UNAVAILABLE">
 
-            <Label text="Séances de groupe à confirmer" styleClass="subtitle-label" />
-            <TableView fx:id="seancesAConfirmerTable" prefHeight="100.0" minHeight="100.0">
-                <columns>
-                    <TableColumn fx:id="colConfirmMentor" text="Mentor" prefWidth="150.0" />
-                    <TableColumn fx:id="colConfirmMatiere" text="Matière" prefWidth="120.0" />
-                    <TableColumn fx:id="colConfirmDate" text="Date" prefWidth="100.0" />
-                    <TableColumn fx:id="colConfirmHeure" text="Heure" prefWidth="100.0" />
-                </columns>
-            </TableView>
-            <Button text="Confirmer ma présence" onAction="#onConfirmerPresenceClick" />
+                <Tab text="Mes demandes" closable="false">
+                    <ScrollPane fitToWidth="true">
+                        <VBox spacing="10.0">
+                            <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0" /></padding>
 
-            <Label text="Mes demandes de mentorat" styleClass="subtitle-label" />
-            <TableView fx:id="demandesTable" prefHeight="130.0" maxHeight="160.0">
-                <columns>
-                    <TableColumn fx:id="colDemandeMentor" text="Mentor" prefWidth="150.0" />
-                    <TableColumn fx:id="colDemandeMatiere" text="Matière" prefWidth="120.0" />
-                    <TableColumn fx:id="colDemandeDate" text="Date demande" prefWidth="110.0" />
-                    <TableColumn fx:id="colDemandeStatut" text="Statut" prefWidth="100.0" />
-                </columns>
-            </TableView>
-            <Button text="Effacer la demande sélectionnée" onAction="#onEffacerDemandeClick" />
+                            <Button fx:id="rechercherMentorButton" text="Rechercher un mentor" onAction="#onRechercherMentorClick" />
 
-            <Label text="Demander une séance (sur une demande de mentorat ACCEPTEE, sélectionnée ci-dessus)" wrapText="true" />
-            <HBox spacing="10.0" alignment="CENTER_LEFT">
-                <DatePicker fx:id="dateSouhaiteePicker" promptText="Date souhaitée (facultatif)" />
-                <TextField fx:id="messageSeanceField" promptText="Message pour le mentor (facultatif)" HBox.hgrow="ALWAYS" />
-                <Button text="Demander une séance" onAction="#onDemanderSeanceClick" />
-            </HBox>
+                            <Label text="Mes demandes de mentorat" styleClass="subtitle-label" />
+                            <TableView fx:id="demandesTable" prefHeight="150.0" minHeight="150.0">
+                                <columns>
+                                    <TableColumn fx:id="colDemandeMentor" text="Mentor" prefWidth="150.0" />
+                                    <TableColumn fx:id="colDemandeMatiere" text="Matière" prefWidth="120.0" />
+                                    <TableColumn fx:id="colDemandeDate" text="Date demande" prefWidth="110.0" />
+                                    <TableColumn fx:id="colDemandeStatut" text="Statut" prefWidth="100.0" />
+                                </columns>
+                            </TableView>
+                            <Button text="Effacer la demande sélectionnée" onAction="#onEffacerDemandeClick" />
 
-            <Label text="Mes demandes de séance" styleClass="subtitle-label" />
-            <TableView fx:id="demandeSeanceTable" prefHeight="130.0" maxHeight="160.0">
-                <columns>
-                    <TableColumn fx:id="colDsMentor" text="Mentor" prefWidth="140.0" />
-                    <TableColumn fx:id="colDsMatiere" text="Matière" prefWidth="110.0" />
-                    <TableColumn fx:id="colDsDateSouhaitee" text="Date souhaitée" prefWidth="110.0" />
-                    <TableColumn fx:id="colDsStatut" text="Statut" prefWidth="100.0" />
-                    <TableColumn fx:id="colDsDatePlanifiee" text="Date planifiée" prefWidth="110.0" />
-                </columns>
-            </TableView>
-            <Button text="Effacer la demande de séance" onAction="#onEffacerDemandeSeanceClick" />
+                            <Label text="Demander une séance (sur une demande de mentorat ACCEPTEE, sélectionnée ci-dessus)" wrapText="true" />
+                            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                                <DatePicker fx:id="dateSouhaiteePicker" promptText="Date souhaitée (facultatif)" />
+                                <TextField fx:id="messageSeanceField" promptText="Message pour le mentor (facultatif)" HBox.hgrow="ALWAYS" />
+                                <Button text="Demander une séance" onAction="#onDemanderSeanceClick" />
+                            </HBox>
 
-            <Label text="Mes séances" styleClass="subtitle-label" />
-            <TableView fx:id="seancesTable" prefHeight="150.0" maxHeight="200.0">
-                <columns>
-                    <TableColumn fx:id="colSeanceMentor" text="Mentor" prefWidth="150.0" />
-                    <TableColumn fx:id="colSeanceMatiere" text="Matière" prefWidth="120.0" />
-                    <TableColumn fx:id="colSeanceDate" text="Date" prefWidth="100.0" />
-                    <TableColumn fx:id="colSeanceHeureDebut" text="Début" prefWidth="80.0" />
-                    <TableColumn fx:id="colSeanceHeureFin" text="Fin" prefWidth="80.0" />
-                    <TableColumn fx:id="colSeanceStatut" text="Statut" prefWidth="100.0" />
-                </columns>
-            </TableView>
-            <Button text="Effacer la séance sélectionnée" onAction="#onEffacerSeanceClick" />
+                            <Label text="Mes demandes de séance" styleClass="subtitle-label" />
+                            <TableView fx:id="demandeSeanceTable" prefHeight="150.0" minHeight="150.0">
+                                <columns>
+                                    <TableColumn fx:id="colDsMentor" text="Mentor" prefWidth="140.0" />
+                                    <TableColumn fx:id="colDsMatiere" text="Matière" prefWidth="110.0" />
+                                    <TableColumn fx:id="colDsDateSouhaitee" text="Date souhaitée" prefWidth="110.0" />
+                                    <TableColumn fx:id="colDsStatut" text="Statut" prefWidth="100.0" />
+                                    <TableColumn fx:id="colDsDatePlanifiee" text="Date planifiée" prefWidth="110.0" />
+                                </columns>
+                            </TableView>
+                            <Button text="Effacer la demande de séance" onAction="#onEffacerDemandeSeanceClick" />
+                        </VBox>
+                    </ScrollPane>
+                </Tab>
 
-            <Label text="Fichiers partagés par mes mentors" styleClass="subtitle-label" />
-            <TableView fx:id="fichiersTable" prefHeight="150.0" minHeight="150.0">
-                <columns>
-                    <TableColumn fx:id="colFichierNom" text="Nom du fichier" prefWidth="220.0" />
-                    <TableColumn fx:id="colFichierMatiere" text="Matière" prefWidth="120.0" />
-                    <TableColumn fx:id="colFichierDate" text="Date" prefWidth="100.0" />
-                </columns>
-            </TableView>
-            <Button text="Ouvrir le fichier sélectionné" onAction="#onOuvrirFichierClick" />
+                <Tab text="Mes séances" closable="false">
+                    <ScrollPane fitToWidth="true">
+                        <VBox spacing="10.0">
+                            <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0" /></padding>
 
-            <Label text="Évaluer une séance réalisée (sélectionne-la dans le tableau ci-dessus)" wrapText="true" />
-            <HBox spacing="10.0" alignment="CENTER_LEFT">
-                <ComboBox fx:id="noteComboBox" promptText="Note (1-5)" />
-                <TextField fx:id="commentaireField" promptText="Commentaire" HBox.hgrow="ALWAYS" />
-                <Button text="Évaluer" onAction="#onEvaluerClick" />
-            </HBox>
+                            <Label text="Séances de groupe à confirmer" styleClass="subtitle-label" />
+                            <TableView fx:id="seancesAConfirmerTable" prefHeight="110.0" minHeight="110.0">
+                                <columns>
+                                    <TableColumn fx:id="colConfirmMentor" text="Mentor" prefWidth="150.0" />
+                                    <TableColumn fx:id="colConfirmMatiere" text="Matière" prefWidth="120.0" />
+                                    <TableColumn fx:id="colConfirmDate" text="Date" prefWidth="100.0" />
+                                    <TableColumn fx:id="colConfirmHeure" text="Heure" prefWidth="100.0" />
+                                </columns>
+                            </TableView>
+                            <Button text="Confirmer ma présence" onAction="#onConfirmerPresenceClick" />
+
+                            <Label text="Mes séances" styleClass="subtitle-label" />
+                            <TableView fx:id="seancesTable" prefHeight="170.0" minHeight="170.0">
+                                <columns>
+                                    <TableColumn fx:id="colSeanceMentor" text="Mentor" prefWidth="150.0" />
+                                    <TableColumn fx:id="colSeanceMatiere" text="Matière" prefWidth="120.0" />
+                                    <TableColumn fx:id="colSeanceDate" text="Date" prefWidth="100.0" />
+                                    <TableColumn fx:id="colSeanceHeureDebut" text="Début" prefWidth="80.0" />
+                                    <TableColumn fx:id="colSeanceHeureFin" text="Fin" prefWidth="80.0" />
+                                    <TableColumn fx:id="colSeanceStatut" text="Statut" prefWidth="100.0" />
+                                </columns>
+                            </TableView>
+                            <Button text="Effacer la séance sélectionnée" onAction="#onEffacerSeanceClick" />
+
+                            <Label text="Évaluer une séance réalisée (sélectionne-la dans le tableau ci-dessus)" wrapText="true" />
+                            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                                <ComboBox fx:id="noteComboBox" promptText="Note (1-5)" />
+                                <TextField fx:id="commentaireField" promptText="Commentaire" HBox.hgrow="ALWAYS" />
+                                <Button text="Évaluer" onAction="#onEvaluerClick" />
+                            </HBox>
+                        </VBox>
+                    </ScrollPane>
+                </Tab>
+
+                <Tab text="Ressources" closable="false">
+                    <VBox spacing="10.0">
+                        <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0" /></padding>
+                        <Label text="Fichiers partagés par mes mentors" styleClass="subtitle-label" />
+                        <TableView fx:id="fichiersTable" prefHeight="330.0">
+                            <columns>
+                                <TableColumn fx:id="colFichierNom" text="Nom du fichier" prefWidth="220.0" />
+                                <TableColumn fx:id="colFichierMatiere" text="Matière" prefWidth="120.0" />
+                                <TableColumn fx:id="colFichierDate" text="Date" prefWidth="100.0" />
+                            </columns>
+                        </TableView>
+                        <Button text="Ouvrir le fichier sélectionné" onAction="#onOuvrirFichierClick" />
+                    </VBox>
+                </Tab>
+            </TabPane>
 
             <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />
         </VBox>

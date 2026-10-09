@@ -14,10 +14,11 @@
     </padding>
 
     <Label text="Mot de passe oublié" styleClass="title-label" />
-    <Label text="Renseigne ton email institutionnel et ton numéro de carte d'étudiant : un code te sera envoyé à l'email de récupération enregistré dans « Mon profil » (Gmail ou autre)" wrapText="true" />
+    <Label text="Renseigne ton email institutionnel, ton numéro de carte d'étudiant et l'adresse qui recevra le code (n'importe quel Gmail ou autre)" wrapText="true" />
 
     <TextField fx:id="emailField" promptText="Email institutionnel" prefWidth="280.0" maxWidth="280.0" />
     <TextField fx:id="numeroCarteField" promptText="Numéro de carte d'étudiant" prefWidth="280.0" maxWidth="280.0" />
+    <TextField fx:id="emailRecuperationField" promptText="Gmail de réception du code" prefWidth="280.0" maxWidth="280.0" />
 
     <Button fx:id="envoyerCodeButton" text="Envoyer le code" onAction="#onEnvoyerCodeClick" prefWidth="280.0" maxWidth="280.0" />
     <Button fx:id="retourButton" text="Retour à la connexion" onAction="#onRetourClick" styleClass="lien-button" prefWidth="280.0" maxWidth="280.0" />

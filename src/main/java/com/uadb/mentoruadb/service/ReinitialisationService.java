@@ -38,13 +38,15 @@ public class ReinitialisationService {
 
     /**
      * Vérifie email institutionnel + numéro de carte, génère le code, le stocke haché et l'envoie
-     * à l'EMAIL DE RÉCUPÉRATION du compte (Gmail ou autre, renseigné dans « Mon profil »).
+     * à l'adresse de réception choisie (n'importe quel Gmail ou autre) ; si {@code emailRecuperation}
+     * est vide, on retombe sur l'EMAIL DE RÉCUPÉRATION du compte (renseigné dans « Mon profil »).
      * Retourne l'adresse à laquelle le code est parti, ou Optional.empty() si l'identité ne
-     * correspond à aucun compte ou si aucun email de récupération n'est renseigné : l'appelant
+     * correspond à aucun compte ou si aucune adresse de réception n'est disponible : l'appelant
      * affiche alors exactement le même message que pour un envoi réussi, pour ne rien révéler
      * sur les comptes existants.
      */
-    public Optional<String> envoyerCode(String email, String numeroCarte) throws SQLException, MessagingException {
+    public Optional<String> envoyerCode(String email, String numeroCarte,
+                                        String emailRecuperation) throws SQLException, MessagingException {
         if (!MailUtil.estConfigure()) {
             throw new MessagingException("Serveur mail non configuré : copie mail.properties.example en "
                     + "mail.properties et renseigne un mot de passe d'application Gmail.");
@@ -64,8 +66,11 @@ public class ReinitialisationService {
             return Optional.empty();
         }
 
-        String emailRecuperation = resultatUtilisateur.get().getEmailRecuperation();
-        if (emailRecuperation == null || emailRecuperation.isBlank()) {
+        String destination = emailRecuperation == null ? "" : emailRecuperation.trim();
+        if (destination.isEmpty()) {
+            destination = resultatUtilisateur.get().getEmailRecuperation();
+        }
+        if (destination == null || destination.isBlank()) {
             return Optional.empty();
         }
 
@@ -76,9 +81,9 @@ public class ReinitialisationService {
                 LocalDateTime.now().plusMinutes(DUREE_VALIDITE_MINUTES)
         );
 
-        MailUtil.envoyer(emailRecuperation.trim(), "Réinitialisation de ton mot de passe Mentor UADB",
+        MailUtil.envoyer(destination, "Réinitialisation de ton mot de passe Mentor UADB",
                 corpsDuMail(resultatUtilisateur.get(), code));
-        return Optional.of(emailRecuperation.trim());
+        return Optional.of(destination);
     }
 
     /** Vérifie le code puis change le mot de passe. Lance IllegalStateException avec un message à afficher. */

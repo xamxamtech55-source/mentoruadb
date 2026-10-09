@@ -30,7 +30,7 @@
                     onAction="#onNotificationsGeneriquesClick" maxWidth="Infinity" alignment="BASELINE_LEFT" />
 
             <!-- Rubriques en onglets, comme l'écran « Gestion des données » de l'admin -->
-            <TabPane prefHeight="520.0" tabClosingPolicy="UNAVAILABLE">
+            <TabPane prefHeight="540.0" tabClosingPolicy="UNAVAILABLE">
 
                 <Tab text="Mes demandes" closable="false">
                     <ScrollPane fitToWidth="true">
@@ -109,6 +109,22 @@
                             </HBox>
                         </VBox>
                     </ScrollPane>
+                </Tab>
+
+                <Tab text="Évaluations" closable="false">
+                    <VBox spacing="10.0">
+                        <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0" /></padding>
+                        <Label text="Mes évaluations données" styleClass="subtitle-label" />
+                        <TableView fx:id="evaluationsTable" prefHeight="330.0">
+                            <columns>
+                                <TableColumn fx:id="colEvalMentor" text="Mentor" prefWidth="150.0" />
+                                <TableColumn fx:id="colEvalMatiere" text="Matière" prefWidth="120.0" />
+                                <TableColumn fx:id="colEvalNote" text="Note" prefWidth="60.0" />
+                                <TableColumn fx:id="colEvalCommentaire" text="Commentaire" prefWidth="220.0" />
+                                <TableColumn fx:id="colEvalDate" text="Date" prefWidth="100.0" />
+                            </columns>
+                        </TableView>
+                    </VBox>
                 </Tab>
 
                 <Tab text="Ressources" closable="false">

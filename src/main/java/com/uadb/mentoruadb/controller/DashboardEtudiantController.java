@@ -2,6 +2,7 @@ package com.uadb.mentoruadb.controller;
 
 import com.uadb.mentoruadb.dao.DemandeMentoratDao;
 import com.uadb.mentoruadb.dao.DemandeSeanceDao;
+import com.uadb.mentoruadb.dao.EvaluationDao;
 import com.uadb.mentoruadb.dao.FichierDao;
 import com.uadb.mentoruadb.dao.MatiereDao;
 import com.uadb.mentoruadb.dao.MentorDao;
@@ -11,6 +12,7 @@ import com.uadb.mentoruadb.dao.SeanceDao;
 import com.uadb.mentoruadb.dao.SeanceParticipantDao;
 import com.uadb.mentoruadb.dto.DemandeSeanceVue;
 import com.uadb.mentoruadb.dto.DemandeVue;
+import com.uadb.mentoruadb.dto.EvaluationEtudiantVue;
 import com.uadb.mentoruadb.dto.SeanceVue;
 import com.uadb.mentoruadb.model.Etudiant;
 import com.uadb.mentoruadb.model.Fichier;
@@ -90,6 +92,13 @@ public class DashboardEtudiantController {
     @FXML private TableColumn<Fichier, String> colFichierMatiere;
     @FXML private TableColumn<Fichier, String> colFichierDate;
 
+    @FXML private TableView<EvaluationEtudiantVue> evaluationsTable;
+    @FXML private TableColumn<EvaluationEtudiantVue, String> colEvalMentor;
+    @FXML private TableColumn<EvaluationEtudiantVue, String> colEvalMatiere;
+    @FXML private TableColumn<EvaluationEtudiantVue, Integer> colEvalNote;
+    @FXML private TableColumn<EvaluationEtudiantVue, String> colEvalCommentaire;
+    @FXML private TableColumn<EvaluationEtudiantVue, String> colEvalDate;
+
     @FXML private ComboBox<Integer> noteComboBox;
     @FXML private TextField commentaireField;
     @FXML private Label messageLabel;
@@ -102,6 +111,7 @@ public class DashboardEtudiantController {
     private final NiveauDao niveauDao = new NiveauDao();
     private final FichierDao fichierDao = new FichierDao();
     private final MatiereDao matiereDao = new MatiereDao();
+    private final EvaluationDao evaluationDao = new EvaluationDao();
     private final NotificationDao notificationDao = new NotificationDao();
     private final MentoratService mentoratService = new MentoratService();
 
@@ -150,6 +160,12 @@ public class DashboardEtudiantController {
             }
         });
 
+        colEvalMentor.setCellValueFactory(new PropertyValueFactory<>("nomMentor"));
+        colEvalMatiere.setCellValueFactory(new PropertyValueFactory<>("nomMatiere"));
+        colEvalNote.setCellValueFactory(new PropertyValueFactory<>("note"));
+        colEvalCommentaire.setCellValueFactory(new PropertyValueFactory<>("commentaire"));
+        colEvalDate.setCellValueFactory(new PropertyValueFactory<>("dateEvaluation"));
+
         noteComboBox.setItems(FXCollections.observableArrayList(1, 2, 3, 4, 5));
     }
 
@@ -185,6 +201,10 @@ public class DashboardEtudiantController {
 
             fichiersTable.setItems(FXCollections.observableArrayList(
                     fichierDao.findVisiblesParEtudiant(etudiant.getIdEtudiant())
+            ));
+
+            evaluationsTable.setItems(FXCollections.observableArrayList(
+                    evaluationDao.findByEtudiantAvecDetails(etudiant.getIdEtudiant())
             ));
 
             seancesGroupeNonVues = seanceDao.findGroupesAVenirByEtudiant(etudiant.getIdEtudiant());

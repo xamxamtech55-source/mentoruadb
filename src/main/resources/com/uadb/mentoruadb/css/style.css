@@ -100,9 +100,18 @@
 /* ---------- Page d'accueil ---------- */
 
 .bienvenue-root {
+    -fx-background-color: #0c1a2a;
+}
+
+.bienvenue-fond {
+    -fx-background-color: #0c1a2a;
+}
+
+/* Voile dégradé posé sur la photo pour garder le texte lisible (gauche sombre, bas sombre). */
+.bienvenue-voile {
     -fx-background-color:
-        linear-gradient(to bottom right, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.0) 45%),
-        linear-gradient(to bottom right, #1d4e79 0%, #142c46 55%, #0c1a2a 100%);
+        linear-gradient(to right, rgba(8, 20, 33, 0.88) 0%, rgba(8, 20, 33, 0.62) 38%, rgba(8, 20, 33, 0.18) 100%),
+        linear-gradient(to bottom, rgba(8, 20, 33, 0.15) 0%, rgba(8, 20, 33, 0.00) 50%, rgba(8, 20, 33, 0.72) 100%);
 }
 
 .bienvenue-contenu {
@@ -113,25 +122,28 @@
     -fx-font-size: 46px;
     -fx-font-weight: bold;
     -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.55), 14, 0.2, 0, 3);
 }
 
 .bienvenue-sous-titre {
     -fx-font-size: 15px;
-    -fx-text-fill: rgba(255, 255, 255, 0.78);
+    -fx-text-fill: rgba(255, 255, 255, 0.82);
 }
 
 .bienvenue-carte {
-    -fx-background-color: rgba(255, 255, 255, 0.08);
-    -fx-background-radius: 12;
-    -fx-border-color: rgba(255, 255, 255, 0.18);
-    -fx-border-radius: 12;
+    -fx-background-color: rgba(9, 24, 38, 0.60);
+    -fx-background-radius: 14;
+    -fx-border-color: rgba(255, 255, 255, 0.22);
+    -fx-border-radius: 14;
     -fx-border-width: 1;
     -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 12, 0.15, 0, 4);
 }
 
 .bienvenue-carte:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.17);
+    -fx-background-color: rgba(19, 48, 74, 0.86);
     -fx-border-color: #64b5f6;
+    -fx-translate-y: -5;
 }
 
 .bienvenue-carte-titre {
@@ -141,7 +153,7 @@
 
 .bienvenue-carte-texte {
     -fx-font-size: 13px;
-    -fx-text-fill: rgba(255, 255, 255, 0.86);
+    -fx-text-fill: rgba(255, 255, 255, 0.88);
     -fx-line-spacing: 3px;
 }
 

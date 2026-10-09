@@ -48,7 +48,7 @@ Reste à faire (une branche `feature/...` par étape, test manuel avant fusion) 
 3. Faire basculer l'onglet actif depuis les notifications (optionnel).
 4. Faire respecter RG20 (Licence 1 non mentor) côté service : aujourd'hui seul le bouton est masqué dans DashboardEtudiantController.
 5. Faire respecter RG22 si souhaité (capacité max non appliquée).
-6. Mettre à jour la section 9.8 du cahier des charges.
+6. Mettre à jour la section 9.8 du cahier des charges. — **fait (branche `feature/docs-organisation`)** : README et CAHIER_DE_CHARGE V1.1 à jour (écrans, limites).
 
 ## Conventions UI
 
@@ -76,3 +76,4 @@ Reste à faire (une branche `feature/...` par étape, test manuel avant fusion) 
 - 2026-10-08 (suite) : l'email de récupération (Gmail…) peut aussi être saisi **à l'inscription** (`inscription.fxml` + `InscriptionController`), champ facultatif reçoit le code de réinitialisation. `InscriptionService.inscrireEtudiant`/`inscrireMentor` prennent un paramètre `emailRecuperation` (validé si non vide, sinon null). Testé : inscription avec/sans Gmail, format invalide refusé.
 - 2026-10-09 : écran d'accueil `bienvenue.fxml` remanié façon héros d'application web : photo « étudiants à la bibliothèque » (`images/etudiants-bibliotheque.jpg`, Pexels, libre de droits) en fond plein cadre avec voile dégradé pour la lisibilité (`.bienvenue-voile`), effet Ken Burns (zoom + panoramique lents, en boucle) et apparition échelonnée des cartes dans `BienvenueController`. Survol des cartes remonté (`-fx-translate-y`). Reste : test visuel par Aly sur son écran.
 - 2026-10-09 (suite) : à l'inscription, le texte « facultatif » du champ email de récupération est intégré au `promptText` (le label séparé prenait trop de place). Branches `feature/dashboard-etudiant-organisation` et `feature/reinitialisation-email` poussées sur `origin` ; PR #1 et #2 ouvertes vers `main`.
+- 2026-10-09 (suite) : branche `feature/docs-organisation` — `README.md` réécrit (16 écrans, fonctionnalités, config SMTP, migrations 001-005, sécurité/limites à jour) et `CAHIER_DE_CHARGE.md` passé en **V1.1** (écrans 10.1-10.5 à jour : accueil animé, dashboards à onglets, réinitialisation en 2 écrans + email de récupération ; §5.5 et recette à 16 écrans ; §12 sécurité + SMTP ; §13 limites L-01 à L-07). Nettoyage racine : dossier vide `DISPLAY/` supprimé et ajouté à `.gitignore`. L'équipe affichée dans le README reste volontairement le tableau à 4 membres.

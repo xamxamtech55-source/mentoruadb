@@ -35,3 +35,6 @@ sauvegarde*.sql
 
 # Docs générées par Qoder
 .qoder/
+
+# Répertoire local temporaire créé par certains outils
+DISPLAY/

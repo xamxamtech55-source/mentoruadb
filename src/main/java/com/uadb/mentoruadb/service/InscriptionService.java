@@ -26,15 +26,17 @@ public class InscriptionService {
     private final MentorDao mentorDao = new MentorDao();
 
     public Etudiant inscrireEtudiant(String nom, String prenom, String email, String motDePasse,
-                                     int idFiliere, int idNiveau, String telephone, String numeroCarte) throws SQLException {
+                                     int idFiliere, int idNiveau, String telephone, String numeroCarte,
+                                     String emailRecuperation) throws SQLException {
 
         verifierEmail(email);
+        String recuperation = normaliserEmailRecuperation(emailRecuperation);
 
         try (Connection conn = DatabaseConnection.getConnection()) {
             conn.setAutoCommit(false);
             try {
                 Etudiant etudiant = creerEtudiant(nom, prenom, email, motDePasse, idFiliere, idNiveau,
-                        telephone, numeroCarte, conn);
+                        telephone, numeroCarte, recuperation, conn);
                 conn.commit();
                 return etudiant;
             } catch (SQLException | RuntimeException e) {
@@ -46,15 +48,17 @@ public class InscriptionService {
 
     /** Un mentor est d'abord un étudiant ; il demande ensuite à devenir mentor (statut EN_ATTENTE). */
     public Mentor inscrireMentor(String nom, String prenom, String email, String motDePasse,
-                                 int idFiliere, int idNiveau, String telephone, String numeroCarte) throws SQLException {
+                                 int idFiliere, int idNiveau, String telephone, String numeroCarte,
+                                 String emailRecuperation) throws SQLException {
 
         verifierEmail(email);
+        String recuperation = normaliserEmailRecuperation(emailRecuperation);
 
         try (Connection conn = DatabaseConnection.getConnection()) {
             conn.setAutoCommit(false);
             try {
                 Etudiant etudiant = creerEtudiant(nom, prenom, email, motDePasse, idFiliere, idNiveau,
-                        telephone, numeroCarte, conn);
+                        telephone, numeroCarte, recuperation, conn);
                 Mentor mentor = new Mentor(0, etudiant.getIdEtudiant(), "EN_ATTENTE");
                 mentor = mentorDao.create(mentor, conn);
                 conn.commit();
@@ -64,6 +68,18 @@ public class InscriptionService {
                 throw e;
             }
         }
+    }
+
+    /** Facultatif : null si vide ; sinon, doit ressembler à une adresse email (Gmail ou autre). */
+    private String normaliserEmailRecuperation(String emailRecuperation) {
+        if (emailRecuperation == null || emailRecuperation.isBlank()) {
+            return null;
+        }
+        String valeur = emailRecuperation.trim();
+        if (!valeur.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
+            throw new IllegalArgumentException("L'email de récupération n'est pas valide.");
+        }
+        return valeur;
     }
 
     private void verifierEmail(String email) throws SQLException {
@@ -78,9 +94,10 @@ public class InscriptionService {
 
     private Etudiant creerEtudiant(String nom, String prenom, String email, String motDePasse,
                                    int idFiliere, int idNiveau, String telephone, String numeroCarte,
-                                   Connection conn) throws SQLException {
+                                   String emailRecuperation, Connection conn) throws SQLException {
         Utilisateur utilisateur = new Utilisateur(0, nom, prenom, email, PasswordUtil.hacher(motDePasse),
                 "ETUDIANT", "ACTIF", telephone, null);
+        utilisateur.setEmailRecuperation(emailRecuperation);
         utilisateur = utilisateurDao.create(utilisateur, conn);
 
         Etudiant etudiant = new Etudiant(0, utilisateur.getIdUtilisateur(), idFiliere, idNiveau, numeroCarte);

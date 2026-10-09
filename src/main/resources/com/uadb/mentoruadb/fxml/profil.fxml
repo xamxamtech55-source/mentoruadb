@@ -17,6 +17,8 @@
 
             <Label fx:id="emailLabel" />
             <TextField fx:id="telephoneField" promptText="Téléphone" maxWidth="300.0" />
+            <TextField fx:id="emailRecuperationField" promptText="Email de récupération (Gmail, ...)" maxWidth="300.0" />
+            <Label text="Cet email personnel reçoit le code de réinitialisation du mot de passe" wrapText="true" />
 
             <HBox spacing="10.0" alignment="CENTER_LEFT">
                 <Button text="Choisir une photo..." onAction="#onChoisirPhotoClick" />

@@ -11,6 +11,7 @@ public class Utilisateur {
     private String statut;
     private String telephone;
     private String photo;
+    private String emailRecuperation;
 
     public Utilisateur() {}
 
@@ -59,4 +60,8 @@ public class Utilisateur {
 
     public String getPhoto() { return photo; }
     public void setPhoto(String photo) { this.photo = photo; }
+
+    /** Adresse personnelle (Gmail, autre) qui reçoit le code de réinitialisation ; null si non renseignée. */
+    public String getEmailRecuperation() { return emailRecuperation; }
+    public void setEmailRecuperation(String emailRecuperation) { this.emailRecuperation = emailRecuperation; }
 }

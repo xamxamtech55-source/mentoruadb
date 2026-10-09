@@ -26,6 +26,9 @@ uploads/
 # Configuration base de données locale (mots de passe) — voir db.properties.example
 db.properties
 
+# Configuration SMTP locale (mot de passe d'application) — voir mail.properties.example
+mail.properties
+
 # Espace de travail VS Code personnel
 *.code-workspace
 sauvegarde*.sql

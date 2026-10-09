@@ -6,6 +6,7 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -13,12 +14,23 @@
            fx:controller="com.uadb.mentoruadb.controller.BienvenueController"
            styleClass="bienvenue-root">
     <children>
+        <StackPane fx:id="fond" styleClass="bienvenue-fond">
+            <children>
+                <ImageView fx:id="imageFond" fitHeight="700.0" preserveRatio="true" smooth="true">
+                    <image>
+                        <Image url="@../images/etudiants-bibliotheque.jpg" />
+                    </image>
+                </ImageView>
+                <Region styleClass="bienvenue-voile" />
+            </children>
+        </StackPane>
+
         <VBox fx:id="contenu" alignment="CENTER" spacing="24.0" maxWidth="920.0" styleClass="bienvenue-contenu">
             <padding>
                 <Insets top="34.0" right="46.0" bottom="30.0" left="46.0" />
             </padding>
 
-            <VBox alignment="CENTER" spacing="8.0">
+            <VBox fx:id="entete" alignment="CENTER" spacing="8.0">
                 <ImageView fitHeight="120.0" preserveRatio="true">
                     <Image url="@../images/logo-uadb.png" />
                 </ImageView>
@@ -28,7 +40,7 @@
             </VBox>
 
             <HBox alignment="CENTER" spacing="18.0">
-                <VBox spacing="8.0" prefWidth="272.0" maxWidth="272.0" styleClass="bienvenue-carte"
+                <VBox fx:id="carteTrouverMentor" spacing="8.0" prefWidth="272.0" maxWidth="272.0" styleClass="bienvenue-carte"
                       onMouseClicked="#onCarteTrouverMentorClick">
                     <padding>
                         <Insets top="18.0" right="18.0" bottom="18.0" left="18.0" />
@@ -38,7 +50,7 @@
                            wrapText="true" styleClass="bienvenue-carte-texte" />
                 </VBox>
 
-                <VBox spacing="8.0" prefWidth="272.0" maxWidth="272.0" styleClass="bienvenue-carte"
+                <VBox fx:id="carteDevenirMentor" spacing="8.0" prefWidth="272.0" maxWidth="272.0" styleClass="bienvenue-carte"
                       onMouseClicked="#onCarteDevenirMentorClick">
                     <padding>
                         <Insets top="18.0" right="18.0" bottom="18.0" left="18.0" />
@@ -48,7 +60,7 @@
                            wrapText="true" styleClass="bienvenue-carte-texte" />
                 </VBox>
 
-                <VBox spacing="8.0" prefWidth="272.0" maxWidth="272.0" styleClass="bienvenue-carte"
+                <VBox fx:id="carteSuiviMentorat" spacing="8.0" prefWidth="272.0" maxWidth="272.0" styleClass="bienvenue-carte"
                       onMouseClicked="#onCarteSuiviMentoratClick">
                     <padding>
                         <Insets top="18.0" right="18.0" bottom="18.0" left="18.0" />
@@ -59,7 +71,7 @@
                 </VBox>
             </HBox>
 
-            <HBox alignment="CENTER" spacing="14.0">
+            <HBox fx:id="actions" alignment="CENTER" spacing="14.0">
                 <Button text="Se connecter" onAction="#onConnexionClick"
                         styleClass="bienvenue-bouton-principal" />
                 <Button text="Créer un compte" onAction="#onInscriptionClick"

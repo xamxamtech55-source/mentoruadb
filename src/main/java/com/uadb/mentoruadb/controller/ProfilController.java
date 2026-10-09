@@ -25,6 +25,7 @@ public class ProfilController {
 
     @FXML private Label emailLabel;
     @FXML private TextField telephoneField;
+    @FXML private TextField emailRecuperationField;
     @FXML private Label photoLabel;
     @FXML private TextField numeroCarteField;
 
@@ -69,6 +70,7 @@ public class ProfilController {
 
             emailLabel.setText("Email : " + utilisateurConnecte.getEmail());
             telephoneField.setText(utilisateurConnecte.getTelephone());
+            emailRecuperationField.setText(utilisateurConnecte.getEmailRecuperation());
             photoLabel.setText(utilisateurConnecte.getPhoto() != null ? utilisateurConnecte.getPhoto() : "Aucune photo");
             numeroCarteField.setText(etudiant.getNumeroCarte());
 
@@ -140,6 +142,15 @@ public class ProfilController {
             }
 
             utilisateurConnecte.setTelephone(telephoneField.getText());
+
+            String emailRecuperation = emailRecuperationField.getText() == null
+                    ? "" : emailRecuperationField.getText().trim();
+            if (!emailRecuperation.isEmpty() && !emailRecuperation.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
+                messageLabel.setText("L'email de récupération n'est pas valide.");
+                return;
+            }
+            utilisateurConnecte.setEmailRecuperation(emailRecuperation.isEmpty() ? null : emailRecuperation);
+
             utilisateurDao.update(utilisateurConnecte);
 
             etudiantConnecte.setNumeroCarte(numeroCarteField.getText());

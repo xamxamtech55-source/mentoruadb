@@ -27,6 +27,7 @@ public class InscriptionController {
     @FXML private TextField emailField;
     @FXML private TextField telephoneField;
     @FXML private TextField numeroCarteField;
+    @FXML private TextField emailRecuperationField;
     @FXML private PasswordField motDePasseField;
     @FXML private TextField motDePasseVisibleField;
     @FXML private Button toggleMotDePasseButton;
@@ -121,6 +122,7 @@ public class InscriptionController {
         String email = emailField.getText();
         String telephone = telephoneField.getText();
         String numeroCarte = numeroCarteField.getText();
+        String emailRecuperation = emailRecuperationField.getText();
         String motDePasse = motDePasseField.getText();
         Filiere filiere = filiereComboBox.getValue();
         Niveau niveau = niveauComboBox.getValue();
@@ -133,7 +135,8 @@ public class InscriptionController {
 
         try {
             inscriptionService.inscrireEtudiant(
-                    nom, prenom, email, motDePasse, filiere.getIdFiliere(), niveau.getIdNiveau(), telephone, numeroCarte
+                    nom, prenom, email, motDePasse, filiere.getIdFiliere(), niveau.getIdNiveau(),
+                    telephone, numeroCarte, emailRecuperation
             );
             messageLabel.setText("Compte créé avec succès ! Redirection vers la connexion...");
 

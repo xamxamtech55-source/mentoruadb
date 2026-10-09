@@ -14,7 +14,7 @@
     </padding>
 
     <Label text="Mot de passe oublié" styleClass="title-label" />
-    <Label text="Renseigne ton email institutionnel et ton numéro de carte d'étudiant : un code de réinitialisation te sera envoyé par mail" wrapText="true" />
+    <Label text="Renseigne ton email institutionnel et ton numéro de carte d'étudiant : un code te sera envoyé à l'email de récupération enregistré dans « Mon profil » (Gmail ou autre)" wrapText="true" />
 
     <TextField fx:id="emailField" promptText="Email institutionnel" prefWidth="280.0" maxWidth="280.0" />
     <TextField fx:id="numeroCarteField" promptText="Numéro de carte d'étudiant" prefWidth="280.0" maxWidth="280.0" />

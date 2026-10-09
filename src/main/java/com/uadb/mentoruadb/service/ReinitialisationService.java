@@ -37,12 +37,14 @@ public class ReinitialisationService {
     private final ReinitialisationDao reinitialisationDao = new ReinitialisationDao();
 
     /**
-     * Vérifie email + numéro de carte, génère le code, le stocke haché et l'envoie par mail.
-     * Retourne true si le mail est parti ; false si l'identité ne correspond à aucun compte
-     * (l'appelant affiche alors exactement le même message que pour un envoi réussi,
-     * pour ne rien révéler sur les emails existants).
+     * Vérifie email institutionnel + numéro de carte, génère le code, le stocke haché et l'envoie
+     * à l'EMAIL DE RÉCUPÉRATION du compte (Gmail ou autre, renseigné dans « Mon profil »).
+     * Retourne l'adresse à laquelle le code est parti, ou Optional.empty() si l'identité ne
+     * correspond à aucun compte ou si aucun email de récupération n'est renseigné : l'appelant
+     * affiche alors exactement le même message que pour un envoi réussi, pour ne rien révéler
+     * sur les comptes existants.
      */
-    public boolean envoyerCode(String email, String numeroCarte) throws SQLException, MessagingException {
+    public Optional<String> envoyerCode(String email, String numeroCarte) throws SQLException, MessagingException {
         if (!MailUtil.estConfigure()) {
             throw new MessagingException("Serveur mail non configuré : copie mail.properties.example en "
                     + "mail.properties et renseigne un mot de passe d'application Gmail.");
@@ -50,16 +52,21 @@ public class ReinitialisationService {
 
         Optional<Utilisateur> resultatUtilisateur = utilisateurDao.findByEmail(email.trim());
         if (resultatUtilisateur.isEmpty()) {
-            return false;
+            return Optional.empty();
         }
         Optional<Etudiant> resultatEtudiant =
                 etudiantDao.findByUtilisateur(resultatUtilisateur.get().getIdUtilisateur());
         if (resultatEtudiant.isEmpty()) {
-            return false;
+            return Optional.empty();
         }
         String carteEnregistree = resultatEtudiant.get().getNumeroCarte();
         if (carteEnregistree == null || !carteEnregistree.equals(numeroCarte.trim())) {
-            return false;
+            return Optional.empty();
+        }
+
+        String emailRecuperation = resultatUtilisateur.get().getEmailRecuperation();
+        if (emailRecuperation == null || emailRecuperation.isBlank()) {
+            return Optional.empty();
         }
 
         String code = genererCode();
@@ -69,9 +76,9 @@ public class ReinitialisationService {
                 LocalDateTime.now().plusMinutes(DUREE_VALIDITE_MINUTES)
         );
 
-        MailUtil.envoyer(email.trim(), "Réinitialisation de ton mot de passe Mentor UADB",
+        MailUtil.envoyer(emailRecuperation.trim(), "Réinitialisation de ton mot de passe Mentor UADB",
                 corpsDuMail(resultatUtilisateur.get(), code));
-        return true;
+        return Optional.of(emailRecuperation.trim());
     }
 
     /** Vérifie le code puis change le mot de passe. Lance IllegalStateException avec un message à afficher. */

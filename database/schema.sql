@@ -35,7 +35,11 @@ CREATE TABLE utilisateur (
 
     -- Champs de profil (sécurité/identification)
                              telephone VARCHAR(20) NULL,
-                             photo VARCHAR(500) NULL
+                             photo VARCHAR(500) NULL,
+
+    -- Adresse personnelle (Gmail, autre) qui reçoit le code de réinitialisation du mot de passe.
+    -- NULL = pas de récupération possible par mail tant que l'étudiant ne l'a pas renseignée dans « Mon profil ».
+                             email_recuperation VARCHAR(150) NULL
 );
 
 

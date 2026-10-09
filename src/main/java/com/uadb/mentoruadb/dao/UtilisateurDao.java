@@ -23,8 +23,8 @@ public class UtilisateurDao implements Dao<Utilisateur, Integer> {
 
     /** Variante transactionnelle : utilise la connexion fournie et NE la ferme PAS (c'est à l'appelant de le faire). */
     public Utilisateur create(Utilisateur u, Connection conn) throws SQLException {
-        String sql = "INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, role, statut, telephone, photo) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, role, statut, telephone, photo, email_recuperation) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -36,6 +36,7 @@ public class UtilisateurDao implements Dao<Utilisateur, Integer> {
             stmt.setString(6, u.getStatut());
             stmt.setString(7, u.getTelephone());
             stmt.setString(8, u.getPhoto());
+            stmt.setString(9, u.getEmailRecuperation());
 
             stmt.executeUpdate();
 
@@ -102,7 +103,7 @@ public class UtilisateurDao implements Dao<Utilisateur, Integer> {
     @Override
     public void update(Utilisateur u) throws SQLException {
         String sql = "UPDATE utilisateur SET nom=?, prenom=?, email=?, mot_de_passe=?, role=?, statut=?, " +
-                "telephone=?, photo=? WHERE id_utilisateur=?";
+                "telephone=?, photo=?, email_recuperation=? WHERE id_utilisateur=?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -115,7 +116,8 @@ public class UtilisateurDao implements Dao<Utilisateur, Integer> {
             stmt.setString(6, u.getStatut());
             stmt.setString(7, u.getTelephone());
             stmt.setString(8, u.getPhoto());
-            stmt.setInt(9, u.getIdUtilisateur());
+            stmt.setString(9, u.getEmailRecuperation());
+            stmt.setInt(10, u.getIdUtilisateur());
 
             stmt.executeUpdate();
         }
@@ -134,7 +136,7 @@ public class UtilisateurDao implements Dao<Utilisateur, Integer> {
     }
 
     private Utilisateur mapRow(ResultSet rs) throws SQLException {
-        return new Utilisateur(
+        Utilisateur u = new Utilisateur(
                 rs.getInt("id_utilisateur"),
                 rs.getString("nom"),
                 rs.getString("prenom"),
@@ -145,5 +147,7 @@ public class UtilisateurDao implements Dao<Utilisateur, Integer> {
                 rs.getString("telephone"),
                 rs.getString("photo")
         );
+        u.setEmailRecuperation(rs.getString("email_recuperation"));
+        return u;
     }
 }

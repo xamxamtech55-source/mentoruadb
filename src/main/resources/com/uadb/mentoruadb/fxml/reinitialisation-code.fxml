@@ -16,7 +16,7 @@
 
     <Label text="Réinitialisation du mot de passe" styleClass="title-label" />
     <Label fx:id="emailEnvoyeLabel" text="Code envoyé" wrapText="true" />
-    <Label text="Saisis le code à 6 chiffres reçu par mail puis choisis un nouveau mot de passe" wrapText="true" />
+    <Label text="Saisis le code à 6 chiffres reçu à ton adresse de récupération puis choisis un nouveau mot de passe" wrapText="true" />
 
     <TextField fx:id="codeField" promptText="Code à 6 chiffres" prefWidth="280.0" maxWidth="280.0" />
     <PasswordField fx:id="nouveauMotDePasseField" promptText="Nouveau mot de passe" prefWidth="280.0" maxWidth="280.0" />

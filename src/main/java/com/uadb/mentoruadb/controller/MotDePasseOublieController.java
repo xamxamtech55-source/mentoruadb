@@ -12,14 +12,16 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * Contrôleur lié à fxml/mot-de-passe-oublie.fxml (étape 1 : demande du code).
  * On demande l'email institutionnel ET le numéro de carte d'étudiant (les deux sont créés à
  * l'inscription, voir InscriptionController) : si l'identité correspond à un compte, un code
- * à 6 chiffres est envoyé par mail, puis l'écran reinitialisation-code.fxml prend le relais.
- * Le message est le même que l'identité corresponde ou non : ne rien révéler sur les
- * comptes existants (énumération d'email).
+ * à 6 chiffres est envoyé à l'EMAIL DE RÉCUPÉRATION du compte (Gmail ou autre, renseigné dans
+ * « Mon profil »), puis l'écran reinitialisation-code.fxml prend le relais.
+ * Le message est le même que l'identité corresponde ou non, ou qu'aucun email de récupération
+ * ne soit renseigné : ne rien révéler sur les comptes existants (énumération d'email).
  */
 public class MotDePasseOublieController {
 
@@ -54,11 +56,11 @@ public class MotDePasseOublieController {
 
         new Thread(() -> {
             try {
-                boolean envoye = reinitialisationService.envoyerCode(email, numeroCarte);
+                Optional<String> destination = reinitialisationService.envoyerCode(email, numeroCarte);
                 Platform.runLater(() -> {
                     envoyerCodeButton.setDisable(false);
-                    if (envoye) {
-                        ouvrirEcranCode(email);
+                    if (destination.isPresent()) {
+                        ouvrirEcranCode(email, destination.get());
                     } else {
                         messageLabel.setText(MESSAGE_RESULTAT);
                     }
@@ -77,14 +79,14 @@ public class MotDePasseOublieController {
         }, "envoi-code-reinitialisation").start();
     }
 
-    private void ouvrirEcranCode(String email) {
+    private void ouvrirEcranCode(String emailInstitutionnel, String emailRecuperation) {
         try {
             Stage stage = (Stage) emailField.getScene().getWindow();
             ReinitialisationCodeController controller = SceneNavigator.switchToAndGetController(
                     stage, "/com/uadb/mentoruadb/fxml/reinitialisation-code.fxml",
                     "Mentor-UADB - Code de réinitialisation"
             );
-            controller.setEmail(email);
+            controller.setContexte(emailInstitutionnel, emailRecuperation);
         } catch (IOException e) {
             messageLabel.setText("Impossible d'ouvrir l'écran de saisie du code.");
         }

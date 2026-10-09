@@ -27,12 +27,17 @@ public class ReinitialisationCodeController {
 
     private final ReinitialisationService reinitialisationService = new ReinitialisationService();
 
+    /** Email institutionnel : sert à retrouver le compte lors de la vérification du code. */
     private String email;
 
-    /** Appelé par l'écran précédent juste après le chargement de cette scène. */
-    public void setEmail(String email) {
-        this.email = email;
-        emailEnvoyeLabel.setText("Code envoyé à " + email);
+    /**
+     * Appelé par l'écran précédent juste après le chargement de cette scène.
+     * @param emailInstitutionnel email du compte (identifie l'utilisateur)
+     * @param emailRecuperation  adresse (Gmail...) à laquelle le code a été envoyé, pour l'afficher
+     */
+    public void setContexte(String emailInstitutionnel, String emailRecuperation) {
+        this.email = emailInstitutionnel;
+        emailEnvoyeLabel.setText("Code envoyé à " + emailRecuperation);
     }
 
     @FXML

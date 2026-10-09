@@ -9,9 +9,9 @@
 | Projet | Mentor-UADB |
 | Porteur | Université Alioune Diop de Bambey (UADB) |
 | Contexte | Projet de fin d'études — cours de Java avancé |
-| Version | 1.0 |
-| Date | 04/10/2026 |
-| Statut | Développement terminé, version 1.0 déposée sur GitHub |
+| Version | 1.1 |
+| Date | 09/10/2026 |
+| Statut | Développement en cours — intégration des changements d'écrans (V1.1) |
 | Dépôt | `git@github.com:xamxamtech55-source/mentoruadb.git` |
 
 ---
@@ -181,9 +181,9 @@ Concevoir et réaliser une application desktop permettant de gérer l'intégrali
 
 ### 5.5 Écrans
 
-L'application compte **15 écrans** :
+L'application compte **16 écrans** :
 
-`bienvenue` · `login` · `inscription` · `mot-de-passe-oublie` · `dashboard-etudiant` · `dashboard-mentor` · `dashboard-admin` · `profil` · `recherche-mentor` · `devenir-mentor` · `seance-groupe` · `validation-mentors` · `liste-mentors` · `gestion-utilisateurs` · `gestion-donnees`
+`bienvenue` · `login` · `inscription` · `mot-de-passe-oublie` · `reinitialisation-code` · `dashboard-etudiant` · `dashboard-mentor` · `dashboard-admin` · `profil` · `recherche-mentor` · `devenir-mentor` · `seance-groupe` · `validation-mentors` · `liste-mentors` · `gestion-utilisateurs` · `gestion-donnees`
 
 ---
 
@@ -322,7 +322,7 @@ MySQL 8
 | **Classes DTO séparées** | Les vues d'affichage (mentor avec identité, matière, note moyenne) sont distinctes des entités pour ne pas coupler le modèle à l'affichage. |
 | **PBKDF2-HMAC-SHA256** | Algorithme de dérivation de clé recommandé pour le stockage de mots de passe, avec sel aléatoire par compte. |
 | **Configuration externalisée** | Les identifiants de base de données sont lus dans l'ordre : variables d'environnement, puis `db.properties` (ignoré par Git), puis valeurs par défaut. Aucun secret dans le code. |
-| **Scripts SQL versionnés** | `schema.sql`, `data.sql` et 3 scripts de migration permettent de reconstruire la base et de faire évoluer le schéma de façon traçable. |
+| **Scripts SQL versionnés** | `schema.sql`, `data.sql` et 5 scripts de migration permettent de reconstruire la base et de faire évoluer le schéma de façon traçable. |
 
 ### 9.3 Organisation physique du code
 
@@ -345,9 +345,11 @@ MySQL 8
 
 ### 10.1 Écran d'accueil
 
-- Fond dégradé bleu, texte et cartes en blanc et bleu clair
+- Héros façon application web : photo d'étudiants à la bibliothèque en fond plein cadre, voile dégradé
+  pour la lisibilité, effet **Ken Burns** (zoom + panoramique lents, en boucle)
 - Logo UADB, titre « Mentor-UADB », sous-titre « La plateforme de mentorat de l'UADB »
-- Trois cartes interactives : **Trouver un mentor**, **Devenir mentor**, **Suivre le mentorat**, chacune redirigeant vers l'écran correspondant
+- Trois cartes interactives en **apparition échelonnée** : **Trouver un mentor**, **Devenir mentor**,
+  **Suivre le mentorat**, chacune redirigeant vers l'écran correspondant ; le survol soulève la carte
 - Deux boutons : **Se connecter**, **Créer un compte**
 
 ### 10.2 Connexion
@@ -356,19 +358,44 @@ MySQL 8
 - Boutons : **Se connecter**, **Créer un compte**, **Mot de passe oublié ?**
 - Lien **Retour à l'accueil** positionné dans le coin haut gauche, sous forme de lien bleu sur fond transparent
 
-### 10.3 Inscription et mot de passe oublié
+### 10.3 Inscription, mon profil et réinitialisation du mot de passe
 
-- Formulaire en deux étapes : identité, puis filière et niveau
-- Validation du domaine `@uadb.edu.sn` et de l'unicité de l'email
-- Réinitialisation par email, avec message de confirmation
+**Inscription** :
+- Identité (nom, prénom), email institutionnel validé `@uadb.edu.sn` et unique, téléphone, numéro de carte,
+  email de récupération facultatif (Gmail ou autre → reçoit le code de réinitialisation), UFR/filière/niveau
+- Le mot de passe est haché (PBKDF2) avant stockage
+
+**Mon profil** (étudiant et mentor) : données personnelles et **email de récupération** du mot de passe.
+
+**Mot de passe oublié — deux écrans** :
+1. `mot-de-passe-oublie` : email institutionnel + numéro de carte d'étudiant + adresse de réception du code
+   (n'importe quel Gmail, pré-remplie avec l'email de récupération du compte mais modifiable)
+2. `reinitialisation-code` : code à 6 chiffres + nouveau mot de passe, valable 15 minutes, 5 tentatives max
+
+Le message affiché est le même que l'identité corresponde ou non à un compte, ou qu'aucune adresse de
+réception ne soit disponible : aucune information sur les comptes existants n'est divulguée.
 
 ### 10.4 Tableau de bord étudiant
 
-Demandes de mentorat, demandes de séance, notifications, accès au profil, à la recherche de mentor et à la candidature mentor.
+Quatre onglets (style repris de `gestion-donnees` de l'admin, notifications au-dessus des onglets) :
+
+- **Mes demandes** : recherche de mentor, demandes de mentorat, demandes de séance
+- **Mes séances** : séances à confirmer, séances prévues/réalisées, évaluations à donner
+- **Évaluations** : historiques des évaluations données
+- **Ressources** : fichiers partagés par le mentor
+
+Accès au profil, à la recherche de mentor et à la candidature mentor.
 
 ### 10.5 Tableau de bord mentor
 
-Demandes reçues, demandes de séance à traiter, séances à confirmer, évaluations, partage de fichiers, gestion des séances de groupe.
+Quatre onglets :
+
+- **Demandes reçues** : candidatures de mentorat et demandes de séance à traiter (dont planification)
+- **Mes séances** : séances individuelles et de groupe
+- **Évaluations** : notes et commentaires reçus
+- **Fichiers** : partage de documents avec les mentorés
+
+Accès au profil et gestion des séances de groupe.
 
 ### 10.6 Tableau de bord administration
 
@@ -458,6 +485,8 @@ Tous les mentors avec filtre par statut, statuts colorés et ouverture de la fic
 | **Injection SQL** | 100 % des requêtes utilisent `PreparedStatement` ; aucun assemblage de chaînes SQL |
 | **Comptes de démonstration** | Les comptes de `data.sql` sont en clair dans le script et convertis en hachage à leur première connexion |
 | **Identifiants de connexion** | Lus depuis l'environnement ou `db.properties` ; aucun secret dans le code ; `db.properties` ignoré par Git |
+| **Réinitialisation du mot de passe** | Identité vérifiée par email institutionnel + n° de carte ; code à 6 chiffres haché (PBKDF2), valable 15 min, 5 tentatives max, usage unique ; envoyé via SMTP au Gmail saisi ou à l'email de récupération du compte |
+| **Secrets SMTP** | Lus depuis l'environnement (`MENTORUADB_MAIL_*`) ou `mail.properties` ; jamais dans le dépôt ; mot de passe d'application Gmail |
 | **Contrôle d'accès** | Trois rôles, redirections distinctes, actions réservées au rôle concerné |
 | **Protection des comptes** | Un administrateur ne peut pas être désactivé ni supprimé |
 | **Protection des données sensibles** | Les secrets ne sont jamais stockés en clair : ni mots de passe, ni identifiants de connexion. Seules les données nécessaires au fonctionnement sont conservées. |
@@ -470,11 +499,11 @@ Ces limites sont **assumées et documentées**, et non des défauts bloquants po
 
 | N° | Limite | Explication |
 |---|---|---|
-| L-01 | La réinitialisation de mot de passe ne vérifie pas l'identité | Il suffit de connaître l'email institutionnel. Une version réelle enverrait un lien ou un code par email. |
-| L-02 | `InscriptionService` n'est pas transactionnel | Si la création du profil échoue après celle du compte, le compte reste en base. |
-| L-03 | `nombre_max_mentores` est informatif | Le mentor déclare sa capacité, mais le système ne bloque pas automatiquement une nouvelle demande au-delà de ce plafond. |
+| L-01 | Le code de réinitialisation part vers l'adresse saisie par la personne | L'utilisateur peut saisir n'importe quel Gmail sur `mot-de-passe-oublie` : si quelqu'un connaît l'email + le n° de carte, il peut faire partir le code vers sa propre adresse. Une version plus stricte imposerait l'email de récupération enregistré. |
+| L-02 | `nombre_max_mentores` est informatif | Le mentor déclare sa capacité, mais le système ne bloque pas automatiquement une nouvelle demande au-delà de ce plafond (RG22). |
+| L-03 | RG20 (Licence 1 non mentor) appliqué côté interface uniquement | Le bouton « devenir mentor » est masqué pour la Licence 1, mais la règle n'est pas encore vérifiée côté service. |
 | L-04 | Coverage de tests automatisés limitée | 6 tests unitaires couvrent `PasswordUtil` (hachage et vérification). Les DAO, services et contrôleurs ont été validés manuellement. |
-| L-05 | Pas d'envoi d'emails | Toutes les notifications sont internes à l'application (table `notification`). |
+| L-05 | Les emails ne servent qu'à la réinitialisation | Les notifications de changement de statut restent internes à l'application (table `notification`). |
 | L-06 | Pas de visioconférence | La modalité `EN_LIGNE` repose sur un lien fourni par le mentor. |
 | L-07 | Absence de cache applicatif | Chaque écran interroge la base ; suffisant à l'échelle du projet. |
 
@@ -521,7 +550,7 @@ Une fonctionnalité est considérée comme livrée quand :
 |---|---|
 | Compilation | sans erreur |
 | Tests unitaires | 6/6 réussis |
-| Chargement des 15 écrans FXML | 15/15, aucune exception |
+| Chargement des 16 écrans FXML | 16/16, aucune exception |
 | Boutons au texte tronqué | 0 |
 | Liens de navigation testés | conformes |
 | Boutons testés au picking réel | conformes |

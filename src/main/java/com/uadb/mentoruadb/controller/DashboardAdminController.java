@@ -5,25 +5,50 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
-
 import java.io.IOException;
+import javafx.event.ActionEvent;
+import javafx.scene.Node;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.layout.StackPane;
 
 /** Contrôleur lié à fxml/dashboard-admin.fxml. */
 public class DashboardAdminController {
 
-    @FXML private Label bienvenueLabel;
-    @FXML private Label messageLabel;
-    @FXML private Button deconnexionButton;
+    @FXML
+    private Label bienvenueLabel;
+    @FXML
+    private Label messageLabel;
+    @FXML
+    private Button deconnexionButton;
+    @FXML
+    private StackPane sectionsPane;
 
     public void chargerDonnees(String prenom) {
         bienvenueLabel.setText("Administration — " + prenom);
+    }
+
+    /**
+     * Barre latérale : affiche la section dont l'id est stocké dans le userData du
+     * bouton cliqué.
+     */
+    @FXML
+    private void onMenuClick(ActionEvent event) {
+        ToggleButton bouton = (ToggleButton) event.getSource();
+        bouton.setSelected(true); // empêche de désélectionner la rubrique courante
+        String cible = (String) bouton.getUserData();
+        for (Node section : sectionsPane.getChildren()) {
+            boolean visible = cible.equals(section.getId());
+            section.setVisible(visible);
+            section.setManaged(visible);
+        }
     }
 
     @FXML
     private void onValiderMentorsClick() {
         try {
             Stage stage = (Stage) deconnexionButton.getScene().getWindow();
-            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/validation-mentors.fxml", "Mentor-UADB - Validation des mentors");
+            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/validation-mentors.fxml",
+                    "Mentor-UADB - Validation des mentors");
         } catch (IOException e) {
             messageLabel.setText("Impossible d'ouvrir l'écran de validation.");
         }
@@ -33,7 +58,8 @@ public class DashboardAdminController {
     private void onGestionDonneesClick() {
         try {
             Stage stage = (Stage) deconnexionButton.getScene().getWindow();
-            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/gestion-donnees.fxml", "Mentor-UADB - Gestion des données");
+            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/gestion-donnees.fxml",
+                    "Mentor-UADB - Gestion des données");
         } catch (IOException e) {
             messageLabel.setText("Impossible d'ouvrir cet écran.");
         }
@@ -43,7 +69,8 @@ public class DashboardAdminController {
     private void onListeMentorsClick() {
         try {
             Stage stage = (Stage) deconnexionButton.getScene().getWindow();
-            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/liste-mentors.fxml", "Mentor-UADB - Liste des mentors");
+            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/liste-mentors.fxml",
+                    "Mentor-UADB - Liste des mentors");
         } catch (IOException e) {
             messageLabel.setText("Impossible d'ouvrir cet écran.");
         }
@@ -58,11 +85,13 @@ public class DashboardAdminController {
             messageLabel.setText("Impossible de revenir à l'écran de connexion.");
         }
     }
+
     @FXML
     private void onGestionUtilisateursClick() {
         try {
             Stage stage = (Stage) deconnexionButton.getScene().getWindow();
-            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/gestion-utilisateurs.fxml", "Mentor-UADB - Gestion des utilisateurs");
+            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/gestion-utilisateurs.fxml",
+                    "Mentor-UADB - Gestion des utilisateurs");
         } catch (IOException e) {
             messageLabel.setText("Impossible d'ouvrir cet écran.");
         }

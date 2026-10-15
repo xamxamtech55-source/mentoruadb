@@ -2,51 +2,95 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane styleClass="login-container"
+<StackPane styleClass="login-fond"
            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.uadb.mentoruadb.controller.LoginController">
     <children>
-        <VBox alignment="CENTER" spacing="12.0">
+        <Region styleClass="login-voile" />
+
+        <VBox alignment="CENTER" spacing="18.0">
             <padding>
-                <Insets top="40.0" right="40.0" bottom="40.0" left="40.0" />
+                <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
             </padding>
 
-            <ImageView fitHeight="108.0" preserveRatio="true">
-                <Image url="@../images/logo-uadb.png" />
-            </ImageView>
-            <Label text="Mentor-UADB" styleClass="title-label" />
-            <Label text="Connexion" styleClass="subtitle-label" />
+            <!-- En-tête UADB -->
+            <HBox alignment="CENTER" spacing="12.0">
+                <StackPane styleClass="login-logo-cercle" maxWidth="58.0" maxHeight="58.0">
+                    <ImageView fitHeight="48.0" fitWidth="48.0" preserveRatio="true">
+                        <Image url="@../images/logo-uadb.png" />
+                    </ImageView>
+                </StackPane>
+                <VBox spacing="1.0" alignment="CENTER_LEFT">
+                    <Label text="UADB" styleClass="login-entete-titre" />
+                    <Label text="Université Alioune Diop de Bambey" styleClass="login-entete-sous" />
+                </VBox>
+            </HBox>
 
-            <TextField fx:id="emailField" promptText="Email institutionnel" prefWidth="280.0" maxWidth="280.0" />
+            <!-- Carte de connexion -->
+            <VBox alignment="CENTER_LEFT" spacing="8.0" prefWidth="420.0" minWidth="420.0" maxWidth="420.0"
+                  styleClass="login-carte">
+                <padding>
+                    <Insets top="26.0" right="28.0" bottom="22.0" left="28.0" />
+                </padding>
 
-            <StackPane prefWidth="280.0" maxWidth="280.0">
-                <PasswordField fx:id="motDePasseField" promptText="Mot de passe" prefWidth="280.0" maxWidth="280.0"
-                               style="-fx-padding: 8 42 8 10;" />
-                <TextField fx:id="motDePasseVisibleField" promptText="Mot de passe" prefWidth="280.0" maxWidth="280.0"
-                           style="-fx-padding: 8 42 8 10;" visible="false" managed="false" />
-                <Button fx:id="toggleMotDePasseButton" text="👁" onAction="#onToggleMotDePasseClick"
-                        styleClass="toggle-password-button" StackPane.alignment="CENTER_RIGHT" />
-            </StackPane>
+                <VBox alignment="CENTER" spacing="2.0">
+                    <Label text="MentorUADB" styleClass="login-carte-marque" />
+                    <Label text="Ensemble pour la réussite" styleClass="login-carte-slogan" />
+                </VBox>
 
-            <Button text="Se connecter" onAction="#onConnexionClick" prefWidth="280.0" maxWidth="280.0" />
-            <Button fx:id="creerCompteButton" text="Créer un compte" onAction="#onCreerCompteClick" styleClass="lien-button" prefWidth="280.0" maxWidth="280.0" />
-            <Button fx:id="motDePasseOublieButton" text="Mot de passe oublié ?" onAction="#onMotDePasseOublieClick" styleClass="lien-button" prefWidth="280.0" maxWidth="280.0" />
+                <Region prefHeight="8.0" />
+                <Label text="Bienvenue !" styleClass="login-carte-titre" />
+                <Label text="Connectez-vous pour accéder à votre espace" styleClass="login-aide" />
+                <Region prefHeight="6.0" />
 
-            <Label fx:id="messageLabel" styleClass="message-label" />
+                <Label text="Email institutionnel" styleClass="login-champ-libelle" />
+                <TextField fx:id="emailField" promptText="ex : prenom.nom@uadb.edu.sn" prefWidth="364.0" maxWidth="364.0" />
+
+                <Region prefHeight="2.0" />
+                <Label text="Mot de passe" styleClass="login-champ-libelle" />
+                <StackPane prefWidth="364.0" maxWidth="364.0">
+                    <PasswordField fx:id="motDePasseField" promptText="Entrez votre mot de passe" prefWidth="364.0" maxWidth="364.0"
+                                   style="-fx-padding: 8 42 8 10;" />
+                    <TextField fx:id="motDePasseVisibleField" promptText="Entrez votre mot de passe" prefWidth="364.0" maxWidth="364.0"
+                               style="-fx-padding: 8 42 8 10;" visible="false" managed="false" />
+                    <Button fx:id="toggleMotDePasseButton" text="👁" onAction="#onToggleMotDePasseClick"
+                            styleClass="toggle-password-button" StackPane.alignment="CENTER_RIGHT" />
+                </StackPane>
+
+                <HBox alignment="CENTER_LEFT" maxWidth="364.0">
+                    <CheckBox fx:id="souvenirCheckBox" text="Se souvenir de moi" styleClass="login-case" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Button fx:id="motDePasseOublieButton" text="Mot de passe oublié ?" onAction="#onMotDePasseOublieClick"
+                            styleClass="lien-discret" />
+                </HBox>
+
+                <Button text="Se connecter  →" onAction="#onConnexionClick" styleClass="login-bouton-principal" />
+
+                <HBox alignment="CENTER" spacing="2.0" maxWidth="364.0">
+                    <Label text="Vous n'avez pas de compte ?" styleClass="login-aide" />
+                    <Button fx:id="creerCompteButton" text="Créer un compte" onAction="#onCreerCompteClick"
+                            styleClass="lien-discret" />
+                </HBox>
+
+                <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" maxWidth="364.0" />
+            </VBox>
         </VBox>
 
         <Button fx:id="retourAccueilButton" text="← Retour à l'accueil" onAction="#onRetourAccueilClick"
-                styleClass="lien-discret" StackPane.alignment="TOP_LEFT">
+                styleClass="login-retour" StackPane.alignment="TOP_LEFT">
             <StackPane.margin>
-                <Insets top="8.0" right="0.0" bottom="0.0" left="8.0" />
+                <Insets top="10.0" right="0.0" bottom="0.0" left="12.0" />
             </StackPane.margin>
         </Button>
     </children>

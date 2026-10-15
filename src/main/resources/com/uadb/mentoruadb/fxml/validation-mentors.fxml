@@ -59,7 +59,7 @@
             <HBox spacing="10.0" alignment="CENTER_LEFT">
                 <Button fx:id="validerButton" text="Valider le candidat" onAction="#onValiderClick" styleClass="action-button" />
                 <Button fx:id="refuserButton" text="Refuser" onAction="#onRefuserClick" styleClass="action-button,refuser-button" />
-                <Button fx:id="retourButton" text="Retour" onAction="#onRetourClick" styleClass="action-button" />
+                <Button fx:id="retourButton" visible="false" managed="false" text="Retour" onAction="#onRetourClick" styleClass="action-button" />
             </HBox>
 
             <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />

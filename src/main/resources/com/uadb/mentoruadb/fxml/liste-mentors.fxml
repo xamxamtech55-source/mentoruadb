@@ -65,7 +65,7 @@
             </VBox>
 
             <HBox spacing="10.0" alignment="CENTER_LEFT">
-                <Button fx:id="retourButton" text="Retour" onAction="#onRetourClick" styleClass="action-button" />
+                <Button fx:id="retourButton" visible="false" managed="false" text="Retour" onAction="#onRetourClick" styleClass="action-button" />
             </HBox>
 
             <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />

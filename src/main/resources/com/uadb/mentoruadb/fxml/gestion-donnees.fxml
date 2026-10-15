@@ -85,7 +85,7 @@
             </TabPane>
 
             <HBox spacing="10.0">
-                <Button fx:id="retourButton" text="Retour" onAction="#onRetourClick" styleClass="lien-button" />
+                <Button fx:id="retourButton" visible="false" managed="false" text="Retour" onAction="#onRetourClick" styleClass="lien-button" />
             </HBox>
 
             <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />

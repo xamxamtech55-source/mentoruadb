@@ -21,7 +21,8 @@
     -fx-text-fill: #1e8449;
 }
 
-.text-field, .password-field {
+.text-field,
+.password-field {
     -fx-pref-width: 260px;
 }
 
@@ -35,6 +36,7 @@
 .button:hover {
     -fx-background-color: #1f618d;
 }
+
 .toggle-password-button {
     -fx-background-color: #c2c2c2;
     -fx-text-fill: #000000;
@@ -47,6 +49,7 @@
     -fx-max-width: 32px;
     -fx-padding: 4 0 4 0;
 }
+
 .deconnexion-button {
     -fx-font-size: 11px;
     -fx-padding: 4 10 4 10;
@@ -56,6 +59,7 @@
     -fx-cursor: hand;
     -fx-pref-width: 120px;
 }
+
 .notification-label {
     -fx-background-color: #fff3cd;
     -fx-text-fill: #856404;
@@ -280,4 +284,220 @@
 .statut-refuse {
     -fx-text-fill: #c0392b;
     -fx-font-weight: bold;
+}
+
+/* =====================================================
+   Coque avec barre latérale (écran étudiant)
+   ===================================================== */
+
+.root {
+    -uadb-marine: #002D62;
+    -uadb-bleu: #0D6EFD;
+    -uadb-bleu-clair: #E7F0FF;
+    -uadb-erreur: #EF4444;
+    -uadb-fond: #F1F5F9;
+    -uadb-texte-2: #64748B;
+    -uadb-bordure: #E2E8F0;
+}
+
+.racine {
+    -fx-background-color: -uadb-fond;
+}
+
+.topbar {
+    -fx-background-color: -uadb-marine;
+    -fx-padding: 10 16 10 16;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.topbar-titre {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.topbar-info {
+    -fx-text-fill: #A9BEDC;
+    -fx-font-size: 12px;
+}
+
+.sidebar {
+    -fx-background-color: white;
+    -fx-padding: 14 12 14 12;
+    -fx-border-color: -uadb-bordure;
+    -fx-border-width: 0 1 0 0;
+}
+
+.sidebar-section {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -uadb-texte-2;
+    -fx-padding: 14 0 4 10;
+}
+
+.menu-item,
+.button.menu-item {
+    -fx-background-color: transparent;
+    -fx-text-fill: -uadb-texte-2;
+    -fx-font-weight: normal;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 9 12 9 12;
+    -fx-background-radius: 8;
+    -fx-pref-width: 190px;
+    -fx-cursor: hand;
+}
+
+.menu-item:hover,
+.button.menu-item:hover {
+    -fx-background-color: -uadb-fond;
+}
+
+.menu-item:selected {
+    -fx-background-color: -uadb-bleu;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.sidebar .deconnexion-button {
+    -fx-pref-width: 190px;
+}
+
+.bouton-secondaire,
+.button.bouton-secondaire {
+    -fx-background-color: white;
+    -fx-text-fill: -uadb-marine;
+    -fx-border-color: -uadb-bordure;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.button.bouton-secondaire:hover {
+    -fx-background-color: -uadb-bleu-clair;
+}
+
+.contenu-page {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane>.viewport {
+    -fx-background-color: transparent;
+}
+
+.bouton-danger,
+.button.bouton-danger {
+    -fx-background-color: white;
+    -fx-text-fill: -uadb-erreur;
+    -fx-border-color: -uadb-erreur;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.button.bouton-danger:hover {
+    -fx-background-color: #FEF2F2;
+}
+
+/* ===== Page de connexion (carte centrée sur photo) ===== */
+.login-fond {
+    -fx-background-color: #0c1a2a;
+    -fx-background-image: url("../images/etudiants-bibliotheque.jpg");
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+}
+
+.login-voile {
+    -fx-background-color: linear-gradient(to bottom, rgba(0, 45, 98, 0.84), rgba(0, 45, 98, 0.66));
+}
+
+.login-logo-cercle {
+    -fx-background-color: white;
+    -fx-background-radius: 29;
+    -fx-padding: 5;
+}
+
+.login-entete-titre {
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.login-entete-sous {
+    -fx-text-fill: #DCE8FF;
+    -fx-font-size: 12px;
+}
+
+.login-carte {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.30), 24, 0.2, 0, 8);
+}
+
+.login-carte-marque {
+    -fx-text-fill: #002D62;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.login-carte-slogan {
+    -fx-text-fill: #64748B;
+    -fx-font-size: 12px;
+}
+
+.login-carte-titre {
+    -fx-text-fill: #0F172A;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.login-aide {
+    -fx-text-fill: #64748B;
+    -fx-font-size: 12px;
+}
+
+.login-champ-libelle {
+    -fx-text-fill: #64748B;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.button.login-bouton-principal {
+    -fx-pref-width: 364px;
+    -fx-pref-height: 40px;
+    -fx-font-size: 14px;
+}
+
+.button.login-retour {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-weight: normal;
+    -fx-pref-width: 170px;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.button.login-retour:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+}
+
+.login-case {
+    -fx-text-fill: #0F172A;
+    -fx-font-size: 12px;
+}
+
+.login-case .box {
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-border-color: #CBD5E1;
+}
+
+.login-case:selected .box {
+    -fx-background-color: #0D6EFD;
+    -fx-border-color: #0D6EFD;
+}
+
+.login-case:selected .mark {
+    -fx-background-color: white;
 }

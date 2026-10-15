@@ -5,8 +5,10 @@ import com.uadb.mentoruadb.model.Etudiant;
 import com.uadb.mentoruadb.model.Utilisateur;
 import com.uadb.mentoruadb.service.AuthService;
 import com.uadb.mentoruadb.util.SceneNavigator;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -15,18 +17,37 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Optional;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 /** Contrôleur lié à fxml/login.fxml. */
 public class LoginController {
 
-    @FXML private TextField emailField;
-    @FXML private PasswordField motDePasseField;
-    @FXML private TextField motDePasseVisibleField;
-    @FXML private Button toggleMotDePasseButton;
-    @FXML private Label messageLabel;
-    @FXML private Button creerCompteButton;
-    @FXML private Button motDePasseOublieButton;
-    @FXML private Button retourAccueilButton;
+    /**
+     * Stockage local (par utilisateur du système) : seul l'email est mémorisé,
+     * jamais le mot de passe.
+     */
+    private static final Preferences PREFS = Preferences.userNodeForPackage(LoginController.class);
+    private static final String CLE_EMAIL_MEMORISE = "email_memorise";
+
+    @FXML
+    private TextField emailField;
+    @FXML
+    private CheckBox souvenirCheckBox;
+    @FXML
+    private PasswordField motDePasseField;
+    @FXML
+    private TextField motDePasseVisibleField;
+    @FXML
+    private Button toggleMotDePasseButton;
+    @FXML
+    private Label messageLabel;
+    @FXML
+    private Button creerCompteButton;
+    @FXML
+    private Button motDePasseOublieButton;
+    @FXML
+    private Button retourAccueilButton;
 
     private final AuthService authService = new AuthService();
     private final EtudiantDao etudiantDao = new EtudiantDao();
@@ -36,7 +57,15 @@ public class LoginController {
     @FXML
     public void initialize() {
         motDePasseVisibleField.textProperty().bindBidirectional(motDePasseField.textProperty());
+
+        String emailMemorise = PREFS.get(CLE_EMAIL_MEMORISE, "");
+        if (!emailMemorise.isBlank()) {
+            emailField.setText(emailMemorise);
+            souvenirCheckBox.setSelected(true);
+            Platform.runLater(motDePasseField::requestFocus);
+        }
     }
+
     @FXML
     private void onToggleMotDePasseClick() {
         motDePasseVisible = !motDePasseVisible;
@@ -64,7 +93,9 @@ public class LoginController {
                 return;
             }
 
-            if ("ETUDIANT".equals(utilisateur.getRole()) || "MENTOR".equals(utilisateur.getRole())){
+            memoriserEmail(email);
+
+            if ("ETUDIANT".equals(utilisateur.getRole()) || "MENTOR".equals(utilisateur.getRole())) {
                 Optional<Etudiant> etudiantOpt = etudiantDao.findByUtilisateur(utilisateur.getIdUtilisateur());
                 if (etudiantOpt.isEmpty()) {
                     messageLabel.setText("Profil étudiant introuvable pour ce compte.");
@@ -73,25 +104,40 @@ public class LoginController {
 
                 Stage stage = (Stage) emailField.getScene().getWindow();
                 DashboardEtudiantController controller = SceneNavigator.switchToAndGetController(
-                        stage, "/com/uadb/mentoruadb/fxml/dashboard-etudiant.fxml", "Mentor-UADB - Tableau de bord"
-                );
+                        stage, "/com/uadb/mentoruadb/fxml/dashboard-etudiant.fxml", "Mentor-UADB - Tableau de bord");
                 controller.chargerDonnees(etudiantOpt.get(), utilisateur.getPrenom());
             } else if ("ADMIN".equals(utilisateur.getRole())) {
                 Stage stage = (Stage) emailField.getScene().getWindow();
                 DashboardAdminController controller = SceneNavigator.switchToAndGetController(
-                        stage, "/com/uadb/mentoruadb/fxml/dashboard-admin.fxml", "Mentor-UADB - Administration"
-                );
+                        stage, "/com/uadb/mentoruadb/fxml/dashboard-admin.fxml", "Mentor-UADB - Administration");
                 controller.chargerDonnees(utilisateur.getPrenom());
             } else {
                 messageLabel.setText("Bienvenue " + utilisateur.getPrenom()
                         + " (" + utilisateur.getRole() + ")");
             }
         } catch (SQLException e) {
-        e.printStackTrace();
-        messageLabel.setText("Erreur de connexion à la base de données.");
-        
+            e.printStackTrace();
+            messageLabel.setText("Erreur de connexion à la base de données.");
+
         } catch (IOException e) {
             messageLabel.setText("Impossible d'ouvrir le tableau de bord.");
+        }
+    }
+
+    /**
+     * Mémorise l'email si la case est cochée, sinon oublie celui qui avait été
+     * mémorisé.
+     */
+    private void memoriserEmail(String email) {
+        if (souvenirCheckBox.isSelected()) {
+            PREFS.put(CLE_EMAIL_MEMORISE, email.trim());
+        } else {
+            PREFS.remove(CLE_EMAIL_MEMORISE);
+        }
+        try {
+            PREFS.flush();
+        } catch (BackingStoreException e) {
+            // Non bloquant : au pire l'email ne sera pas pré-rempli la prochaine fois.
         }
     }
 
@@ -110,7 +156,8 @@ public class LoginController {
     private void onMotDePasseOublieClick() {
         try {
             Stage stage = (Stage) motDePasseOublieButton.getScene().getWindow();
-            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/mot-de-passe-oublie.fxml", "Mentor-UADB - Mot de passe oublié");
+            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/mot-de-passe-oublie.fxml",
+                    "Mentor-UADB - Mot de passe oublié");
         } catch (IOException e) {
             messageLabel.setText("Impossible d'ouvrir cet écran.");
         }

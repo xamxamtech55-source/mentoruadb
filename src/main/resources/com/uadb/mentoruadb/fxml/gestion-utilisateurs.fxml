@@ -29,7 +29,7 @@
                 <Button text="Activer" onAction="#onActiverClick" />
                 <Button text="Désactiver" onAction="#onDesactiverClick" styleClass="lien-button" />
                 <Button text="Supprimer" onAction="#onSupprimerClick" styleClass="lien-button" />
-                <Button fx:id="retourButton" text="Retour" onAction="#onRetourClick" styleClass="lien-button" />
+                <Button fx:id="retourButton" visible="false" managed="false" text="Retour" onAction="#onRetourClick" styleClass="lien-button" />
             </HBox>
 
             <Label fx:id="messageLabel" styleClass="message-label" />

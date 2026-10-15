@@ -43,65 +43,118 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javafx.event.ActionEvent;
+import javafx.scene.Node;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.layout.StackPane;
+
 /** Contrôleur lié à fxml/dashboard-etudiant.fxml. */
 public class DashboardEtudiantController {
 
     private static final String NIVEAU_BLOQUE_MENTORAT = "Licence 1";
 
-    @FXML private Label bienvenueLabel;
-    @FXML private Button notificationButton;
-    @FXML private Button notificationsGeneriquesButton;
-    @FXML private Button rechercherMentorButton;
-    @FXML private Button tableauMentorButton;
-    @FXML private Button deconnexionButton;
-    @FXML private Button devenirMentorButton;
-    @FXML private Button profilButton;
+    @FXML
+    private Label bienvenueLabel;
+    @FXML
+    private Button notificationButton;
+    @FXML
+    private Button notificationsGeneriquesButton;
+    @FXML
+    private Button rechercherMentorButton;
+    @FXML
+    private Button tableauMentorButton;
+    @FXML
+    private Button deconnexionButton;
+    @FXML
+    private Button devenirMentorButton;
+    @FXML
+    private Button profilButton;
 
-    @FXML private TableView<SeanceVue> seancesAConfirmerTable;
-    @FXML private TableColumn<SeanceVue, String> colConfirmMentor;
-    @FXML private TableColumn<SeanceVue, String> colConfirmMatiere;
-    @FXML private TableColumn<SeanceVue, String> colConfirmDate;
-    @FXML private TableColumn<SeanceVue, String> colConfirmHeure;
+    @FXML
+    private TableView<SeanceVue> seancesAConfirmerTable;
+    @FXML
+    private TableColumn<SeanceVue, String> colConfirmMentor;
+    @FXML
+    private TableColumn<SeanceVue, String> colConfirmMatiere;
+    @FXML
+    private TableColumn<SeanceVue, String> colConfirmDate;
+    @FXML
+    private TableColumn<SeanceVue, String> colConfirmHeure;
 
-    @FXML private TableView<DemandeVue> demandesTable;
-    @FXML private TableColumn<DemandeVue, String> colDemandeMentor;
-    @FXML private TableColumn<DemandeVue, String> colDemandeMatiere;
-    @FXML private TableColumn<DemandeVue, String> colDemandeDate;
-    @FXML private TableColumn<DemandeVue, String> colDemandeStatut;
+    @FXML
+    private TableView<DemandeVue> demandesTable;
+    @FXML
+    private TableColumn<DemandeVue, String> colDemandeMentor;
+    @FXML
+    private TableColumn<DemandeVue, String> colDemandeMatiere;
+    @FXML
+    private TableColumn<DemandeVue, String> colDemandeDate;
+    @FXML
+    private TableColumn<DemandeVue, String> colDemandeStatut;
 
-    @FXML private DatePicker dateSouhaiteePicker;
-    @FXML private TextField messageSeanceField;
+    @FXML
+    private DatePicker dateSouhaiteePicker;
+    @FXML
+    private TextField messageSeanceField;
 
-    @FXML private TableView<DemandeSeanceVue> demandeSeanceTable;
-    @FXML private TableColumn<DemandeSeanceVue, String> colDsMentor;
-    @FXML private TableColumn<DemandeSeanceVue, String> colDsMatiere;
-    @FXML private TableColumn<DemandeSeanceVue, String> colDsDateSouhaitee;
-    @FXML private TableColumn<DemandeSeanceVue, String> colDsStatut;
-    @FXML private TableColumn<DemandeSeanceVue, String> colDsDatePlanifiee;
+    @FXML
+    private TableView<DemandeSeanceVue> demandeSeanceTable;
+    @FXML
+    private TableColumn<DemandeSeanceVue, String> colDsMentor;
+    @FXML
+    private TableColumn<DemandeSeanceVue, String> colDsMatiere;
+    @FXML
+    private TableColumn<DemandeSeanceVue, String> colDsDateSouhaitee;
+    @FXML
+    private TableColumn<DemandeSeanceVue, String> colDsStatut;
+    @FXML
+    private TableColumn<DemandeSeanceVue, String> colDsDatePlanifiee;
 
-    @FXML private TableView<SeanceVue> seancesTable;
-    @FXML private TableColumn<SeanceVue, String> colSeanceMentor;
-    @FXML private TableColumn<SeanceVue, String> colSeanceMatiere;
-    @FXML private TableColumn<SeanceVue, String> colSeanceDate;
-    @FXML private TableColumn<SeanceVue, String> colSeanceHeureDebut;
-    @FXML private TableColumn<SeanceVue, String> colSeanceHeureFin;
-    @FXML private TableColumn<SeanceVue, String> colSeanceStatut;
+    @FXML
+    private TableView<SeanceVue> seancesTable;
+    @FXML
+    private TableColumn<SeanceVue, String> colSeanceMentor;
+    @FXML
+    private TableColumn<SeanceVue, String> colSeanceMatiere;
+    @FXML
+    private TableColumn<SeanceVue, String> colSeanceDate;
+    @FXML
+    private TableColumn<SeanceVue, String> colSeanceHeureDebut;
+    @FXML
+    private TableColumn<SeanceVue, String> colSeanceHeureFin;
+    @FXML
+    private TableColumn<SeanceVue, String> colSeanceStatut;
 
-    @FXML private TableView<Fichier> fichiersTable;
-    @FXML private TableColumn<Fichier, String> colFichierNom;
-    @FXML private TableColumn<Fichier, String> colFichierMatiere;
-    @FXML private TableColumn<Fichier, String> colFichierDate;
+    @FXML
+    private TableView<Fichier> fichiersTable;
+    @FXML
+    private TableColumn<Fichier, String> colFichierNom;
+    @FXML
+    private TableColumn<Fichier, String> colFichierMatiere;
+    @FXML
+    private TableColumn<Fichier, String> colFichierDate;
 
-    @FXML private TableView<EvaluationEtudiantVue> evaluationsTable;
-    @FXML private TableColumn<EvaluationEtudiantVue, String> colEvalMentor;
-    @FXML private TableColumn<EvaluationEtudiantVue, String> colEvalMatiere;
-    @FXML private TableColumn<EvaluationEtudiantVue, Integer> colEvalNote;
-    @FXML private TableColumn<EvaluationEtudiantVue, String> colEvalCommentaire;
-    @FXML private TableColumn<EvaluationEtudiantVue, String> colEvalDate;
+    @FXML
+    private TableView<EvaluationEtudiantVue> evaluationsTable;
+    @FXML
+    private TableColumn<EvaluationEtudiantVue, String> colEvalMentor;
+    @FXML
+    private TableColumn<EvaluationEtudiantVue, String> colEvalMatiere;
+    @FXML
+    private TableColumn<EvaluationEtudiantVue, Integer> colEvalNote;
+    @FXML
+    private TableColumn<EvaluationEtudiantVue, String> colEvalCommentaire;
+    @FXML
+    private TableColumn<EvaluationEtudiantVue, String> colEvalDate;
 
-    @FXML private ComboBox<Integer> noteComboBox;
-    @FXML private TextField commentaireField;
-    @FXML private Label messageLabel;
+    @FXML
+    private ComboBox<Integer> noteComboBox;
+    @FXML
+    private TextField commentaireField;
+    @FXML
+    private Label messageLabel;
+    @FXML
+    private StackPane sectionsPane;
 
     private final MentorDao mentorDao = new MentorDao();
     private final DemandeMentoratDao demandeDao = new DemandeMentoratDao();
@@ -169,30 +222,33 @@ public class DashboardEtudiantController {
         noteComboBox.setItems(FXCollections.observableArrayList(1, 2, 3, 4, 5));
     }
 
-    /** Appelée manuellement depuis LoginController juste après avoir chargé cet écran. */
+    /**
+     * Appelée manuellement depuis LoginController juste après avoir chargé cet
+     * écran.
+     */
     public void chargerDonnees(Etudiant etudiant, String prenom) {
         this.etudiantConnecte = etudiant;
         this.prenomConnecte = prenom;
         rafraichir(etudiant);
     }
 
-    /** Recharge les tableaux, sans redemander le prénom (utile après un retour d'un autre écran). */
+    /**
+     * Recharge les tableaux, sans redemander le prénom (utile après un retour d'un
+     * autre écran).
+     */
     public void rafraichir(Etudiant etudiant) {
         this.etudiantConnecte = etudiant;
         bienvenueLabel.setText("Bienvenue " + prenomConnecte);
 
         try {
             seancesAConfirmerTable.setItems(FXCollections.observableArrayList(
-                    seanceDao.findGroupesAConfirmerByEtudiant(etudiant.getIdEtudiant())
-            ));
+                    seanceDao.findGroupesAConfirmerByEtudiant(etudiant.getIdEtudiant())));
 
             demandesTable.setItems(FXCollections.observableArrayList(
-                    demandeDao.findByEtudiantAvecDetails(etudiant.getIdEtudiant())
-            ));
+                    demandeDao.findByEtudiantAvecDetails(etudiant.getIdEtudiant())));
 
             demandeSeanceTable.setItems(FXCollections.observableArrayList(
-                    demandeSeanceDao.findByEtudiantAvecDetails(etudiant.getIdEtudiant())
-            ));
+                    demandeSeanceDao.findByEtudiantAvecDetails(etudiant.getIdEtudiant())));
 
             List<SeanceVue> toutesLesSeances = new ArrayList<>();
             toutesLesSeances.addAll(seanceDao.findByEtudiantAvecDetails(etudiant.getIdEtudiant()));
@@ -200,16 +256,15 @@ public class DashboardEtudiantController {
             seancesTable.setItems(FXCollections.observableArrayList(toutesLesSeances));
 
             fichiersTable.setItems(FXCollections.observableArrayList(
-                    fichierDao.findVisiblesParEtudiant(etudiant.getIdEtudiant())
-            ));
+                    fichierDao.findVisiblesParEtudiant(etudiant.getIdEtudiant())));
 
             evaluationsTable.setItems(FXCollections.observableArrayList(
-                    evaluationDao.findByEtudiantAvecDetails(etudiant.getIdEtudiant())
-            ));
+                    evaluationDao.findByEtudiantAvecDetails(etudiant.getIdEtudiant())));
 
             seancesGroupeNonVues = seanceDao.findGroupesAVenirByEtudiant(etudiant.getIdEtudiant());
             if (!seancesGroupeNonVues.isEmpty()) {
-                notificationButton.setText("🔔 " + seancesGroupeNonVues.size() + " nouvelle(s) séance(s) de groupe — clique pour voir");
+                notificationButton.setText(
+                        "🔔 " + seancesGroupeNonVues.size() + " nouvelle(s) séance(s) de groupe — clique pour voir");
                 notificationButton.setVisible(true);
                 notificationButton.setManaged(true);
             } else {
@@ -219,7 +274,8 @@ public class DashboardEtudiantController {
 
             int nbNotifsGeneriques = notificationDao.findNonLuesByUtilisateur(etudiant.getIdUtilisateur()).size();
             if (nbNotifsGeneriques > 0) {
-                notificationsGeneriquesButton.setText("📩 " + nbNotifsGeneriques + " notification(s) — clique pour voir");
+                notificationsGeneriquesButton
+                        .setText("📩 " + nbNotifsGeneriques + " notification(s) — clique pour voir");
                 notificationsGeneriquesButton.setVisible(true);
                 notificationsGeneriquesButton.setManaged(true);
             } else {
@@ -242,7 +298,8 @@ public class DashboardEtudiantController {
 
     @FXML
     private void onNotificationClick() {
-        if (seancesGroupeNonVues.isEmpty()) return;
+        if (seancesGroupeNonVues.isEmpty())
+            return;
 
         StringBuilder details = new StringBuilder();
         for (SeanceVue s : seancesGroupeNonVues) {
@@ -268,7 +325,8 @@ public class DashboardEtudiantController {
     @FXML
     private void onNotificationsGeneriquesClick() {
         try {
-            List<Notification> notifications = notificationDao.findNonLuesByUtilisateur(etudiantConnecte.getIdUtilisateur());
+            List<Notification> notifications = notificationDao
+                    .findNonLuesByUtilisateur(etudiantConnecte.getIdUtilisateur());
             StringBuilder details = new StringBuilder();
             for (Notification n : notifications) {
                 details.append("• ").append(n.getMessage()).append("\n");
@@ -317,7 +375,10 @@ public class DashboardEtudiantController {
         }
     }
 
-    /** Demande une séance sur la demande de mentorat sélectionnée (doit être ACCEPTEE). Date souhaitée et message sont facultatifs. */
+    /**
+     * Demande une séance sur la demande de mentorat sélectionnée (doit être
+     * ACCEPTEE). Date souhaitée et message sont facultatifs.
+     */
     @FXML
     private void onDemanderSeanceClick() {
         DemandeVue demande = demandesTable.getSelectionModel().getSelectedItem();
@@ -331,7 +392,8 @@ public class DashboardEtudiantController {
         }
 
         try {
-            mentoratService.demanderSeance(demande.getIdDemande(), dateSouhaiteePicker.getValue(), messageSeanceField.getText());
+            mentoratService.demanderSeance(demande.getIdDemande(), dateSouhaiteePicker.getValue(),
+                    messageSeanceField.getText());
             messageLabel.setText("Demande de séance envoyée à " + demande.getNomMentor() + ".");
             dateSouhaiteePicker.setValue(null);
             messageSeanceField.clear();
@@ -388,8 +450,7 @@ public class DashboardEtudiantController {
         try {
             Stage stage = (Stage) rechercherMentorButton.getScene().getWindow();
             RechercheMentorController controller = SceneNavigator.switchToAndGetController(
-                    stage, "/com/uadb/mentoruadb/fxml/recherche-mentor.fxml", "Mentor-UADB - Recherche de mentor"
-            );
+                    stage, "/com/uadb/mentoruadb/fxml/recherche-mentor.fxml", "Mentor-UADB - Recherche de mentor");
             controller.setEtudiantConnecte(etudiantConnecte, prenomConnecte);
         } catch (IOException e) {
             bienvenueLabel.setText("Impossible d'ouvrir la recherche de mentor.");
@@ -416,13 +477,28 @@ public class DashboardEtudiantController {
 
             Stage stage = (Stage) tableauMentorButton.getScene().getWindow();
             DashboardMentorController controller = SceneNavigator.switchToAndGetController(
-                    stage, "/com/uadb/mentoruadb/fxml/dashboard-mentor.fxml", "Mentor-UADB - Espace mentor"
-            );
+                    stage, "/com/uadb/mentoruadb/fxml/dashboard-mentor.fxml", "Mentor-UADB - Espace mentor");
             controller.chargerDonnees(etudiantConnecte, mentorOpt.get(), prenomConnecte);
         } catch (SQLException e) {
             bienvenueLabel.setText("Erreur lors de l'accès à l'espace mentor.");
         } catch (IOException e) {
             bienvenueLabel.setText("Impossible d'ouvrir le tableau de bord mentor.");
+        }
+    }
+
+    /**
+     * Barre latérale : affiche la section dont l'id est stocké dans le userData du
+     * bouton cliqué.
+     */
+    @FXML
+    private void onMenuClick(ActionEvent event) {
+        ToggleButton bouton = (ToggleButton) event.getSource();
+        bouton.setSelected(true); // empêche de désélectionner la rubrique courante
+        String cible = (String) bouton.getUserData();
+        for (Node section : sectionsPane.getChildren()) {
+            boolean visible = cible.equals(section.getId());
+            section.setVisible(visible);
+            section.setManaged(visible);
         }
     }
 
@@ -445,8 +521,7 @@ public class DashboardEtudiantController {
         try {
             Stage stage = (Stage) devenirMentorButton.getScene().getWindow();
             DevenirMentorController controller = SceneNavigator.switchToAndGetController(
-                    stage, "/com/uadb/mentoruadb/fxml/devenir-mentor.fxml", "Mentor-UADB - Devenir mentor"
-            );
+                    stage, "/com/uadb/mentoruadb/fxml/devenir-mentor.fxml", "Mentor-UADB - Devenir mentor");
             controller.setEtudiantConnecte(etudiantConnecte, prenomConnecte);
         } catch (IOException e) {
             bienvenueLabel.setText("Impossible d'ouvrir l'écran de candidature mentor.");
@@ -458,8 +533,7 @@ public class DashboardEtudiantController {
         try {
             Stage stage = (Stage) profilButton.getScene().getWindow();
             ProfilController controller = SceneNavigator.switchToAndGetController(
-                    stage, "/com/uadb/mentoruadb/fxml/profil.fxml", "Mentor-UADB - Mon profil"
-            );
+                    stage, "/com/uadb/mentoruadb/fxml/profil.fxml", "Mentor-UADB - Mon profil");
             controller.setContexte(etudiantConnecte, prenomConnecte);
         } catch (IOException e) {
             bienvenueLabel.setText("Impossible d'ouvrir le profil.");
@@ -481,7 +555,8 @@ public class DashboardEtudiantController {
         }
 
         if (!Desktop.isDesktopSupported() || !Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
-            bienvenueLabel.setText("Ouverture automatique non disponible ici. Chemin du fichier : " + f.getAbsolutePath());
+            bienvenueLabel
+                    .setText("Ouverture automatique non disponible ici. Chemin du fichier : " + f.getAbsolutePath());
             return;
         }
 
@@ -490,9 +565,8 @@ public class DashboardEtudiantController {
             try {
                 Desktop.getDesktop().open(f);
             } catch (Exception e) {
-                javafx.application.Platform.runLater(() ->
-                        bienvenueLabel.setText("Impossible d'ouvrir automatiquement. Chemin : " + f.getAbsolutePath())
-                );
+                javafx.application.Platform.runLater(() -> bienvenueLabel
+                        .setText("Impossible d'ouvrir automatiquement. Chemin : " + f.getAbsolutePath()));
             }
         });
         thread.setDaemon(true);
@@ -514,7 +588,8 @@ public class DashboardEtudiantController {
         }
 
         try {
-            mentoratService.evaluerSeance(seance.getIdSeance(), etudiantConnecte.getIdEtudiant(), note, commentaireField.getText());
+            mentoratService.evaluerSeance(seance.getIdSeance(), etudiantConnecte.getIdEtudiant(), note,
+                    commentaireField.getText());
             bienvenueLabel.setText("Évaluation enregistrée, merci !");
             commentaireField.clear();
             noteComboBox.setValue(null);

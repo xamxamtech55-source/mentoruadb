@@ -38,7 +38,9 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-
+import javafx.event.ActionEvent;
+import javafx.scene.Node;
+import javafx.scene.layout.StackPane;
 /** Contrôleur lié à fxml/dashboard-mentor.fxml. */
 public class DashboardMentorController {
 
@@ -97,7 +99,7 @@ public class DashboardMentorController {
     @FXML private TableColumn<Fichier, String> colFichierDate;
 
     @FXML private Label messageLabel;
-
+    @FXML private StackPane sectionsPane;
     private final DemandeMentoratDao demandeDao = new DemandeMentoratDao();
     private final DemandeSeanceDao demandeSeanceDao = new DemandeSeanceDao();
     private final SeanceDao seanceDao = new SeanceDao();
@@ -525,6 +527,18 @@ public class DashboardMentorController {
             messageLabel.setText("Erreur lors de la copie du fichier.");
         } catch (SQLException e) {
             messageLabel.setText("Erreur lors de l'enregistrement en base.");
+        }
+    }
+    /** Barre latérale : affiche la section dont l'id est stocké dans le userData du bouton cliqué. */
+    @FXML
+    private void onMenuClick(ActionEvent event) {
+        ToggleButton bouton = (ToggleButton) event.getSource();
+        bouton.setSelected(true); // empêche de désélectionner la rubrique courante
+        String cible = (String) bouton.getUserData();
+        for (Node section : sectionsPane.getChildren()) {
+            boolean visible = cible.equals(section.getId());
+            section.setVisible(visible);
+            section.setManaged(visible);
         }
     }
 

@@ -10,8 +10,8 @@ import java.io.IOException;
 /** Centralise le changement d'écran pour éviter de dupliquer le code de chargement FXML. */
 public class SceneNavigator {
 
-    private static final double LARGEUR_FENETRE = 950.0;
-    private static final double HAUTEUR_FENETRE = 700.0;
+    private static final double LARGEUR_FENETRE = 1100.0;
+    private static final double HAUTEUR_FENETRE = 720.0;
 
     private SceneNavigator() {}
 

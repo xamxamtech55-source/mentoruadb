@@ -31,7 +31,11 @@
         <VBox styleClass="sidebar" prefWidth="215.0" minWidth="215.0" spacing="3.0">
             <Label text="ADMINISTRATION" styleClass="sidebar-section" />
 
-            <ToggleButton text="Validation des mentors" toggleGroup="$menuGroup" selected="true"
+            <ToggleButton text="Accueil" toggleGroup="$menuGroup" selected="true"
+                          onAction="#onMenuClick" styleClass="menu-item" maxWidth="Infinity">
+                <userData><String fx:value="secAccueil" /></userData>
+            </ToggleButton>
+            <ToggleButton text="Validation des mentors" toggleGroup="$menuGroup"
                           onAction="#onMenuClick" styleClass="menu-item" maxWidth="Infinity">
                 <userData><String fx:value="secValidation" /></userData>
             </ToggleButton>
@@ -65,7 +69,43 @@
             <Label fx:id="bienvenueLabel" styleClass="title-label" wrapText="true" />
 
             <StackPane fx:id="sectionsPane" VBox.vgrow="ALWAYS">
-                <StackPane fx:id="secValidation">
+                <!-- Accueil -->
+                <ScrollPane fx:id="secAccueil" fitToWidth="true">
+                    <VBox spacing="16.0" styleClass="contenu-page">
+                        <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0" /></padding>
+
+                        <HBox spacing="12.0">
+                            <VBox styleClass="stat-carte" HBox.hgrow="ALWAYS" maxWidth="Infinity" spacing="2.0">
+                                <Label fx:id="statEtudiants" text="0" styleClass="stat-valeur" />
+                                <Label text="Comptes étudiants" styleClass="stat-libelle" wrapText="true" />
+                            </VBox>
+                            <VBox styleClass="stat-carte" HBox.hgrow="ALWAYS" maxWidth="Infinity" spacing="2.0">
+                                <Label fx:id="statMentors" text="0" styleClass="stat-valeur" />
+                                <Label text="Mentors validés" styleClass="stat-libelle" wrapText="true" />
+                            </VBox>
+                            <VBox styleClass="stat-carte" HBox.hgrow="ALWAYS" maxWidth="Infinity" spacing="2.0">
+                                <Label fx:id="statCandidatures" text="0" styleClass="stat-valeur" />
+                                <Label text="Candidatures en attente" styleClass="stat-libelle" wrapText="true" />
+                            </VBox>
+                            <VBox styleClass="stat-carte" HBox.hgrow="ALWAYS" maxWidth="Infinity" spacing="2.0">
+                                <Label fx:id="statSeancesAVenir" text="0" styleClass="stat-valeur" />
+                                <Label text="Séances à venir" styleClass="stat-libelle" wrapText="true" />
+                            </VBox>
+                        </HBox>
+
+                        <VBox styleClass="carte" spacing="10.0">
+                            <Label text="Demandes de mentorat" styleClass="subtitle-label" />
+                            <VBox fx:id="demandesBox" spacing="8.0" />
+                        </VBox>
+
+                        <VBox styleClass="carte" spacing="10.0">
+                            <Label text="Séances" styleClass="subtitle-label" />
+                            <VBox fx:id="seancesBox" spacing="8.0" />
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
+
+                <StackPane fx:id="secValidation" visible="false" managed="false">
                     <fx:include source="validation-mentors.fxml" />
                 </StackPane>
                 <StackPane fx:id="secListeMentors" visible="false" managed="false">

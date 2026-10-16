@@ -31,7 +31,11 @@
         <VBox styleClass="sidebar" prefWidth="215.0" minWidth="215.0" spacing="3.0">
             <Label text="ESPACE ÉTUDIANT" styleClass="sidebar-section" />
 
-            <ToggleButton text="Mes demandes" toggleGroup="$menuGroup" selected="true"
+            <ToggleButton text="Accueil" toggleGroup="$menuGroup" selected="true"
+                          onAction="#onMenuClick" styleClass="menu-item" maxWidth="Infinity">
+                <userData><String fx:value="secAccueil" /></userData>
+            </ToggleButton>
+            <ToggleButton text="Mes demandes" toggleGroup="$menuGroup"
                           onAction="#onMenuClick" styleClass="menu-item" maxWidth="Infinity">
                 <userData><String fx:value="secDemandes" /></userData>
             </ToggleButton>
@@ -80,8 +84,39 @@
 
             <StackPane fx:id="sectionsPane" VBox.vgrow="ALWAYS">
 
+                <!-- Accueil -->
+                <ScrollPane fx:id="secAccueil" fitToWidth="true">
+                    <VBox spacing="16.0" styleClass="contenu-page">
+                        <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0" /></padding>
+
+                        <HBox spacing="12.0">
+                            <VBox styleClass="stat-carte" HBox.hgrow="ALWAYS" maxWidth="Infinity" spacing="2.0">
+                                <Label fx:id="statDemandesAttente" text="0" styleClass="stat-valeur" />
+                                <Label text="Demandes en attente" styleClass="stat-libelle" wrapText="true" />
+                            </VBox>
+                            <VBox styleClass="stat-carte" HBox.hgrow="ALWAYS" maxWidth="Infinity" spacing="2.0">
+                                <Label fx:id="statDemandesAcceptees" text="0" styleClass="stat-valeur" />
+                                <Label text="Demandes acceptées" styleClass="stat-libelle" wrapText="true" />
+                            </VBox>
+                            <VBox styleClass="stat-carte" HBox.hgrow="ALWAYS" maxWidth="Infinity" spacing="2.0">
+                                <Label fx:id="statSeancesAVenir" text="0" styleClass="stat-valeur" />
+                                <Label text="Séances à venir" styleClass="stat-libelle" wrapText="true" />
+                            </VBox>
+                            <VBox styleClass="stat-carte" HBox.hgrow="ALWAYS" maxWidth="Infinity" spacing="2.0">
+                                <Label fx:id="statFichiers" text="0" styleClass="stat-valeur" />
+                                <Label text="Fichiers reçus" styleClass="stat-libelle" wrapText="true" />
+                            </VBox>
+                        </HBox>
+
+                        <VBox styleClass="carte" spacing="10.0">
+                            <Label text="Mes prochaines séances" styleClass="subtitle-label" />
+                            <VBox fx:id="prochainesSeancesBox" spacing="6.0" />
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
+
                 <!-- Mes demandes -->
-                <ScrollPane fx:id="secDemandes" fitToWidth="true">
+                <ScrollPane fx:id="secDemandes" fitToWidth="true" visible="false" managed="false">
                     <VBox spacing="10.0" styleClass="contenu-page">
                         <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0" /></padding>
 
@@ -189,6 +224,17 @@
                         <Button text="Ouvrir le fichier sélectionné" onAction="#onOuvrirFichierClick" />
                     </VBox>
                 </ScrollPane>
+
+                <!-- Pages intégrées -->
+                <StackPane fx:id="secProfil" visible="false" managed="false">
+                    <fx:include fx:id="profil" source="profil.fxml" />
+                </StackPane>
+                <StackPane fx:id="secRecherche" visible="false" managed="false">
+                    <fx:include fx:id="recherche" source="recherche-mentor.fxml" />
+                </StackPane>
+                <StackPane fx:id="secDevenir" visible="false" managed="false">
+                    <fx:include fx:id="devenir" source="devenir-mentor.fxml" />
+                </StackPane>
             </StackPane>
 
             <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />

@@ -1,27 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
 
-<VBox alignment="CENTER" spacing="12.0" styleClass="login-container"
-      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.uadb.mentoruadb.controller.MotDePasseOublieController">
-    <padding>
-        <Insets top="40.0" right="40.0" bottom="40.0" left="40.0" />
-    </padding>
-
-    <Label text="Mot de passe oublié" styleClass="title-label" />
-    <Label text="Renseigne ton email institutionnel, ton numéro de carte d'étudiant et l'adresse qui recevra le code (n'importe quel Gmail ou autre)" wrapText="true" />
-
-    <TextField fx:id="emailField" promptText="Email institutionnel" prefWidth="280.0" maxWidth="280.0" />
-    <TextField fx:id="numeroCarteField" promptText="Numéro de carte d'étudiant" prefWidth="280.0" maxWidth="280.0" />
-    <TextField fx:id="emailRecuperationField" promptText="Gmail de réception du code" prefWidth="280.0" maxWidth="280.0" />
-
-    <Button fx:id="envoyerCodeButton" text="Envoyer le code" onAction="#onEnvoyerCodeClick" prefWidth="280.0" maxWidth="280.0" />
-    <Button fx:id="retourButton" text="Retour à la connexion" onAction="#onRetourClick" styleClass="lien-button" prefWidth="280.0" maxWidth="280.0" />
-
-    <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />
-</VBox>
+<StackPane styleClass="login-fond"
+           xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.uadb.mentoruadb.controller.MotDePasseOublieController">
+  <children>
+    <Region styleClass="login-voile"/>
+    <ScrollPane fitToWidth="true" fitToHeight="true" styleClass="login-scroll">
+      <VBox alignment="CENTER" spacing="18.0">
+        <padding>
+          <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
+        </padding>
+        <!-- En-tête UADB -->
+        <HBox alignment="CENTER" spacing="12.0">
+          <StackPane styleClass="login-logo-cercle" maxWidth="58.0" maxHeight="58.0">
+            <ImageView fitHeight="48.0" fitWidth="48.0" preserveRatio="true">
+              <Image url="@../images/logo-uadb.png"/>
+            </ImageView>
+          </StackPane>
+          <VBox spacing="1.0" alignment="CENTER_LEFT">
+            <Label text="UADB" styleClass="login-entete-titre"/>
+            <Label text="Université Alioune Diop de Bambey" styleClass="login-entete-sous"/>
+          </VBox>
+        </HBox>
+        <!-- Carte -->
+        <VBox alignment="CENTER_LEFT" spacing="8.0" prefWidth="420.0" minWidth="420.0" maxWidth="420.0"
+                          styleClass="login-carte">
+          <padding>
+            <Insets top="26.0" right="28.0" bottom="22.0" left="28.0"/>
+          </padding>
+          <Label text="Mot de passe oublié" styleClass="login-carte-titre"/>
+          <Label text="Renseigne ton email institutionnel, ton numéro de carte d'étudiant et l'adresse qui recevra le code (n'importe quel Gmail ou autre)"
+                                 styleClass="login-aide" wrapText="true" />
+          <Region prefHeight="6.0"/>
+          <Label text="Email institutionnel" styleClass="login-champ-libelle"/>
+          <TextField fx:id="emailField" promptText="ex : prenom.nom@uadb.edu.sn" maxWidth="Infinity"/>
+          <Label text="Numéro de carte d'étudiant" styleClass="login-champ-libelle"/>
+          <TextField fx:id="numeroCarteField" promptText="Numéro de carte d'étudiant" maxWidth="Infinity"/>
+          <Label text="Adresse de réception du code" styleClass="login-champ-libelle"/>
+          <TextField fx:id="emailRecuperationField" promptText="Gmail de réception du code" maxWidth="Infinity"/>
+          <Region prefHeight="6.0"/>
+          <Button fx:id="envoyerCodeButton" text="Envoyer le code  →" onAction="#onEnvoyerCodeClick"
+                                  styleClass="login-bouton-principal" maxWidth="Infinity" />
+          <HBox alignment="CENTER">
+            <Button fx:id="retourButton" text="← Retour à la connexion" onAction="#onRetourClick" styleClass="lien-discret"/>
+          </HBox>
+          <Label fx:id="messageLabel" styleClass="message-label" wrapText="true"/>
+        </VBox>
+      </VBox>
+    </ScrollPane>
+  </children>
+</StackPane>

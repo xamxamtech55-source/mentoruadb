@@ -501,3 +501,74 @@
 .login-case:selected .mark {
     -fx-background-color: white;
 }
+
+/* ===== Accueil étudiant : cartes et séances ===== */
+.stat-carte {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 12;
+    -fx-padding: 14 16 14 16;
+}
+
+.stat-valeur {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #002D62;
+}
+
+.stat-libelle {
+    -fx-font-size: 12px;
+    -fx-text-fill: #64748B;
+}
+
+.carte {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 12;
+    -fx-padding: 16;
+}
+
+.seance-ligne {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 8 0 8 0;
+    -fx-border-color: transparent transparent #E2E8F0 transparent;
+}
+
+.seance-date {
+    -fx-font-weight: bold;
+    -fx-text-fill: #0D6EFD;
+}
+
+.texte-secondaire {
+    -fx-text-fill: #64748B;
+}
+
+/* ===== Pages secondaires (carte centrée) et barres de statistiques ===== */
+.page-carte {
+    -fx-background-color: white;
+    -fx-background-radius: 14;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 14;
+}
+
+.barre-stat .track {
+    -fx-background-color: #E2E8F0;
+    -fx-background-radius: 6;
+    -fx-background-insets: 0;
+}
+
+.barre-stat .bar {
+    -fx-background-color: #0D6EFD;
+    -fx-background-radius: 6;
+    -fx-background-insets: 0;
+    -fx-padding: 5;
+}
+
+/* ===== Pages d'authentification avec défilement ===== */
+.login-scroll,
+.login-scroll>.viewport {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}

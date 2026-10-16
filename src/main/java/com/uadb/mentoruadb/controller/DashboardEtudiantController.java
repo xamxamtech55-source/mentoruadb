@@ -47,6 +47,12 @@ import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import javafx.scene.control.ToggleGroup;
 
 /** Contrôleur lié à fxml/dashboard-etudiant.fxml. */
 public class DashboardEtudiantController {
@@ -156,6 +162,25 @@ public class DashboardEtudiantController {
     @FXML
     private StackPane sectionsPane;
 
+    @FXML
+    private ToggleGroup menuGroup;
+    @FXML
+    private ProfilController profilController;
+    @FXML
+    private RechercheMentorController rechercheController;
+    @FXML
+    private DevenirMentorController devenirController;
+    @FXML
+    private Label statDemandesAttente;
+    @FXML
+    private Label statDemandesAcceptees;
+    @FXML
+    private Label statSeancesAVenir;
+    @FXML
+    private Label statFichiers;
+    @FXML
+    private VBox prochainesSeancesBox;
+
     private final MentorDao mentorDao = new MentorDao();
     private final DemandeMentoratDao demandeDao = new DemandeMentoratDao();
     private final DemandeSeanceDao demandeSeanceDao = new DemandeSeanceDao();
@@ -260,7 +285,7 @@ public class DashboardEtudiantController {
 
             evaluationsTable.setItems(FXCollections.observableArrayList(
                     evaluationDao.findByEtudiantAvecDetails(etudiant.getIdEtudiant())));
-
+            majAccueil();
             seancesGroupeNonVues = seanceDao.findGroupesAVenirByEtudiant(etudiant.getIdEtudiant());
             if (!seancesGroupeNonVues.isEmpty()) {
                 notificationButton.setText(
@@ -293,6 +318,59 @@ public class DashboardEtudiantController {
             tableauMentorButton.setManaged(!niveauBloquePourMentorat);
         } catch (SQLException e) {
             bienvenueLabel.setText("Erreur de chargement des données.");
+        }
+    }
+
+    /**
+     * Remplit les cartes et la liste de l'accueil à partir des tableaux déjà
+     * chargés (aucune requête en plus).
+     */
+    private void majAccueil() {
+        long enAttente = demandesTable.getItems().stream()
+                .filter(d -> "EN_ATTENTE".equals(d.getStatut())).count();
+        long acceptees = demandesTable.getItems().stream()
+                .filter(d -> "ACCEPTEE".equals(d.getStatut())).count();
+
+        LocalDate aujourdhui = LocalDate.now();
+        List<SeanceVue> aVenir = seancesTable.getItems().stream()
+                .filter(s -> "PLANIFIEE".equals(s.getStatut())
+                        && s.getDateSeance() != null
+                        && !s.getDateSeance().isBefore(aujourdhui))
+                .sorted(Comparator.comparing(SeanceVue::getDateSeance)
+                        .thenComparing(SeanceVue::getHeureDebut, Comparator.nullsLast(Comparator.naturalOrder())))
+                .toList();
+
+        statDemandesAttente.setText(String.valueOf(enAttente));
+        statDemandesAcceptees.setText(String.valueOf(acceptees));
+        statSeancesAVenir.setText(String.valueOf(aVenir.size()));
+        statFichiers.setText(String.valueOf(fichiersTable.getItems().size()));
+
+        prochainesSeancesBox.getChildren().clear();
+        if (aVenir.isEmpty()) {
+            Label vide = new Label("Aucune séance planifiée pour le moment.");
+            vide.getStyleClass().add("texte-secondaire");
+            prochainesSeancesBox.getChildren().add(vide);
+            return;
+        }
+
+        DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        for (SeanceVue s : aVenir.stream().limit(5).toList()) {
+            Label date = new Label(s.getDateSeance().format(formatDate));
+            date.getStyleClass().add("seance-date");
+            date.setMinWidth(90);
+
+            String heure = s.getHeureDebut() != null ? s.getHeureDebut().toString() : "";
+            Label heureLabel = new Label(heure);
+            heureLabel.getStyleClass().add("texte-secondaire");
+            heureLabel.setMinWidth(50);
+
+            String type = "GROUPE".equals(s.getTypeSeance()) ? " (groupe)" : "";
+            Label detail = new Label(s.getNomMatiere() + " — avec " + s.getNomMentor() + type);
+            detail.setWrapText(true);
+
+            HBox ligne = new HBox(10, date, heureLabel, detail);
+            ligne.getStyleClass().add("seance-ligne");
+            prochainesSeancesBox.getChildren().add(ligne);
         }
     }
 
@@ -447,14 +525,8 @@ public class DashboardEtudiantController {
 
     @FXML
     private void onRechercherMentorClick() {
-        try {
-            Stage stage = (Stage) rechercherMentorButton.getScene().getWindow();
-            RechercheMentorController controller = SceneNavigator.switchToAndGetController(
-                    stage, "/com/uadb/mentoruadb/fxml/recherche-mentor.fxml", "Mentor-UADB - Recherche de mentor");
-            controller.setEtudiantConnecte(etudiantConnecte, prenomConnecte);
-        } catch (IOException e) {
-            bienvenueLabel.setText("Impossible d'ouvrir la recherche de mentor.");
-        }
+        rechercheController.setEtudiantConnecte(etudiantConnecte, prenomConnecte);
+        afficherPageIntegree("secRecherche");
     }
 
     @FXML
@@ -487,19 +559,40 @@ public class DashboardEtudiantController {
     }
 
     /**
-     * Barre latérale : affiche la section dont l'id est stocké dans le userData du
+     * Barre latérale : affiche la rubrique dont l'id est stocké dans le userData du
      * bouton cliqué.
      */
     @FXML
     private void onMenuClick(ActionEvent event) {
         ToggleButton bouton = (ToggleButton) event.getSource();
         bouton.setSelected(true); // empêche de désélectionner la rubrique courante
-        String cible = (String) bouton.getUserData();
+        afficherSection((String) bouton.getUserData());
+    }
+
+    /**
+     * /** Affiche une rubrique de la zone centrale ; recharge les données pour les
+     * rubriques de consultation.
+     */
+    private void afficherSection(String cible) {
         for (Node section : sectionsPane.getChildren()) {
             boolean visible = cible.equals(section.getId());
             section.setVisible(visible);
             section.setManaged(visible);
         }
+        if (List.of("secAccueil", "secDemandes", "secSeances", "secEvaluations", "secRessources").contains(cible)) {
+            if (etudiantConnecte != null) {
+                rafraichir(etudiantConnecte);
+            }
+        }
+    }
+
+    /**
+     * Ouvre une page intégrée (profil, recherche, candidature) : plus aucune
+     * rubrique du menu n'est surlignée.
+     */
+    private void afficherPageIntegree(String cible) {
+        menuGroup.selectToggle(null);
+        afficherSection(cible);
     }
 
     @FXML
@@ -518,26 +611,14 @@ public class DashboardEtudiantController {
             bienvenueLabel.setText("Le mentorat n'est pas disponible en " + NIVEAU_BLOQUE_MENTORAT + ".");
             return;
         }
-        try {
-            Stage stage = (Stage) devenirMentorButton.getScene().getWindow();
-            DevenirMentorController controller = SceneNavigator.switchToAndGetController(
-                    stage, "/com/uadb/mentoruadb/fxml/devenir-mentor.fxml", "Mentor-UADB - Devenir mentor");
-            controller.setEtudiantConnecte(etudiantConnecte, prenomConnecte);
-        } catch (IOException e) {
-            bienvenueLabel.setText("Impossible d'ouvrir l'écran de candidature mentor.");
-        }
+        devenirController.setEtudiantConnecte(etudiantConnecte, prenomConnecte);
+        afficherPageIntegree("secDevenir");
     }
 
     @FXML
     private void onProfilClick() {
-        try {
-            Stage stage = (Stage) profilButton.getScene().getWindow();
-            ProfilController controller = SceneNavigator.switchToAndGetController(
-                    stage, "/com/uadb/mentoruadb/fxml/profil.fxml", "Mentor-UADB - Mon profil");
-            controller.setContexte(etudiantConnecte, prenomConnecte);
-        } catch (IOException e) {
-            bienvenueLabel.setText("Impossible d'ouvrir le profil.");
-        }
+        profilController.setContexte(etudiantConnecte, prenomConnecte);
+        afficherPageIntegree("secProfil");
     }
 
     @FXML

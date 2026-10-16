@@ -705,21 +705,40 @@ public class DashboardMentorController {
     }
 
     /**
-     * Affiche une section intégrée du tableau de bord mentor.
-     *
-     * @param idSection identifiant JavaFX de la section à afficher
+     * Barre latérale : affiche la rubrique dont l'id est stocké dans le userData du
+     * bouton cliqué.
      */
-    private void afficherPageIntegree(String idSection) {
-        if (sectionsPane == null || idSection == null) {
-            return;
-        }
+    @FXML
+    private void onMenuClick(ActionEvent event) {
+        ToggleButton bouton = (ToggleButton) event.getSource();
+        bouton.setSelected(true); // empêche de désélectionner la rubrique courante
+        afficherSection((String) bouton.getUserData());
+    }
 
-        for (Node node : sectionsPane.getChildren()) {
-            boolean afficher = idSection.equals(node.getId());
-
-            node.setVisible(afficher);
-            node.setManaged(afficher);
+    /**
+     * Affiche une rubrique de la zone centrale ; recharge les données pour les
+     * rubriques de consultation.
+     */
+    private void afficherSection(String cible) {
+        for (Node section : sectionsPane.getChildren()) {
+            boolean visible = cible.equals(section.getId());
+            section.setVisible(visible);
+            section.setManaged(visible);
         }
+        if (List.of("secAccueil", "secDemandes", "secSeances", "secEvaluations", "secFichiers").contains(cible)) {
+            if (mentorConnecte != null) {
+                rafraichir();
+            }
+        }
+    }
+
+    /**
+     * Ouvre une page intégrée (séance de groupe) : plus aucune rubrique du menu
+     * n'est surlignée.
+     */
+    private void afficherPageIntegree(String cible) {
+        menuGroup.selectToggle(null);
+        afficherSection(cible);
     }
 
     @FXML

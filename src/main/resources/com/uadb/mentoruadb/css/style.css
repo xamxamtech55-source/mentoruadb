@@ -242,7 +242,7 @@
 }
 
 .button.nav-button {
-    -fx-pref-width: auto;
+    -fx-pref-width: -1;
     -fx-min-width: 90px;
     -fx-padding: 7 14 7 14;
 }
@@ -597,18 +597,6 @@
     -fx-border-color: #0057C8;
 }
 
-.acc-oeil {
-    -fx-background-color: transparent;
-    -fx-cursor: hand;
-}
-
-.acc-lien {
-    -fx-background-color: transparent;
-    -fx-text-fill: #0057C8;
-    -fx-padding: 0;
-    -fx-cursor: hand;
-}
-
 .acc-bouton-principal {
     -fx-background-color: #0057C8;
     -fx-text-fill: white;
@@ -861,4 +849,131 @@
 .acc-pied-texte {
     -fx-text-fill: white;
     -fx-font-size: 11px;
+}
+
+/* ===== Inscription et espace administrateur (préfixe acc-) ===== */
+
+/* --- Inscription --- */
+.acc-inscription-scroll,
+.acc-inscription-scroll>.viewport {
+    -fx-background-color: #F4F7FB;
+}
+
+.acc-inscription-racine {
+    -fx-background-color: #F4F7FB;
+    -fx-padding: 28 20 28 20;
+}
+
+.acc-inscription-carte {
+    -fx-background-color: white;
+    -fx-background-radius: 14;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 14;
+    -fx-effect: dropshadow(gaussian, rgba(11, 47, 107, 0.08), 16, 0, 0, 4);
+}
+
+.acc-aide {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 11px;
+}
+
+/* --- Espace administrateur --- */
+.acc-admin-racine {
+    -fx-background-color: #F4F7FB;
+}
+
+.acc-topbar {
+    -fx-background-color: #0B2F6B;
+    -fx-padding: 10 22 10 22;
+}
+
+.acc-topbar-titre {
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.acc-topbar-info {
+    -fx-text-fill: #CFE0FF;
+    -fx-font-size: 12px;
+}
+
+.acc-deconnexion {
+    -fx-background-color: rgba(255, 255, 255, 0.14);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 8 16 8 16;
+    -fx-cursor: hand;
+}
+
+.acc-deconnexion:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.25);
+}
+
+.acc-admin-sidebar {
+    -fx-background-color: linear-gradient(to bottom, #0B2F6B, #0A3D85);
+    -fx-padding: 22 14 18 14;
+}
+
+.acc-admin-section {
+    -fx-text-fill: #8FB3E8;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 8 10;
+}
+
+/* La rubrique sélectionnée doit ressortir : règle placée après acc-menu:hover */
+.acc-menu:selected {
+    -fx-background-color: #0057C8;
+}
+
+.acc-titre-page {
+    -fx-text-fill: #0B2F6B;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.acc-admin-centre {
+    -fx-background-color: #F4F7FB;
+}
+
+/* ===== Correctifs de largeur : la règle globale .button impose 260px ===== */
+
+/* Bouton œil : petit carré sans fond, à droite du champ */
+.button.acc-oeil {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    -fx-padding: 0 8 0 8;
+    -fx-text-fill: #64748B;
+    -fx-pref-width: 36px;
+    -fx-min-width: 36px;
+    -fx-max-width: 36px;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.button.acc-oeil:hover,
+.button.acc-oeil:pressed {
+    -fx-background-color: transparent;
+    -fx-text-fill: #0057C8;
+}
+
+/* Liens : largeur selon le texte */
+.button.acc-lien {
+    -fx-pref-width: -1;
+}
+
+/* Bouton Déconnexion de la barre du haut : largeur selon le texte */
+.button.acc-deconnexion {
+    -fx-pref-width: -1;
+}
+
+/* Boutons de la bannière d'accueil : largeur fixe et lisible */
+.button.acc-bouton-hero,
+.button.acc-bouton-hero-secondaire {
+    -fx-pref-width: 200px;
+    -fx-min-width: 200px;
 }

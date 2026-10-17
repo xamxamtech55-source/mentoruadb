@@ -14,18 +14,22 @@ import java.io.IOException;
  */
 public class Main extends Application {
 
+    /** Taille minimale : en dessous, les écrans ne sont plus utilisables. */
+    private static final double LARGEUR_MIN = 360.0;
+    private static final double HAUTEUR_MIN = 520.0;
+
     @Override
     public void start(Stage stage) throws IOException {
         Parent root = FXMLLoader.load(
-                getClass().getResource("/com/uadb/mentoruadb/fxml/bienvenue.fxml")
-        );
+                getClass().getResource("/com/uadb/mentoruadb/fxml/bienvenue.fxml"));
 
         Scene scene = new Scene(root, 950, 700);
         scene.getStylesheets().add(
-                getClass().getResource("/com/uadb/mentoruadb/css/style.css").toExternalForm()
-        );
+                getClass().getResource("/com/uadb/mentoruadb/css/style.css").toExternalForm());
 
         stage.setTitle("Mentor-UADB");
+        stage.setMinWidth(LARGEUR_MIN);
+        stage.setMinHeight(HAUTEUR_MIN);
         stage.setScene(scene);
         stage.show();
     }

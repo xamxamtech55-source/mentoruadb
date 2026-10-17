@@ -5,6 +5,7 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -13,85 +14,128 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane styleClass="login-fond"
-           xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="com.uadb.mentoruadb.controller.LoginController">
-    <children>
-        <Region styleClass="login-voile" />
-
-        <VBox alignment="CENTER" spacing="18.0">
-            <padding>
-                <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
-            </padding>
-
-            <!-- En-tête UADB -->
-            <HBox alignment="CENTER" spacing="12.0">
-                <StackPane styleClass="login-logo-cercle" maxWidth="58.0" maxHeight="58.0">
-                    <ImageView fitHeight="48.0" fitWidth="48.0" preserveRatio="true">
-                        <Image url="@../images/logo-uadb.png" />
-                    </ImageView>
-                </StackPane>
-                <VBox spacing="1.0" alignment="CENTER_LEFT">
-                    <Label text="UADB" styleClass="login-entete-titre" />
-                    <Label text="Université Alioune Diop de Bambey" styleClass="login-entete-sous" />
-                </VBox>
-            </HBox>
-
-            <!-- Carte de connexion -->
-            <VBox alignment="CENTER_LEFT" spacing="8.0" prefWidth="420.0" minWidth="420.0" maxWidth="420.0"
-                  styleClass="login-carte">
-                <padding>
-                    <Insets top="26.0" right="28.0" bottom="22.0" left="28.0" />
-                </padding>
-
-                <VBox alignment="CENTER" spacing="2.0">
-                    <Label text="MentorUADB" styleClass="login-carte-marque" />
-                    <Label text="Ensemble pour la réussite" styleClass="login-carte-slogan" />
-                </VBox>
-
-                <Region prefHeight="8.0" />
-                <Label text="Bienvenue !" styleClass="login-carte-titre" />
-                <Label text="Connectez-vous pour accéder à votre espace" styleClass="login-aide" />
-                <Region prefHeight="6.0" />
-
-                <Label text="Email institutionnel" styleClass="login-champ-libelle" />
-                <TextField fx:id="emailField" promptText="ex : prenom.nom@uadb.edu.sn" prefWidth="364.0" maxWidth="364.0" />
-
-                <Region prefHeight="2.0" />
-                <Label text="Mot de passe" styleClass="login-champ-libelle" />
-                <StackPane prefWidth="364.0" maxWidth="364.0">
-                    <PasswordField fx:id="motDePasseField" promptText="Entrez votre mot de passe" prefWidth="364.0" maxWidth="364.0"
-                                   style="-fx-padding: 8 42 8 10;" />
-                    <TextField fx:id="motDePasseVisibleField" promptText="Entrez votre mot de passe" prefWidth="364.0" maxWidth="364.0"
-                               style="-fx-padding: 8 42 8 10;" visible="false" managed="false" />
-                    <Button fx:id="toggleMotDePasseButton" text="👁" onAction="#onToggleMotDePasseClick"
-                            styleClass="toggle-password-button" StackPane.alignment="CENTER_RIGHT" />
-                </StackPane>
-
-                <HBox alignment="CENTER_LEFT" maxWidth="364.0">
-                    <CheckBox fx:id="souvenirCheckBox" text="Se souvenir de moi" styleClass="login-case" />
-                    <Region HBox.hgrow="ALWAYS" />
-                    <Button fx:id="motDePasseOublieButton" text="Mot de passe oublié ?" onAction="#onMotDePasseOublieClick"
-                            styleClass="lien-discret" />
-                </HBox>
-
-                <Button text="Se connecter  →" onAction="#onConnexionClick" styleClass="login-bouton-principal" />
-
-                <HBox alignment="CENTER" spacing="2.0" maxWidth="364.0">
-                    <Label text="Vous n'avez pas de compte ?" styleClass="login-aide" />
-                    <Button fx:id="creerCompteButton" text="Créer un compte" onAction="#onCreerCompteClick"
-                            styleClass="lien-discret" />
-                </HBox>
-
-                <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" maxWidth="364.0" />
-            </VBox>
+<HBox fx:id="racine" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.uadb.mentoruadb.controller.LoginController"
+      styleClass="acc-login-racine">
+  <children>
+    <!-- Panneau gauche : photo du bâtiment + identité (masqué en petite fenêtre) -->
+    <StackPane fx:id="panneauGauche" styleClass="acc-login-gauche" prefWidth="400.0">
+      <children>
+        <ImageView fx:id="imageGauche" preserveRatio="true" pickOnBounds="false"
+                                   StackPane.alignment="TOP_CENTER">
+          <image>
+            <Image url="@../images/bat.jpg"/>
+          </image>
+        </ImageView>
+        <Region styleClass="acc-voile-gauche"/>
+        <VBox alignment="CENTER" spacing="10.0" pickOnBounds="false">
+          <padding>
+            <Insets top="30.0" right="24.0" bottom="24.0" left="24.0"/>
+          </padding>
+          <children>
+            <StackPane styleClass="acc-logo-cercle" prefWidth="104.0" prefHeight="104.0"
+                                               maxWidth="104.0" maxHeight="104.0">
+              <children>
+                <ImageView fitHeight="84.0" fitWidth="84.0" preserveRatio="true">
+                  <image>
+                    <Image url="@../images/logo-uadb.png"/>
+                  </image>
+                </ImageView>
+              </children>
+            </StackPane>
+            <Label text="UADB" styleClass="acc-logo-titre"/>
+            <Label text="Université Alioune Diop de Bambey" wrapText="true"
+                                           textAlignment="CENTER" styleClass="acc-logo-sous" />
+            <Region VBox.vgrow="ALWAYS"/>
+            <Label text="MentorUADB" styleClass="acc-marque"/>
+            <Label text="Connecter • Accompagner • Réussir" wrapText="true" styleClass="acc-marque-sous"/>
+            <Region prefHeight="10.0"/>
+            <Label text="« S'orienter aujourd'hui, réussir demain »" wrapText="true"
+                                           textAlignment="CENTER" styleClass="acc-citation-bas" />
+          </children>
         </VBox>
-
-        <Button fx:id="retourAccueilButton" text="← Retour à l'accueil" onAction="#onRetourAccueilClick"
-                styleClass="login-retour" StackPane.alignment="TOP_LEFT">
-            <StackPane.margin>
-                <Insets top="10.0" right="0.0" bottom="0.0" left="12.0" />
-            </StackPane.margin>
-        </Button>
-    </children>
-</StackPane>
+      </children>
+    </StackPane>
+    <!-- Panneau droit : formulaire, défilable en petite fenêtre -->
+    <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" HBox.hgrow="ALWAYS"
+                        styleClass="acc-login-scroll">
+      <content>
+        <StackPane styleClass="acc-login-droite">
+          <children>
+            <VBox alignment="CENTER_LEFT" spacing="8.0" maxWidth="380.0">
+              <children>
+                <Label fx:id="titreLabel" text="Connexion à votre compte" wrapText="true"
+                                                       styleClass="acc-titre-form" />
+                <Label fx:id="sousTitreLabel"
+                                                       text="Accédez à votre espace MentorUADB et poursuivez votre parcours."
+                                                       wrapText="true" styleClass="acc-texte-gris" />
+                <Region prefHeight="12.0"/>
+                <Label text="Identifiant" styleClass="acc-libelle"/>
+                <TextField fx:id="emailField" promptText="Email institutionnel (prenom.nom@uadb.edu.sn)"
+                                                           maxWidth="Infinity" styleClass="acc-champ" />
+                <Region prefHeight="4.0"/>
+                <Label text="Mot de passe" styleClass="acc-libelle"/>
+                <StackPane maxWidth="Infinity">
+                  <children>
+                    <PasswordField fx:id="motDePasseField" promptText="Votre mot de passe"
+                                                                           maxWidth="Infinity" styleClass="acc-champ"
+                                                                           style="-fx-padding: 10 42 10 12;" />
+                    <TextField fx:id="motDePasseVisibleField" promptText="Votre mot de passe"
+                                                                       maxWidth="Infinity" styleClass="acc-champ"
+                                                                       style="-fx-padding: 10 42 10 12;" visible="false" managed="false" />
+                    <Button fx:id="toggleMotDePasseButton" text="👁" onAction="#onToggleMotDePasseClick"
+                                                                    styleClass="acc-oeil" StackPane.alignment="CENTER_RIGHT">
+                      <StackPane.margin>
+                        <Insets right="6.0"/>
+                      </StackPane.margin>
+                    </Button>
+                  </children>
+                </StackPane>
+                <Region prefHeight="4.0"/>
+                <HBox alignment="CENTER_LEFT" maxWidth="Infinity">
+                  <children>
+                    <CheckBox fx:id="souvenirCheckBox" text="Se souvenir de moi"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="motDePasseOublieButton" text="Mot de passe oublié ?"
+                                                                    onAction="#onMotDePasseOublieClick" styleClass="acc-lien" />
+                  </children>
+                </HBox>
+                <Region prefHeight="6.0"/>
+                <Button fx:id="connexionButton" text="Se connecter  →" maxWidth="Infinity"
+                                                        onAction="#onConnexionClick" styleClass="acc-bouton-principal" />
+                <Label fx:id="messageLabel" wrapText="true" maxWidth="Infinity" styleClass="acc-message"/>
+                <HBox alignment="CENTER" spacing="10.0" maxWidth="Infinity">
+                  <children>
+                    <Region styleClass="acc-ligne" HBox.hgrow="ALWAYS" prefHeight="1.0" maxHeight="1.0"/>
+                    <Label text="Ou" styleClass="acc-ou"/>
+                    <Region styleClass="acc-ligne" HBox.hgrow="ALWAYS" prefHeight="1.0" maxHeight="1.0"/>
+                  </children>
+                </HBox>
+                <Button fx:id="accesAdminButton" text="✔  Accès administrateur" maxWidth="Infinity"
+                                                        onAction="#onAccesAdminClick" styleClass="acc-bouton-secondaire" />
+                <HBox alignment="CENTER" spacing="4.0" maxWidth="Infinity">
+                  <children>
+                    <Label text="Vous n'avez pas de compte ?" styleClass="acc-texte-gris" wrapText="true"/>
+                    <Button fx:id="creerCompteButton" text="Créer un compte"
+                                                                    onAction="#onCreerCompteClick" styleClass="acc-lien" />
+                  </children>
+                </HBox>
+                <Region prefHeight="8.0"/>
+                <Label text="Université Alioune Diop de Bambey" styleClass="acc-pied"
+                                                       maxWidth="Infinity" alignment="CENTER" wrapText="true" />
+                <Label text="« S'orienter aujourd'hui, réussir demain »" styleClass="acc-texte-gris"
+                                                       maxWidth="Infinity" alignment="CENTER" wrapText="true" />
+              </children>
+            </VBox>
+            <Button fx:id="retourAccueilButton" text="← Accueil" onAction="#onRetourAccueilClick"
+                                            styleClass="acc-retour" StackPane.alignment="TOP_LEFT">
+              <StackPane.margin>
+                <Insets top="12.0" left="12.0"/>
+              </StackPane.margin>
+            </Button>
+          </children>
+        </StackPane>
+      </content>
+    </ScrollPane>
+  </children>
+</HBox>

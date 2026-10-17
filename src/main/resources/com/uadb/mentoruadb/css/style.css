@@ -501,3 +501,364 @@
 .login-case:selected .mark {
     -fx-background-color: white;
 }
+
+/* ===== Mentor-UADB : connexion et accueil (préfixe acc-) ===== */
+
+.acc-login-racine,
+.acc-accueil-racine {
+    -fx-background-color: #F4F7FB;
+}
+
+/* --- Connexion : panneau gauche --- */
+.acc-login-gauche {
+    -fx-background-color: #0B2F6B;
+}
+
+.acc-voile-gauche {
+    -fx-background-color: linear-gradient(to bottom,
+            rgba(11, 47, 107, 0.15) 0%,
+            rgba(11, 47, 107, 0.88) 55%,
+            #0B2F6B 100%);
+}
+
+.acc-logo-cercle {
+    -fx-background-color: white;
+    -fx-background-radius: 60;
+    -fx-padding: 10;
+}
+
+.acc-logo-titre {
+    -fx-text-fill: white;
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+}
+
+.acc-logo-sous {
+    -fx-text-fill: #CFE0FF;
+    -fx-font-size: 12px;
+    -fx-text-alignment: center;
+}
+
+.acc-marque {
+    -fx-text-fill: white;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
+.acc-marque-sous {
+    -fx-text-fill: #CFE0FF;
+    -fx-font-size: 12px;
+}
+
+.acc-citation-bas {
+    -fx-text-fill: #CFE0FF;
+    -fx-font-size: 12px;
+    -fx-font-style: italic;
+}
+
+/* --- Connexion : formulaire --- */
+.acc-login-scroll,
+.acc-login-scroll>.viewport {
+    -fx-background-color: white;
+}
+
+.acc-login-droite {
+    -fx-background-color: white;
+    -fx-padding: 28 24 24 24;
+}
+
+.acc-titre-form {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0B2F6B;
+}
+
+.acc-texte-gris {
+    -fx-text-fill: #64748B;
+    -fx-font-size: 13px;
+}
+
+.acc-libelle {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #334155;
+}
+
+.acc-champ {
+    -fx-background-color: white;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 10 12 10 12;
+    -fx-font-size: 13px;
+}
+
+.acc-champ:focused {
+    -fx-border-color: #0057C8;
+}
+
+.acc-oeil {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+
+.acc-lien {
+    -fx-background-color: transparent;
+    -fx-text-fill: #0057C8;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+}
+
+.acc-bouton-principal {
+    -fx-background-color: #0057C8;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 12;
+    -fx-cursor: hand;
+}
+
+.acc-bouton-principal:hover {
+    -fx-background-color: #0A4DA2;
+}
+
+.acc-bouton-secondaire {
+    -fx-background-color: white;
+    -fx-text-fill: #0B2F6B;
+    -fx-font-weight: bold;
+    -fx-border-color: #0B2F6B;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 11;
+    -fx-cursor: hand;
+}
+
+.acc-bouton-secondaire:hover {
+    -fx-background-color: #EEF4FF;
+}
+
+.acc-ligne {
+    -fx-background-color: #E2E8F0;
+}
+
+.acc-ou {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 12px;
+}
+
+.acc-message {
+    -fx-text-fill: #DC2626;
+    -fx-font-size: 12px;
+}
+
+.acc-pied {
+    -fx-text-fill: #0B2F6B;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.acc-retour {
+    -fx-background-color: transparent;
+    -fx-text-fill: #0057C8;
+    -fx-cursor: hand;
+}
+
+/* --- Accueil : barre latérale --- */
+.acc-sidebar {
+    -fx-background-color: linear-gradient(to bottom, #0B2F6B, #0A3D85);
+}
+
+.acc-marque-side {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.acc-menu {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-alignment: CENTER-LEFT;
+    -fx-padding: 10 14 10 14;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.acc-menu:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.10);
+}
+
+.acc-menu-actif {
+    -fx-background-color: #0057C8;
+}
+
+.acc-menu:focused,
+.acc-menu-compact:focused {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.acc-pilule-sombre {
+    -fx-background-color: rgba(255, 255, 255, 0.12);
+    -fx-text-fill: #CFE0FF;
+    -fx-background-radius: 14;
+    -fx-padding: 6 12 6 12;
+    -fx-font-size: 11px;
+}
+
+/* --- Accueil : barre compacte (petite fenêtre) --- */
+.acc-barre-compacte {
+    -fx-background-color: #0B2F6B;
+    -fx-padding: 8 12 8 12;
+}
+
+.acc-menu-compact {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 6 10 6 10;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.acc-menu-compact:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.12);
+}
+
+.acc-menu-compact.acc-menu-actif {
+    -fx-background-color: #0057C8;
+}
+
+/* --- Accueil : zone principale --- */
+.acc-principal {
+    -fx-background-color: #F4F7FB;
+}
+
+.acc-scroll,
+.acc-scroll>.viewport {
+    -fx-background-color: #F4F7FB;
+}
+
+.acc-contenu {
+    -fx-background-color: #F4F7FB;
+}
+
+.acc-hero {
+    -fx-background-color: linear-gradient(to right, #0B2F6B, #0A4DA2);
+    -fx-background-radius: 16;
+    -fx-padding: 26 30 26 30;
+}
+
+.acc-hero-h1 {
+    -fx-text-fill: white;
+    -fx-font-size: 22px;
+}
+
+.acc-hero-marque {
+    -fx-text-fill: #7DB8FF;
+    -fx-font-size: 34px;
+    -fx-font-weight: bold;
+}
+
+.acc-hero-texte {
+    -fx-text-fill: #E2ECFF;
+    -fx-font-size: 13px;
+}
+
+.acc-pilule {
+    -fx-background-color: #0057C8;
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-padding: 6 14 6 14;
+    -fx-font-size: 12px;
+}
+
+.acc-bouton-hero {
+    -fx-background-color: white;
+    -fx-text-fill: #0B2F6B;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 9 18 9 18;
+    -fx-cursor: hand;
+}
+
+.acc-bouton-hero-secondaire {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-border-color: white;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 8 17 8 17;
+    -fx-cursor: hand;
+}
+
+.acc-hero-image {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 12, 0, 0, 4);
+}
+
+.acc-section-titre {
+    -fx-text-fill: #0B2F6B;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.acc-carte {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 12;
+    -fx-padding: 16;
+}
+
+.acc-carte:hover {
+    -fx-translate-y: -3;
+}
+
+.acc-carte-icone {
+    -fx-font-size: 26px;
+}
+
+.acc-carte-titre {
+    -fx-text-fill: #0B2F6B;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+.acc-carte-texte {
+    -fx-text-fill: #64748B;
+    -fx-font-size: 12px;
+}
+
+.acc-citation {
+    -fx-background-color: #DCEBFF;
+    -fx-background-radius: 12;
+    -fx-padding: 22 26 22 26;
+}
+
+.acc-citation-guillemet {
+    -fx-text-fill: #0057C8;
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+}
+
+.acc-citation-texte {
+    -fx-text-fill: #0B2F6B;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.acc-citation-auteur {
+    -fx-text-fill: #475569;
+    -fx-font-size: 12px;
+}
+
+.acc-pied-page {
+    -fx-background-color: #0B2F6B;
+    -fx-padding: 12 24 12 24;
+}
+
+.acc-pied-texte {
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+}

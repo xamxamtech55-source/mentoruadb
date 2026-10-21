@@ -10,6 +10,7 @@ import com.uadb.mentoruadb.dao.MatiereDao;
 import com.uadb.mentoruadb.dao.MentorDao;
 import com.uadb.mentoruadb.dao.NotificationDao;
 import com.uadb.mentoruadb.dao.SeanceDao;
+import com.uadb.mentoruadb.dao.SeanceParticipantDao;
 import com.uadb.mentoruadb.dao.UtilisateurDao;
 import com.uadb.mentoruadb.model.DemandeMentorat;
 import com.uadb.mentoruadb.model.DemandeSeance;
@@ -24,6 +25,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -44,6 +46,7 @@ public class MentoratService {
     private final DemandeMentoratDao demandeDao = new DemandeMentoratDao();
     private final DemandeSeanceDao demandeSeanceDao = new DemandeSeanceDao();
     private final SeanceDao seanceDao = new SeanceDao();
+    private final SeanceParticipantDao seanceParticipantDao = new SeanceParticipantDao();
     private final EvaluationDao evaluationDao = new EvaluationDao();
     private final ExpertiseDao expertiseDao = new ExpertiseDao();
     private final NotificationDao notificationDao = new NotificationDao();
@@ -57,16 +60,35 @@ public class MentoratService {
     // ---------------------------------------------------------------
 
     /**
-     * Une demande ne peut porter que sur une matière que le mentor maîtrise (table expertise).
-     * Ce contrôle existait déjà côté écran (RechercheMentorController) mais uniquement là : il
-     * est fait ici aussi, pour qu'aucun autre chemin de création d'une demande ne puisse le
-     * contourner.
+     * Crée une demande de mentorat. Contrôles métier (indépendants de l'écran, pour qu'aucun
+     * autre chemin ne les contourne) :
+     *   - le mentor doit exister et être VALIDE (RG : jamais de mentor non validé) ;
+     *   - un étudiant ne peut pas se demander lui-même comme mentor ;
+     *   - la matière demandée doit figurer dans les expertises du mentor (RG23) ;
+     *   - une seule demande EN_ATTENTE à la fois pour un même couple mentor + matière
+     *     (empêche la double demande, y compris en cas de double clic).
      */
     public DemandeMentorat creerDemande(int idEtudiant, int idMentor, int idMatiere) throws SQLException {
+        Mentor mentor = mentorDao.findById(idMentor)
+                .orElseThrow(() -> new IllegalArgumentException("Mentor introuvable."));
+        if (!"VALIDE".equals(mentor.getStatutValidation())) {
+            throw new IllegalArgumentException("Ce mentor n'est pas encore validé.");
+        }
+        if (mentor.getIdEtudiant() == idEtudiant) {
+            throw new IllegalArgumentException("Tu ne peux pas demander un mentorat à toi-même.");
+        }
+
         boolean maitriseLaMatiere = expertiseDao.findByMentor(idMentor).stream()
                 .anyMatch(e -> e.getIdMatiere() == idMatiere);
         if (!maitriseLaMatiere) {
             throw new IllegalArgumentException("Ce mentor ne maîtrise pas cette matière.");
+        }
+
+        boolean dejaEnAttente = demandeDao.findByEtudiant(idEtudiant).stream()
+                .anyMatch(d -> d.getIdMentor() == idMentor && d.getIdMatiere() == idMatiere
+                        && "EN_ATTENTE".equals(d.getStatut()));
+        if (dejaEnAttente) {
+            throw new IllegalStateException("Une demande est déjà en attente pour ce mentor et cette matière.");
         }
 
         DemandeMentorat demande = new DemandeMentorat(0, idEtudiant, idMentor, idMatiere, LocalDate.now(), "EN_ATTENTE");
@@ -184,6 +206,71 @@ public class MentoratService {
     }
 
     // ---------------------------------------------------------------
+    // Séances de groupe
+    // ---------------------------------------------------------------
+
+    /**
+     * Crée une séance de groupe et invite, dans UNE transaction, tous les étudiants ayant une
+     * demande de mentorat ACCEPTEE avec ce mentor sur cette matière (aucun participant si ce
+     * list est vide — une séance de groupe sans participant n'a pas de sens). Chaque étudiant
+     * invité est notifié (RG27). Contrôles : mentor VALIDE, matière dans ses expertises (RG23),
+     * date non passée, heure_fin &gt; heure_debut (RG11).
+     */
+    public Seance creerSeanceDeGroupe(int idMentor, int idMatiere, LocalDate dateSeance, LocalTime heureDebut,
+                                      LocalTime heureFin, String modalite, String lieu) throws SQLException {
+
+        Mentor mentor = mentorDao.findById(idMentor)
+                .orElseThrow(() -> new IllegalArgumentException("Mentor introuvable."));
+        if (!"VALIDE".equals(mentor.getStatutValidation())) {
+            throw new IllegalArgumentException("Seul un mentor validé peut créer une séance de groupe.");
+        }
+        if (dateSeance == null) {
+            throw new IllegalArgumentException("La date de la séance est obligatoire.");
+        }
+        if (dateSeance.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("La date de la séance ne peut pas être dans le passé.");
+        }
+        if (heureDebut == null || heureFin == null || !heureFin.isAfter(heureDebut)) {
+            throw new IllegalArgumentException("L'heure de fin doit être après l'heure de début.");
+        }
+        boolean maitriseLaMatiere = expertiseDao.findByMentor(idMentor).stream()
+                .anyMatch(e -> e.getIdMatiere() == idMatiere);
+        if (!maitriseLaMatiere) {
+            throw new IllegalArgumentException("Ce mentor ne maîtrise pas cette matière.");
+        }
+
+        List<Integer> etudiants = demandeDao.findEtudiantsAcceptesByMentorEtMatiere(idMentor, idMatiere);
+        if (etudiants.isEmpty()) {
+            throw new IllegalStateException("Aucun étudiant n'a une demande acceptée en "
+                    + nomMatiere(idMatiere) + " — cette séance de groupe n'aurait aucun participant.");
+        }
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                Seance seance = Seance.groupe(0, idMentor, idMatiere, dateSeance, heureDebut, heureFin,
+                        "PLANIFIEE", modalite, lieu);
+                seance = seanceDao.create(seance, conn);
+
+                for (Integer idEtudiant : etudiants) {
+                    seanceParticipantDao.ajouter(seance.getIdSeance(), idEtudiant, conn);
+                    notificationDao.creerPourEtudiant(idEtudiant,
+                            "Nouvelle séance de groupe en " + nomMatiere(idMatiere) + " avec " + nomMentor(idMentor)
+                                    + " le " + dateSeance + " de " + heureDebut + " à " + heureFin
+                                    + " (" + modalite + ", " + lieu + "). Confirme ta présence depuis ton tableau de bord.",
+                            conn);
+                }
+
+                conn.commit();
+                return seance;
+            } catch (SQLException | RuntimeException e) {
+                conn.rollback();
+                throw e;
+            }
+        }
+    }
+
+    // ---------------------------------------------------------------
     // Séances et évaluations (inchangé)
     // ---------------------------------------------------------------
 
@@ -202,6 +289,10 @@ public class MentoratService {
         }
 
         Seance seance = resultat.get();
+        if (!"PLANIFIEE".equals(seance.getStatut())) {
+            throw new IllegalStateException(
+                    "Seule une séance planifiée peut être modifiée (statut actuel : " + seance.getStatut() + ").");
+        }
         seance.setStatut(statut);
         seanceDao.update(seance);
     }

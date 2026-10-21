@@ -2,29 +2,33 @@ package com.uadb.mentoruadb.controller;
 
 import com.uadb.mentoruadb.dao.MentorDao;
 import com.uadb.mentoruadb.dto.MentorDetailVue;
-import com.uadb.mentoruadb.util.SceneNavigator;
+import com.uadb.mentoruadb.util.MessageLabel;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Locale;
 
-/** Contrôleur lié à fxml/liste-mentors.fxml : consultation de tous les mentors par l'admin. */
+/**
+ * Contrôleur lié à fxml/liste-mentors.fxml : vue administrative de tous les mentors
+ * (validés, en attente et refusés), contrairement à la recherche étudiant qui ne
+ * montre que les mentors validés.
+ */
 public class ListeMentorsController {
 
     private static final String TOUS = "Tous les statuts";
 
     @FXML private ChoiceBox<String> filtreStatut;
+    @FXML private TextField rechercheField;
     @FXML private TableView<MentorDetailVue> mentorsTable;
     @FXML private TableColumn<MentorDetailVue, String> colMentor;
     @FXML private TableColumn<MentorDetailVue, String> colFiliere;
@@ -41,8 +45,8 @@ public class ListeMentorsController {
     @FXML private Label modeValue;
     @FXML private Label capaciteValue;
     @FXML private Label biographieValue;
+    @FXML private Label aucunResultatLabel;
     @FXML private Label messageLabel;
-    @FXML private Button retourButton;
 
     private final MentorDao mentorDao = new MentorDao();
     private List<MentorDetailVue> tousLesMentors = List.of();
@@ -60,10 +64,12 @@ public class ListeMentorsController {
         filtreStatut.getItems().setAll(TOUS, "Validés", "En attente", "Refusés");
         filtreStatut.setValue(TOUS);
         filtreStatut.valueProperty().addListener((obs, ancien, nouveau) -> appliquerFiltre());
+        rechercheField.textProperty().addListener((obs, ancien, nouveau) -> appliquerFiltre());
 
         mentorsTable.getSelectionModel().selectedItemProperty().addListener((obs, ancien, mentor) ->
                 afficherFiche(mentor));
 
+        MessageLabel.rendreDynamique(messageLabel);
         charger();
     }
 
@@ -100,18 +106,21 @@ public class ListeMentorsController {
             tousLesMentors = mentorDao.findTousAvecDetails();
             appliquerFiltre();
         } catch (SQLException e) {
-            e.printStackTrace();
             messageLabel.setText("Erreur de chargement de la liste des mentors.");
         }
     }
 
     private void appliquerFiltre() {
         String choix = filtreStatut.getValue();
+        String recherche = rechercheField.getText() == null ? "" : rechercheField.getText();
         List<MentorDetailVue> filtres = tousLesMentors.stream()
                 .filter(m -> correspondAuFiltre(m.getStatutValidation(), choix))
+                .filter(m -> correspondARecherche(m, recherche))
                 .toList();
 
         mentorsTable.setItems(FXCollections.observableArrayList(filtres));
+        aucunResultatLabel.setVisible(filtres.isEmpty());
+        aucunResultatLabel.setManaged(filtres.isEmpty());
         afficherFiche(null);
         messageLabel.setText(filtres.size() + " mentor(s) affiché(s).");
     }
@@ -126,6 +135,22 @@ public class ListeMentorsController {
             case "Refusés" -> "REFUSE".equals(statut);
             default -> true;
         };
+    }
+
+    /** Recherche libre (insensible à la casse) sur nom, email, filière et matières. */
+    private static boolean correspondARecherche(MentorDetailVue m, String recherche) {
+        String texte = recherche == null ? "" : recherche.trim().toLowerCase(Locale.ROOT);
+        if (texte.isEmpty()) {
+            return true;
+        }
+        return contient(m.getNomComplet(), texte)
+                || contient(m.getEmail(), texte)
+                || contient(m.getNomFiliere(), texte)
+                || contient(m.getMatieres(), texte);
+    }
+
+    private static boolean contient(String valeur, String texteRecherche) {
+        return valeur != null && valeur.toLowerCase(Locale.ROOT).contains(texteRecherche);
     }
 
     private void afficherFiche(MentorDetailVue mentor) {
@@ -185,15 +210,5 @@ public class ListeMentorsController {
             case "LES_DEUX" -> "Les deux";
             default -> modePreference;
         };
-    }
-
-    @FXML
-    private void onRetourClick() {
-        try {
-            Stage stage = (Stage) retourButton.getScene().getWindow();
-            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/dashboard-admin.fxml", "Mentor-UADB - Administration");
-        } catch (IOException e) {
-            messageLabel.setText("Impossible de revenir au tableau de bord admin.");
-        }
     }
 }

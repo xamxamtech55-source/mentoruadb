@@ -14,6 +14,8 @@
             </padding>
 
             <Label text="Gestion des utilisateurs" styleClass="title-label" />
+            <Label text="Le mot de passe n'est jamais affiché. Un compte désactivé ne peut plus se connecter."
+                   styleClass="subtitle-label" wrapText="true" />
 
             <TableView fx:id="utilisateursTable" prefHeight="350.0">
                 <columns>
@@ -26,10 +28,9 @@
             </TableView>
 
             <HBox spacing="10.0">
-                <Button text="Activer" onAction="#onActiverClick" />
-                <Button text="Désactiver" onAction="#onDesactiverClick" styleClass="lien-button" />
-                <Button text="Supprimer" onAction="#onSupprimerClick" styleClass="lien-button" />
-                <Button fx:id="retourButton" visible="false" managed="false" text="Retour" onAction="#onRetourClick" styleClass="lien-button" />
+                <Button text="Activer" onAction="#onActiverClick" styleClass="ds-btn,ds-btn-secondary" />
+                <Button text="Désactiver" onAction="#onDesactiverClick" styleClass="ds-btn,ds-btn-secondary" />
+                <Button text="Supprimer" onAction="#onSupprimerClick" styleClass="ds-btn,ds-btn-danger" />
             </HBox>
 
             <Label fx:id="messageLabel" styleClass="message-label" />

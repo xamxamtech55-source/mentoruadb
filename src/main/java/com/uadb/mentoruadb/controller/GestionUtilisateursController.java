@@ -2,17 +2,18 @@ package com.uadb.mentoruadb.controller;
 
 import com.uadb.mentoruadb.dao.UtilisateurDao;
 import com.uadb.mentoruadb.model.Utilisateur;
-import com.uadb.mentoruadb.util.SceneNavigator;
+import com.uadb.mentoruadb.util.DialogueUtil;
+import com.uadb.mentoruadb.util.MessageLabel;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.sql.SQLException;
 
 /** Contrôleur lié à fxml/gestion-utilisateurs.fxml. Le mot de passe n'est jamais affiché (exigence sécurité). */
@@ -25,7 +26,6 @@ public class GestionUtilisateursController {
     @FXML private TableColumn<Utilisateur, String> colRole;
     @FXML private TableColumn<Utilisateur, String> colStatut;
     @FXML private Label messageLabel;
-    @FXML private Button retourButton;
 
     private final UtilisateurDao utilisateurDao = new UtilisateurDao();
 
@@ -36,7 +36,27 @@ public class GestionUtilisateursController {
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
         colRole.setCellValueFactory(new PropertyValueFactory<>("role"));
         colStatut.setCellValueFactory(new PropertyValueFactory<>("statut"));
+        colStatut.setCellFactory(col -> coloredStatutCell());
+        MessageLabel.rendreDynamique(messageLabel);
         rafraichir();
+    }
+
+    /** Colore le statut de compte (ACTIF / INACTIF) pour le distinguer d'un coup d'œil. */
+    private static TableCell<Utilisateur, String> coloredStatutCell() {
+        return new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean vide) {
+                super.updateItem(item, vide);
+                if (vide || item == null) {
+                    setText(null);
+                    getStyleClass().removeIf(c -> c.startsWith("statut-"));
+                } else {
+                    setText(item);
+                    getStyleClass().removeIf(c -> c.startsWith("statut-"));
+                    getStyleClass().add("ACTIF".equals(item) ? "statut-valide" : "statut-refuse");
+                }
+            }
+        };
     }
 
     private void rafraichir() {
@@ -49,16 +69,27 @@ public class GestionUtilisateursController {
 
     @FXML
     private void onActiverClick() {
-        changerStatut("ACTIF");
+        changerStatut("ACTIF", null);
     }
 
     @FXML
     private void onDesactiverClick() {
-        changerStatut("INACTIF");
+        Utilisateur utilisateur = utilisateursTable.getSelectionModel().getSelectedItem();
+        if (utilisateur == null) {
+            messageLabel.setText("Sélectionne un utilisateur dans le tableau d'abord.");
+            return;
+        }
+        boolean confirme = confirmer("Désactiver le compte",
+                "Désactiver le compte de " + nomComplet(utilisateur) + " (" + utilisateur.getEmail() + ") ?\n"
+                        + "Il ne pourra plus se connecter tant qu'il n'est pas réactivé.");
+        if (confirme) {
+            changerStatut("INACTIF", utilisateur);
+        }
     }
 
-    private void changerStatut(String statut) {
-        Utilisateur utilisateur = utilisateursTable.getSelectionModel().getSelectedItem();
+    private void changerStatut(String statut, Utilisateur selection) {
+        Utilisateur utilisateur = selection != null ? selection
+                : utilisateursTable.getSelectionModel().getSelectedItem();
         if (utilisateur == null) {
             messageLabel.setText("Sélectionne un utilisateur dans le tableau d'abord.");
             return;
@@ -72,8 +103,9 @@ public class GestionUtilisateursController {
             utilisateur.setStatut(statut);
             utilisateurDao.update(utilisateur);
             rafraichir();
-            messageLabel.setText("Statut mis à jour : " + statut + ".");
+            succes("Statut mis à jour : " + nomComplet(utilisateur) + " est maintenant " + statut + ".");
         } catch (SQLException e) {
+            messageLabel.getStyleClass().setAll("message-label");
             messageLabel.setText("Erreur lors de la mise à jour.");
         }
     }
@@ -90,22 +122,41 @@ public class GestionUtilisateursController {
             return;
         }
 
+        boolean confirme = confirmer("Supprimer le compte",
+                "Supprimer définitivement le compte de " + nomComplet(utilisateur)
+                        + " (" + utilisateur.getEmail() + ") ?\n"
+                        + "Ses données liées (étudiant, mentor…) empêcheront la suppression.");
+        if (!confirme) {
+            return;
+        }
+
         try {
             utilisateurDao.delete(utilisateur.getIdUtilisateur());
             rafraichir();
-            messageLabel.setText("Utilisateur supprimé.");
+            succes("Utilisateur supprimé.");
         } catch (SQLException e) {
+            messageLabel.getStyleClass().setAll("message-label");
             messageLabel.setText("Impossible de supprimer : cet utilisateur a des données liées (étudiant, mentor...).");
         }
     }
 
-    @FXML
-    private void onRetourClick() {
-        try {
-            Stage stage = (Stage) retourButton.getScene().getWindow();
-            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/dashboard-admin.fxml", "Mentor-UADB - Administration");
-        } catch (IOException e) {
-            messageLabel.setText("Impossible de revenir au tableau de bord admin.");
-        }
+    private static boolean confirmer(String titre, String contenu) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(titre);
+        alert.setHeaderText(null);
+        alert.setContentText(null);
+        DialogueUtil.contenu(alert, contenu);
+        return alert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK;
+    }
+
+    private static String nomComplet(Utilisateur utilisateur) {
+        return (utilisateur.getPrenom() != null ? utilisateur.getPrenom() : "") + " "
+                + (utilisateur.getNom() != null ? utilisateur.getNom() : "");
+    }
+
+    /** Le message de confirmation n'est pas une erreur : il passe en vert. */
+    private void succes(String texte) {
+        messageLabel.getStyleClass().setAll("succes-label");
+        messageLabel.setText(texte);
     }
 }

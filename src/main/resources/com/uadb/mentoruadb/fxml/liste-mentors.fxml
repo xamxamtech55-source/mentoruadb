@@ -17,12 +17,18 @@
             </padding>
 
             <Label text="Liste des mentors" styleClass="title-label" />
-            <Label text="Tous les mentors déclarés, avec leur statut de validation." styleClass="subtitle-label" />
+            <Label text="Gérez les candidatures et les statuts des mentors."
+                   styleClass="subtitle-label" wrapText="true" />
 
             <HBox spacing="10.0" alignment="CENTER_LEFT">
                 <Label text="Filtrer par statut :" />
-                <ChoiceBox fx:id="filtreStatut" prefWidth="220.0" />
+                <ChoiceBox fx:id="filtreStatut" prefWidth="180.0" />
+                <TextField fx:id="rechercheField" promptText="Rechercher par nom, filière ou matière…"
+                           prefWidth="260.0" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
             </HBox>
+
+            <Label fx:id="aucunResultatLabel" text="Aucun mentor ne correspond à la recherche."
+                   styleClass="ds-empty" wrapText="true" visible="false" managed="false" />
 
             <TableView fx:id="mentorsTable" prefHeight="180.0">
                 <columns>
@@ -63,10 +69,6 @@
                     <Label fx:id="biographieValue" styleClass="dossier-valeur" wrapText="true" GridPane.rowIndex="9" GridPane.columnIndex="1" />
                 </GridPane>
             </VBox>
-
-            <HBox spacing="10.0" alignment="CENTER_LEFT">
-                <Button fx:id="retourButton" visible="false" managed="false" text="Retour" onAction="#onRetourClick" styleClass="action-button" />
-            </HBox>
 
             <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />
         </VBox>

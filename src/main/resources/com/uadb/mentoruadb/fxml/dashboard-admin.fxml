@@ -19,31 +19,32 @@
 
     <!-- Barre du haut -->
     <top>
-        <HBox styleClass="topbar">
+        <HBox styleClass="topbar" alignment="CENTER_LEFT"><Button fx:id="hamburgerButton" text="☰" onAction="#onHamburgerClick" styleClass="hamburger-button" />
             <Label text="MentorUADB" styleClass="topbar-titre" />
             <Region HBox.hgrow="ALWAYS" />
             <Label text="Université Alioune Diop de Bambey" styleClass="topbar-info" />
+            <Label fx:id="adminHeaderLabel" text="Administrateur" styleClass="topbar-info" />
         </HBox>
     </top>
 
     <!-- Barre latérale -->
     <left>
-        <VBox styleClass="sidebar" prefWidth="215.0" minWidth="215.0" spacing="3.0">
+        <VBox fx:id="sidebarPane" styleClass="sidebar" prefWidth="215.0" minWidth="215.0" spacing="3.0">
             <Label text="ADMINISTRATION" styleClass="sidebar-section" />
 
-            <ToggleButton text="Validation des mentors" toggleGroup="$menuGroup" selected="true"
+            <ToggleButton fx:id="menuValidation" text="Validation des mentors" toggleGroup="$menuGroup" selected="true"
                           onAction="#onMenuClick" styleClass="menu-item" maxWidth="Infinity">
                 <userData><String fx:value="secValidation" /></userData>
             </ToggleButton>
-            <ToggleButton text="Liste des mentors" toggleGroup="$menuGroup"
+            <ToggleButton fx:id="menuMentors" text="Liste des mentors" toggleGroup="$menuGroup"
                           onAction="#onMenuClick" styleClass="menu-item" maxWidth="Infinity">
                 <userData><String fx:value="secListeMentors" /></userData>
             </ToggleButton>
-            <ToggleButton text="Utilisateurs" toggleGroup="$menuGroup"
+            <ToggleButton fx:id="menuUtilisateurs" text="Utilisateurs" toggleGroup="$menuGroup"
                           onAction="#onMenuClick" styleClass="menu-item" maxWidth="Infinity">
                 <userData><String fx:value="secUtilisateurs" /></userData>
             </ToggleButton>
-            <ToggleButton text="UFR / Filières / Matières" toggleGroup="$menuGroup"
+            <ToggleButton fx:id="menuCatalogue" text="UFR / Filières / Matières" toggleGroup="$menuGroup"
                           onAction="#onMenuClick" styleClass="menu-item" maxWidth="Infinity">
                 <userData><String fx:value="secDonnees" /></userData>
             </ToggleButton>
@@ -64,6 +65,39 @@
 
             <Label fx:id="bienvenueLabel" styleClass="title-label" wrapText="true" />
 
+            <!-- Zone de synthèse : utilisateurs, candidatures, mentors -->
+            <HBox spacing="12.0">
+                <VBox styleClass="ds-stat-card,ds-stat-card-compact" HBox.hgrow="ALWAYS" maxWidth="Infinity" spacing="2.0">
+                    <Label fx:id="statUtilisateursValue" text="0" styleClass="ds-stat-value" />
+                    <Label text="Utilisateurs" styleClass="ds-stat-label" wrapText="true" />
+                    <Label fx:id="statUtilisateursDetail" styleClass="ds-stat-label" wrapText="true" />
+                </VBox>
+                <VBox styleClass="ds-stat-card,ds-stat-card-compact" HBox.hgrow="ALWAYS" maxWidth="Infinity" spacing="2.0">
+                    <Label fx:id="statCandidaturesValue" text="0" styleClass="ds-stat-value" />
+                    <Label text="Candidatures mentor" styleClass="ds-stat-label" wrapText="true" />
+                    <Label fx:id="statCandidaturesDetail" styleClass="ds-stat-label" wrapText="true" />
+                </VBox>
+                <VBox styleClass="ds-stat-card,ds-stat-card-compact" HBox.hgrow="ALWAYS" maxWidth="Infinity" spacing="2.0">
+                    <Label fx:id="statMentorsValue" text="0" styleClass="ds-stat-value" />
+                    <Label text="Mentors déclarés" styleClass="ds-stat-label" wrapText="true" />
+                    <Label fx:id="statMentorsDetail" styleClass="ds-stat-label" wrapText="true" />
+                </VBox>
+            </HBox>
+
+            <Label fx:id="aucuneCandidatureLabel" text="Aucune candidature en attente — rien à traiter pour le moment."
+                   styleClass="ds-empty" wrapText="true" visible="false" managed="false" />
+
+            <!-- Raccourcis vers les rubriques -->
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <Button text="Traiter les candidatures" onAction="#onOuvrirValidationClick" styleClass="ds-btn,ds-btn-secondary" />
+                <Button text="Liste des mentors" onAction="#onOuvrirMentorsClick" styleClass="ds-btn,ds-btn-secondary" />
+                <Button text="Gérer les utilisateurs" onAction="#onOuvrirUtilisateursClick" styleClass="ds-btn,ds-btn-secondary" />
+                <Button text="Données académiques" onAction="#onOuvrirCatalogueClick" styleClass="ds-btn,ds-btn-secondary" />
+            </HBox>
+
+            <!-- Message de la rubrique active -->
+            <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />
+
             <StackPane fx:id="sectionsPane" VBox.vgrow="ALWAYS">
                 <StackPane fx:id="secValidation">
                     <fx:include source="validation-mentors.fxml" />
@@ -78,8 +112,6 @@
                     <fx:include source="gestion-donnees.fxml" />
                 </StackPane>
             </StackPane>
-
-            <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />
         </VBox>
     </center>
 </BorderPane>

@@ -20,6 +20,7 @@ import com.uadb.mentoruadb.model.Matiere;
 import com.uadb.mentoruadb.model.Mentor;
 import com.uadb.mentoruadb.model.Notification;
 import com.uadb.mentoruadb.service.MentoratService;
+import com.uadb.mentoruadb.util.MessageLabel;
 import com.uadb.mentoruadb.util.SceneNavigator;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -28,6 +29,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.awt.Desktop;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,11 +43,15 @@ import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 /** Contrôleur lié à fxml/dashboard-mentor.fxml. */
 public class DashboardMentorController {
 
     @FXML private Label bienvenueLabel;
     @FXML private Button deconnexionButton;
+    @FXML private Button hamburgerButton;
+    @FXML private VBox sidebarPane;
+    @FXML private Button profilButton;
     @FXML private Button retourEtudiantButton;
     @FXML private Button seanceGroupeButton;
     @FXML private Button notificationsButton;
@@ -160,6 +166,9 @@ public class DashboardMentorController {
         // Recharge la liste "Partager avec" à chaque changement de matière (elle dépend des
         // étudiants qui ont une demande acceptée pour CETTE matière avec ce mentor).
         matiereFichierComboBox.valueProperty().addListener((obs, ancienne, nouvelle) -> rafraichirDestinataires(nouvelle));
+
+        MessageLabel.rendreDynamique(messageLabel);
+        hamburgerButton.setTooltip(new Tooltip("Masquer le menu"));
     }
 
     /** Appelée manuellement après le chargement de cet écran, pour lui transmettre le mentor connecté. */
@@ -374,6 +383,8 @@ public class DashboardMentorController {
             mentoratService.marquerSeanceRealisee(seance.getIdSeance());
             messageLabel.setText("Séance marquée comme réalisée.");
             rafraichir();
+        } catch (IllegalStateException e) {
+            messageLabel.setText(e.getMessage());
         } catch (SQLException e) {
             messageLabel.setText("Erreur lors de la mise à jour.");
         }
@@ -391,6 +402,8 @@ public class DashboardMentorController {
             mentoratService.annulerSeance(seance.getIdSeance());
             messageLabel.setText("Séance annulée.");
             rafraichir();
+        } catch (IllegalStateException e) {
+            messageLabel.setText(e.getMessage());
         } catch (SQLException e) {
             messageLabel.setText("Erreur lors de l'annulation.");
         }
@@ -540,6 +553,129 @@ public class DashboardMentorController {
             section.setVisible(visible);
             section.setManaged(visible);
         }
+    }
+
+    @FXML
+    private void onHamburgerClick() {
+        if (sidebarPane != null) {
+            sidebarPane.setVisible(!sidebarPane.isVisible());
+            sidebarPane.setManaged(sidebarPane.isVisible());
+            Tooltip infobulle = hamburgerButton.getTooltip();
+            if (infobulle != null) {
+                infobulle.setText(sidebarPane.isVisible() ? "Masquer le menu" : "Afficher le menu");
+            }
+        }
+    }
+
+    @FXML
+    private void onProfilClick() {
+        try {
+            Stage stage = (Stage) profilButton.getScene().getWindow();
+            ProfilController controller = SceneNavigator.switchToAndGetController(
+                    stage, "/com/uadb/mentoruadb/fxml/profil.fxml", "Mentor-UADB - Mon profil");
+            controller.setContexte(etudiantConnecte, prenomConnecte);
+        } catch (IOException e) {
+            messageLabel.setText("Impossible d'ouvrir le profil.");
+        }
+    }
+
+    @FXML
+    private void onConsulterDemandeClick() {
+        DemandeRecueVue demande = demandesTable.getSelectionModel().getSelectedItem();
+        if (demande == null) {
+            messageLabel.setText("Sélectionne une demande dans le tableau d'abord.");
+            return;
+        }
+        messageLabel.setText("Demande de " + demande.getNomEtudiant() + " pour " + demande.getNomMatiere()
+                + " — demandée le " + demande.getDateDemande() + " (statut : " + demande.getStatut() + ").");
+    }
+
+    @FXML
+    private void onConsulterDemandeSeanceClick() {
+        DemandeSeanceRecueVue demandeSeance = demandeSeanceTable.getSelectionModel().getSelectedItem();
+        if (demandeSeance == null) {
+            messageLabel.setText("Sélectionne une demande de séance dans le tableau d'abord.");
+            return;
+        }
+        StringBuilder details = new StringBuilder("Demande de " + demandeSeance.getNomEtudiant() + " pour "
+                + demandeSeance.getNomMatiere() + " — créneau souhaité : "
+                + (demandeSeance.getDateSouhaitee() == null ? "au premier moment possible" : demandeSeance.getDateSouhaitee())
+                + " (statut : " + demandeSeance.getStatut() + ").");
+        if (demandeSeance.getMessage() != null && !demandeSeance.getMessage().isBlank()) {
+            details.append(" Message : ").append(demandeSeance.getMessage());
+        }
+        messageLabel.setText(details.toString());
+    }
+
+    @FXML
+    private void onGroupeMarquerRealiseeClick() {
+        SeanceGroupeVue seance = seancesGroupeTable.getSelectionModel().getSelectedItem();
+        if (seance == null) {
+            messageLabel.setText("Sélectionne une séance de groupe dans le tableau d'abord.");
+            return;
+        }
+
+        try {
+            mentoratService.marquerSeanceRealisee(seance.getIdSeance());
+            messageLabel.setText("Séance de groupe marquée comme réalisée.");
+            rafraichir();
+        } catch (IllegalStateException e) {
+            messageLabel.setText(e.getMessage());
+        } catch (SQLException e) {
+            messageLabel.setText("Erreur lors de la mise à jour.");
+        }
+    }
+
+    @FXML
+    private void onGroupeAnnulerClick() {
+        SeanceGroupeVue seance = seancesGroupeTable.getSelectionModel().getSelectedItem();
+        if (seance == null) {
+            messageLabel.setText("Sélectionne une séance de groupe dans le tableau d'abord.");
+            return;
+        }
+
+        try {
+            mentoratService.annulerSeance(seance.getIdSeance());
+            messageLabel.setText("Séance de groupe annulée.");
+            rafraichir();
+        } catch (IllegalStateException e) {
+            messageLabel.setText(e.getMessage());
+        } catch (SQLException e) {
+            messageLabel.setText("Erreur lors de l'annulation.");
+        }
+    }
+
+    @FXML
+    private void onOuvrirFichierClick() {
+        Fichier fichier = fichiersTable.getSelectionModel().getSelectedItem();
+        if (fichier == null) {
+            messageLabel.setText("Sélectionne un fichier dans le tableau d'abord.");
+            return;
+        }
+
+        java.io.File f = new java.io.File(fichier.getChemin());
+        if (!f.exists()) {
+            messageLabel.setText("Fichier introuvable sur le disque.");
+            return;
+        }
+
+        if (!Desktop.isDesktopSupported() || !Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
+            messageLabel.setText(
+                    "Ouverture automatique non disponible ici. Chemin du fichier : " + f.getAbsolutePath());
+            return;
+        }
+
+        messageLabel.setText("Ouverture en cours...");
+        Thread thread = new Thread(() -> {
+            try {
+                Desktop.getDesktop().open(f);
+            } catch (Exception e) {
+                javafx.application.Platform.runLater(() -> messageLabel.setText(
+                        "Impossible d'ouvrir automatiquement. Chemin : " + f.getAbsolutePath()));
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
     }
 
     @FXML

@@ -1,17 +1,18 @@
 package com.uadb.mentoruadb.controller;
 
-import com.uadb.mentoruadb.dao.DemandeMentoratDao;
 import com.uadb.mentoruadb.dao.ExpertiseDao;
-import com.uadb.mentoruadb.dao.SeanceDao;
-import com.uadb.mentoruadb.dao.SeanceParticipantDao;
 import com.uadb.mentoruadb.model.Etudiant;
 import com.uadb.mentoruadb.model.Matiere;
 import com.uadb.mentoruadb.model.Mentor;
-import com.uadb.mentoruadb.model.Seance;
+import com.uadb.mentoruadb.service.MentoratService;
+import com.uadb.mentoruadb.util.DialogueUtil;
+import com.uadb.mentoruadb.util.MessageLabel;
 import com.uadb.mentoruadb.util.SceneNavigator;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -20,6 +21,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -38,9 +40,7 @@ public class SeanceGroupeController {
     @FXML private Button retourButton;
 
     private final ExpertiseDao expertiseDao = new ExpertiseDao();
-    private final SeanceDao seanceDao = new SeanceDao();
-    private final SeanceParticipantDao seanceParticipantDao = new SeanceParticipantDao();
-    private final DemandeMentoratDao demandeDao = new DemandeMentoratDao();
+    private final MentoratService mentoratService = new MentoratService();
 
     private Etudiant etudiantConnecte;
     private Mentor mentorConnecte;
@@ -49,6 +49,7 @@ public class SeanceGroupeController {
     @FXML
     public void initialize() {
         modaliteComboBox.setItems(FXCollections.observableArrayList("EN_LIGNE", "PRESENTIEL"));
+        MessageLabel.rendreDynamique(messageLabel);
     }
 
     /** Appelée manuellement depuis DashboardMentorController après le chargement de cet écran. */
@@ -76,6 +77,10 @@ public class SeanceGroupeController {
             messageLabel.setText("Remplis tous les champs.");
             return;
         }
+        if (dateSeancePicker.getValue().isBefore(LocalDate.now())) {
+            messageLabel.setText("La date de la séance ne peut pas être dans le passé.");
+            return;
+        }
 
         try {
             DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm");
@@ -87,22 +92,28 @@ public class SeanceGroupeController {
                 return;
             }
 
-            Seance seance = Seance.groupe(0, mentorConnecte.getIdMentor(), matiere.getIdMatiere(),
-                    dateSeancePicker.getValue(), heureDebut, heureFin, "PLANIFIEE", modalite, lieu);
-            seance = seanceDao.create(seance);
-
-            List<Integer> etudiants = demandeDao.findEtudiantsAcceptesByMentorEtMatiere(
-                    mentorConnecte.getIdMentor(), matiere.getIdMatiere());
-            for (Integer idEtudiant : etudiants) {
-                seanceParticipantDao.ajouter(seance.getIdSeance(), idEtudiant);
+            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmation.setTitle("Confirmation");
+            confirmation.setHeaderText("Créer la séance de groupe");
+            confirmation.setContentText(null);
+            DialogueUtil.contenu(confirmation, "Créer une séance de groupe en " + matiere.getNom() + " le "
+                    + dateSeancePicker.getValue() + " de " + heureDebut + " à " + heureFin + " (" + modalite + ", "
+                    + lieu + ") ? Tous les étudiants ayant une demande acceptée sur cette matière seront invités.");
+            if (!confirmation.showAndWait().filter(ButtonType.OK::equals).isPresent()) {
+                return;
             }
-            messageLabel.setText("Séance de groupe créée — " + etudiants.size() + " étudiant(s) invité(s). Redirection...");
+
+            mentoratService.creerSeanceDeGroupe(mentorConnecte.getIdMentor(), matiere.getIdMatiere(),
+                    dateSeancePicker.getValue(), heureDebut, heureFin, modalite, lieu);
+            messageLabel.setText("Séance de groupe créée et étudiants invités. Redirection...");
 
             javafx.animation.PauseTransition pause = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(1.5));
             pause.setOnFinished(event -> onRetourClick());
             pause.play();
         } catch (DateTimeParseException e) {
             messageLabel.setText("Format d'heure invalide — utilise HH:mm (ex: 14:30).");
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            messageLabel.setText(e.getMessage());
         } catch (SQLException e) {
             messageLabel.setText("Erreur lors de la création.");
         }

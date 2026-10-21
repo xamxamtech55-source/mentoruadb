@@ -19,16 +19,18 @@
 
     <!-- Barre du haut -->
     <top>
-        <HBox styleClass="topbar">
+        <HBox styleClass="topbar" alignment="CENTER_LEFT"><Button fx:id="hamburgerButton" text="☰" onAction="#onHamburgerClick" styleClass="hamburger-button" />
             <Label text="MentorUADB" styleClass="topbar-titre" />
             <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="mentorHeaderLabel" styleClass="topbar-info" />
+            <Label text="   ·   " styleClass="topbar-info" />
             <Label text="Université Alioune Diop de Bambey" styleClass="topbar-info" />
         </HBox>
     </top>
 
     <!-- Barre latérale -->
     <left>
-        <VBox styleClass="sidebar" prefWidth="215.0" minWidth="215.0" spacing="3.0">
+        <VBox fx:id="sidebarPane" styleClass="sidebar" prefWidth="215.0" minWidth="215.0" spacing="3.0">
             <Label text="ESPACE MENTOR" styleClass="sidebar-section" />
 
             <ToggleButton text="Demandes reçues" toggleGroup="$menuGroup" selected="true"
@@ -43,10 +45,15 @@
                           onAction="#onMenuClick" styleClass="menu-item" maxWidth="Infinity">
                 <userData><String fx:value="secEvaluations" /></userData>
             </ToggleButton>
-            <ToggleButton text="Fichiers" toggleGroup="$menuGroup"
+            <ToggleButton text="Ressources" toggleGroup="$menuGroup"
                           onAction="#onMenuClick" styleClass="menu-item" maxWidth="Infinity">
                 <userData><String fx:value="secFichiers" /></userData>
             </ToggleButton>
+
+            <Label text="COMPTE" styleClass="sidebar-section" />
+
+            <Button fx:id="profilButton" text="Mon profil" onAction="#onProfilClick"
+                    styleClass="menu-item" maxWidth="Infinity" />
 
             <Label text="ACTIONS" styleClass="sidebar-section" />
 
@@ -66,13 +73,46 @@
     <center>
         <VBox spacing="10.0">
             <padding>
-                <Insets top="16.0" right="20.0" bottom="12.0" left="20.0" />
+                <Insets top="14.0" right="20.0" bottom="12.0" left="20.0" />
             </padding>
 
             <Label fx:id="bienvenueLabel" styleClass="title-label" wrapText="true" />
 
             <Button fx:id="notificationsButton" styleClass="notification-label" wrapText="true" visible="false" managed="false"
                     onAction="#onNotificationsClick" maxWidth="Infinity" alignment="BASELINE_LEFT" />
+
+            <!-- Zone de synthèse : demandes, séances à venir, séances terminées, évaluations -->
+            <HBox spacing="12.0">
+                <VBox styleClass="ds-stat-card,ds-stat-card-compact" HBox.hgrow="ALWAYS" maxWidth="Infinity" spacing="2.0">
+                    <Label fx:id="statDemandesValue" text="0" styleClass="ds-stat-value" />
+                    <Label text="Demandes reçues" styleClass="ds-stat-label" wrapText="true" />
+                    <Label fx:id="statDemandesDetail" styleClass="ds-stat-label" wrapText="true" />
+                </VBox>
+                <VBox styleClass="ds-stat-card,ds-stat-card-compact" HBox.hgrow="ALWAYS" maxWidth="Infinity" spacing="2.0">
+                    <Label fx:id="statProchainesValue" text="0" styleClass="ds-stat-value" />
+                    <Label text="Prochaines séances" styleClass="ds-stat-label" wrapText="true" />
+                    <Label fx:id="statProchainesDetail" styleClass="ds-stat-label" wrapText="true" />
+                </VBox>
+                <VBox styleClass="ds-stat-card,ds-stat-card-compact" HBox.hgrow="ALWAYS" maxWidth="Infinity" spacing="2.0">
+                    <Label fx:id="statTermineesValue" text="0" styleClass="ds-stat-value" />
+                    <Label text="Séances terminées" styleClass="ds-stat-label" wrapText="true" />
+                    <Label fx:id="statTermineesDetail" styleClass="ds-stat-label" wrapText="true" />
+                </VBox>
+                <VBox styleClass="ds-stat-card,ds-stat-card-compact" HBox.hgrow="ALWAYS" maxWidth="Infinity" spacing="2.0">
+                    <Label fx:id="statEvaluationsValue" text="0" styleClass="ds-stat-value" />
+                    <Label text="Évaluations" styleClass="ds-stat-label" wrapText="true" />
+                    <Label fx:id="statEvaluationsDetail" styleClass="ds-stat-label" wrapText="true" />
+                </VBox>
+            </HBox>
+
+            <!-- Raccourcis -->
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <Button text="Créer une séance de groupe" onAction="#onSeanceGroupeClick" styleClass="ds-btn,ds-btn-secondary" />
+                <Button text="Mon profil" onAction="#onProfilClick" styleClass="ds-btn,ds-btn-secondary" />
+            </HBox>
+
+            <!-- Message de la rubrique active -->
+            <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />
 
             <StackPane fx:id="sectionsPane" VBox.vgrow="ALWAYS">
 
@@ -90,11 +130,13 @@
                                 <TableColumn fx:id="colDemandeStatut" text="Statut" prefWidth="100.0" />
                             </columns>
                         </TableView>
-                        <HBox spacing="10.0">
-                            <Button text="Accepter" onAction="#onAccepterClick" />
-                            <Button text="Refuser" onAction="#onRefuserClick" styleClass="bouton-danger" />
-                            <Button text="Effacer la demande sélectionnée" onAction="#onEffacerDemandeClick" styleClass="bouton-secondaire" />
+                        <HBox spacing="10.0" alignment="CENTER_LEFT">
+                            <Button text="Consulter" onAction="#onConsulterDemandeClick" styleClass="ds-btn,ds-btn-secondary" />
+                            <Button fx:id="accepterDemandeButton" text="Accepter" onAction="#onAccepterClick" styleClass="ds-btn,ds-btn-primary" disable="true" />
+                            <Button fx:id="refuserDemandeButton" text="Refuser" onAction="#onRefuserClick" styleClass="ds-btn,ds-btn-danger" disable="true" />
+                            <Button text="Effacer" onAction="#onEffacerDemandeClick" styleClass="ds-btn,ds-btn-secondary" />
                         </HBox>
+                        <Label text="Les actions Accepter et Refuser ne s'activent que sur une demande en attente." styleClass="ds-help" wrapText="true" />
 
                         <Label text="Demandes de séance reçues (sur une relation déjà acceptée)" styleClass="subtitle-label" wrapText="true" />
                         <TableView fx:id="demandeSeanceTable" prefHeight="150.0" minHeight="150.0">
@@ -106,7 +148,7 @@
                                 <TableColumn fx:id="colDsStatut" text="Statut" prefWidth="100.0" />
                             </columns>
                         </TableView>
-                        <Label text="Planifier la séance sélectionnée (selon ta disponibilité)" />
+                        <Label text="Planifier la séance sélectionnée (selon ta disponibilité — date du jour ou plus tard)" wrapText="true" />
                         <HBox spacing="10.0" alignment="CENTER_LEFT">
                             <DatePicker fx:id="dateSeancePicker" promptText="Date" />
                             <TextField fx:id="heureDebutField" promptText="Début (HH:mm)" prefWidth="90.0" />
@@ -114,10 +156,11 @@
                             <ComboBox fx:id="modaliteComboBox" promptText="Modalité" />
                             <TextField fx:id="lieuField" promptText="Salle ou lien" prefWidth="160.0" />
                         </HBox>
-                        <HBox spacing="10.0">
-                            <Button text="Planifier (accepter)" onAction="#onPlanifierSeanceClick" />
-                            <Button text="Refuser" onAction="#onRefuserSeanceClick" styleClass="bouton-danger" />
-                            <Button text="Effacer la demande de séance" onAction="#onEffacerDemandeSeanceClick" styleClass="bouton-secondaire" />
+                        <HBox spacing="10.0" alignment="CENTER_LEFT">
+                            <Button text="Consulter" onAction="#onConsulterDemandeSeanceClick" styleClass="ds-btn,ds-btn-secondary" />
+                            <Button fx:id="accepterSeanceButton" text="Planifier (accepter)" onAction="#onPlanifierSeanceClick" styleClass="ds-btn,ds-btn-primary" disable="true" />
+                            <Button fx:id="refuserSeanceButton" text="Refuser" onAction="#onRefuserSeanceClick" styleClass="ds-btn,ds-btn-danger" disable="true" />
+                            <Button text="Effacer" onAction="#onEffacerDemandeSeanceClick" styleClass="ds-btn,ds-btn-secondary" />
                         </HBox>
                     </VBox>
                 </ScrollPane>
@@ -127,8 +170,30 @@
                     <VBox spacing="10.0" styleClass="contenu-page">
                         <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0" /></padding>
 
+                        <Label text="Prochaines séances (individuelles et de groupe)" styleClass="subtitle-label" wrapText="true" />
+                        <TableView fx:id="prochainesSeancesTable" prefHeight="130.0" minHeight="110.0">
+                            <columns>
+                                <TableColumn fx:id="colProchQui" text="Avec" prefWidth="180.0" />
+                                <TableColumn fx:id="colProchMatiere" text="Matière" prefWidth="120.0" />
+                                <TableColumn fx:id="colProchDate" text="Date" prefWidth="100.0" />
+                                <TableColumn fx:id="colProchDebut" text="Début" prefWidth="80.0" />
+                                <TableColumn fx:id="colProchFin" text="Fin" prefWidth="80.0" />
+                                <TableColumn fx:id="colProchStatut" text="Statut" prefWidth="100.0" />
+                            </columns>
+                        </TableView>
+
+                        <Label text="Séances terminées (réalisées)" styleClass="subtitle-label" />
+                        <TableView fx:id="termineesSeancesTable" prefHeight="110.0" minHeight="100.0">
+                            <columns>
+                                <TableColumn fx:id="colTermQui" text="Avec" prefWidth="180.0" />
+                                <TableColumn fx:id="colTermMatiere" text="Matière" prefWidth="120.0" />
+                                <TableColumn fx:id="colTermDate" text="Date" prefWidth="100.0" />
+                                <TableColumn fx:id="colTermHeure" text="Début" prefWidth="80.0" />
+                            </columns>
+                        </TableView>
+
                         <Label text="Mes séances individuelles" styleClass="subtitle-label" />
-                        <TableView fx:id="seancesTable" prefHeight="170.0" minHeight="170.0">
+                        <TableView fx:id="seancesTable" prefHeight="150.0" minHeight="150.0">
                             <columns>
                                 <TableColumn fx:id="colSeanceEtudiant" text="Étudiant" prefWidth="150.0" />
                                 <TableColumn fx:id="colSeanceMatiere" text="Matière" prefWidth="120.0" />
@@ -138,14 +203,15 @@
                                 <TableColumn fx:id="colSeanceStatut" text="Statut" prefWidth="100.0" />
                             </columns>
                         </TableView>
-                        <HBox spacing="10.0">
-                            <Button text="Marquer réalisée" onAction="#onMarquerRealiseeClick" />
-                            <Button text="Annuler la séance" onAction="#onAnnulerClick" styleClass="bouton-danger" />
-                            <Button text="Effacer la séance sélectionnée" onAction="#onEffacerSeanceIndividuelleClick" styleClass="bouton-secondaire" />
+                        <HBox spacing="10.0" alignment="CENTER_LEFT">
+                            <Button fx:id="marquerRealiseeButton" text="Marquer réalisée" onAction="#onMarquerRealiseeClick" styleClass="ds-btn,ds-btn-primary" disable="true" />
+                            <Button fx:id="annulerSeanceButton" text="Annuler la séance" onAction="#onAnnulerClick" styleClass="ds-btn,ds-btn-danger" disable="true" />
+                            <Button text="Effacer" onAction="#onEffacerSeanceIndividuelleClick" styleClass="ds-btn,ds-btn-secondary" />
                         </HBox>
+                        <Label text="Les actions ne s'activent que sur une séance planifiée." styleClass="ds-help" wrapText="true" />
 
                         <Label text="Mes séances de groupe" styleClass="subtitle-label" />
-                        <TableView fx:id="seancesGroupeTable" prefHeight="170.0" minHeight="170.0">
+                        <TableView fx:id="seancesGroupeTable" prefHeight="150.0" minHeight="150.0">
                             <columns>
                                 <TableColumn fx:id="colGroupeMatiere" text="Matière" prefWidth="120.0" />
                                 <TableColumn fx:id="colGroupeDate" text="Date" prefWidth="100.0" />
@@ -154,9 +220,11 @@
                                 <TableColumn fx:id="colGroupeParticipation" text="Participation" prefWidth="130.0" />
                             </columns>
                         </TableView>
-                        <HBox spacing="10.0">
-                            <Button text="Voir les étudiants confirmés" onAction="#onVoirConfirmesClick" />
-                            <Button text="Effacer la séance de groupe" onAction="#onEffacerSeanceGroupeClick" styleClass="bouton-secondaire" />
+                        <HBox spacing="10.0" alignment="CENTER_LEFT">
+                            <Button text="Voir les étudiants confirmés" onAction="#onVoirConfirmesClick" styleClass="ds-btn,ds-btn-secondary" />
+                            <Button fx:id="marquerGroupeRealiseeButton" text="Marquer réalisée" onAction="#onGroupeMarquerRealiseeClick" styleClass="ds-btn,ds-btn-primary" disable="true" />
+                            <Button fx:id="annulerGroupeButton" text="Annuler la séance" onAction="#onGroupeAnnulerClick" styleClass="ds-btn,ds-btn-danger" disable="true" />
+                            <Button text="Effacer" onAction="#onEffacerSeanceGroupeClick" styleClass="ds-btn,ds-btn-secondary" />
                         </HBox>
                     </VBox>
                 </ScrollPane>
@@ -165,7 +233,8 @@
                 <ScrollPane fx:id="secEvaluations" fitToWidth="true" visible="false" managed="false">
                     <VBox spacing="10.0" styleClass="contenu-page">
                         <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0" /></padding>
-                        <Label text="Mes évaluations" styleClass="subtitle-label" />
+                        <Label text="Évaluations reçues de mes étudiants" styleClass="subtitle-label" />
+                        <Label fx:id="evaluationsResumeLabel" styleClass="ds-help" wrapText="true" />
                         <TableView fx:id="evaluationsTable" prefHeight="330.0">
                             <columns>
                                 <TableColumn fx:id="colEvalEtudiant" text="Étudiant" prefWidth="150.0" />
@@ -175,33 +244,32 @@
                                 <TableColumn fx:id="colEvalDate" text="Date" prefWidth="100.0" />
                             </columns>
                         </TableView>
-                        <Button text="Effacer l'évaluation sélectionnée" onAction="#onEffacerEvaluationClick" styleClass="bouton-secondaire" />
+                        <Button text="Effacer l'évaluation sélectionnée" onAction="#onEffacerEvaluationClick" styleClass="ds-btn,ds-btn-secondary" />
                     </VBox>
                 </ScrollPane>
 
-                <!-- Fichiers -->
+                <!-- Ressources -->
                 <ScrollPane fx:id="secFichiers" fitToWidth="true" visible="false" managed="false">
                     <VBox spacing="10.0" styleClass="contenu-page">
                         <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0" /></padding>
-                        <Label text="Mes fichiers partagés" styleClass="subtitle-label" />
+                        <Label text="Mes ressources partagées" styleClass="subtitle-label" />
                         <HBox spacing="10.0" alignment="CENTER_LEFT">
                             <ComboBox fx:id="matiereFichierComboBox" promptText="Matière du fichier" />
                             <ComboBox fx:id="destinataireFichierComboBox" promptText="Partager avec" />
-                            <Button text="Choisir un fichier..." onAction="#onChoisirFichierClick" />
+                            <Button text="Choisir un fichier..." onAction="#onChoisirFichierClick" styleClass="ds-btn,ds-btn-secondary" />
                             <Label fx:id="fichierSelectionneLabel" text="Aucun fichier choisi" />
-                            <Button text="Partager" onAction="#onUploaderClick" />
+                            <Button text="Partager" onAction="#onUploaderClick" styleClass="ds-btn,ds-btn-primary" />
                         </HBox>
-                        <TableView fx:id="fichiersTable" prefHeight="300.0">
+                        <TableView fx:id="fichiersTable" prefHeight="280.0">
                             <columns>
                                 <TableColumn fx:id="colFichierNom" text="Nom du fichier" prefWidth="250.0" />
                                 <TableColumn fx:id="colFichierDate" text="Date" prefWidth="100.0" />
                             </columns>
                         </TableView>
+                        <Button text="Ouvrir le fichier sélectionné" onAction="#onOuvrirFichierClick" styleClass="ds-btn,ds-btn-secondary" />
                     </VBox>
                 </ScrollPane>
             </StackPane>
-
-            <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />
         </VBox>
     </center>
 </BorderPane>

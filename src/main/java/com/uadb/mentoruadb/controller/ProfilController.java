@@ -1,15 +1,18 @@
 package com.uadb.mentoruadb.controller;
 
-import com.uadb.mentoruadb.dao.EtudiantDao;
+import com.uadb.mentoruadb.dao.FiliereDao;
 import com.uadb.mentoruadb.dao.MentorDao;
+import com.uadb.mentoruadb.dao.NiveauDao;
 import com.uadb.mentoruadb.dao.UtilisateurDao;
 import com.uadb.mentoruadb.model.Etudiant;
 import com.uadb.mentoruadb.model.Mentor;
 import com.uadb.mentoruadb.model.Utilisateur;
+import com.uadb.mentoruadb.util.MessageLabel;
 import com.uadb.mentoruadb.util.SceneNavigator;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -20,17 +23,30 @@ import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.Optional;
 
-/** Contrôleur lié à fxml/profil.fxml. Gère le profil utilisateur + étudiant + (si applicable) mentor. */
+/**
+ * Contrôleur lié à fxml/profil.fxml.
+ * Sépare les données modifiables (coordonnées, photo, profil mentor) des données
+ * contrôlées par l'établissement (identité, email, rôle, statut, filière, niveau, carte).
+ * Le rôle et le statut de validation ne sont jamais modifiables depuis cet écran.
+ */
 public class ProfilController {
 
+    // Données contrôlées (lecture seule)
+    @FXML private Label nomCompletLabel;
     @FXML private Label emailLabel;
+    @FXML private Label roleLabel;
+    @FXML private Label statutLabel;
+    @FXML private Label filiereLabel;
+    @FXML private Label niveauLabel;
+    @FXML private Label numeroCarteLabel;
+
+    // Coordonnées et photo (modifiables)
     @FXML private TextField telephoneField;
     @FXML private TextField emailRecuperationField;
     @FXML private Label photoLabel;
-    @FXML private TextField numeroCarteField;
 
-    @FXML private Separator separateurMentor;
-    @FXML private Label titreMentorLabel;
+    // Profil mentor (modifiable, si applicable)
+    @FXML private VBox carteMentor;
     @FXML private TextArea biographieField;
     @FXML private TextField experienceField;
     @FXML private ComboBox<String> modePreferenceComboBox;
@@ -41,8 +57,9 @@ public class ProfilController {
     @FXML private Button retourButton;
 
     private final UtilisateurDao utilisateurDao = new UtilisateurDao();
-    private final EtudiantDao etudiantDao = new EtudiantDao();
     private final MentorDao mentorDao = new MentorDao();
+    private final FiliereDao filiereDao = new FiliereDao();
+    private final NiveauDao niveauDao = new NiveauDao();
 
     private Utilisateur utilisateurConnecte;
     private Etudiant etudiantConnecte;
@@ -53,6 +70,7 @@ public class ProfilController {
     @FXML
     public void initialize() {
         modePreferenceComboBox.setItems(FXCollections.observableArrayList("EN_LIGNE", "PRESENTIEL", "LES_DEUX"));
+        MessageLabel.rendreDynamique(messageLabel);
     }
 
     /** Appelée manuellement depuis DashboardEtudiantController après le chargement de cet écran. */
@@ -68,11 +86,24 @@ public class ProfilController {
             }
             utilisateurConnecte = utilisateurOpt.get();
 
-            emailLabel.setText("Email : " + utilisateurConnecte.getEmail());
+            // Identité et compte (lecture seule)
+            nomCompletLabel.setText(utilisateurConnecte.getPrenom() + " " + utilisateurConnecte.getNom());
+            emailLabel.setText(utilisateurConnecte.getEmail());
+            roleLabel.setText(utilisateurConnecte.getRole());
+            statutLabel.setText(utilisateurConnecte.getStatut());
+
+            // Informations académiques (lecture seule)
+            filiereLabel.setText(filiereDao.findById(etudiant.getIdFiliere())
+                    .map(f -> f.getNom()).orElse("Non renseignée"));
+            niveauLabel.setText(niveauDao.findById(etudiant.getIdNiveau())
+                    .map(n -> n.getLibelle()).orElse("Non renseigné"));
+            String carte = etudiant.getNumeroCarte();
+            numeroCarteLabel.setText(carte == null || carte.isBlank() ? "Non renseigné" : carte);
+
+            // Coordonnées (modifiables)
             telephoneField.setText(utilisateurConnecte.getTelephone());
             emailRecuperationField.setText(utilisateurConnecte.getEmailRecuperation());
             photoLabel.setText(utilisateurConnecte.getPhoto() != null ? utilisateurConnecte.getPhoto() : "Aucune photo");
-            numeroCarteField.setText(etudiant.getNumeroCarte());
 
             Optional<Mentor> mentorOpt = mentorDao.findByEtudiant(etudiant.getIdEtudiant());
             // La section mentor n'apparaît que pour un mentor VALIDÉ.
@@ -88,18 +119,8 @@ public class ProfilController {
                         : "Ta candidature mentor a été refusée.");
             }
 
-            separateurMentor.setVisible(estMentor);
-            separateurMentor.setManaged(estMentor);
-            titreMentorLabel.setVisible(estMentor);
-            titreMentorLabel.setManaged(estMentor);
-            biographieField.setVisible(estMentor);
-            biographieField.setManaged(estMentor);
-            experienceField.setVisible(estMentor);
-            experienceField.setManaged(estMentor);
-            modePreferenceComboBox.setVisible(estMentor);
-            modePreferenceComboBox.setManaged(estMentor);
-            nombreMaxMentoresField.setVisible(estMentor);
-            nombreMaxMentoresField.setManaged(estMentor);
+            carteMentor.setVisible(estMentor);
+            carteMentor.setManaged(estMentor);
 
             if (estMentor) {
                 mentorConnecte = mentorOpt.get();
@@ -153,8 +174,8 @@ public class ProfilController {
 
             utilisateurDao.update(utilisateurConnecte);
 
-            etudiantConnecte.setNumeroCarte(numeroCarteField.getText());
-            etudiantDao.update(etudiantConnecte);
+            // Le numéro de carte, la filière, le niveau, le rôle et le statut ne sont pas modifiables ici :
+            // ils sont contrôlés par l'établissement.
 
             if (mentorConnecte != null) {
                 mentorConnecte.setBiographie(biographieField.getText());

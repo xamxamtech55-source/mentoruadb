@@ -3,6 +3,7 @@ package com.uadb.mentoruadb.controller;
 import com.uadb.mentoruadb.dao.UtilisateurDao;
 import com.uadb.mentoruadb.model.Utilisateur;
 import com.uadb.mentoruadb.service.ReinitialisationService;
+import com.uadb.mentoruadb.util.MessageLabel;
 import com.uadb.mentoruadb.util.SceneNavigator;
 import jakarta.mail.MessagingException;
 import javafx.application.Platform;
@@ -49,6 +50,8 @@ public class MotDePasseOublieController {
                 prefillerEmailRecuperation();
             }
         });
+
+        MessageLabel.rendreDynamique(messageLabel);
     }
 
     /** Pré-remplit le champ de réception avec l'email de récupération du compte, sans écraser une saisie. */

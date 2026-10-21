@@ -4,7 +4,10 @@ import com.uadb.mentoruadb.dao.EtudiantDao;
 import com.uadb.mentoruadb.model.Etudiant;
 import com.uadb.mentoruadb.model.Utilisateur;
 import com.uadb.mentoruadb.service.AuthService;
+import com.uadb.mentoruadb.util.MessageLabel;
 import com.uadb.mentoruadb.util.SceneNavigator;
+import javafx.animation.FadeTransition;
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -12,10 +15,10 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -24,7 +27,9 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
- * Contrôleur lié à fxml/login.fxml.
+ * Contrôleur lié à fxml/login.fxml : écran fusionné d'accueil et de connexion.
+ * Fond panoramique (photo + voile bleu nuit), bloc institutionnel à gauche,
+ * carte de connexion flottante à droite.
  * Redirige chaque rôle vers son propre espace : ADMIN vers l'administration,
  * ETUDIANT et MENTOR vers l'espace étudiant.
  */
@@ -34,20 +39,20 @@ public class LoginController {
     private static final Preferences PREFS = Preferences.userNodeForPackage(LoginController.class);
     private static final String CLE_EMAIL_MEMORISE = "email_memorise";
 
-    /** En dessous de cette largeur, le panneau de marque est masqué. */
+    /** En dessous de cette largeur, le bloc institutionnel est masqué. */
     private static final double SEUIL_COMPACT = 760.0;
 
-    private static final String TITRE_DEFAUT = "Connexion à votre compte";
-    private static final String SOUS_TITRE_DEFAUT = "Accédez à votre espace MentorUADB et poursuivez votre parcours.";
+    private static final String TITRE_DEFAUT = "Connectez-vous à votre espace";
+    private static final String SOUS_TITRE_DEFAUT = "Retrouvez votre espace MentorUADB.";
     private static final String BOUTON_DEFAUT = "Se connecter  →";
     private static final String BOUTON_ADMIN_DEFAUT = "✔  Accès administrateur";
 
     @FXML
-    private HBox racine;
+    private StackPane racine;
     @FXML
-    private StackPane panneauGauche;
+    private VBox blocInstitutionnel;
     @FXML
-    private ImageView imageGauche;
+    private VBox carteConnexion;
     @FXML
     private Label titreLabel;
     @FXML
@@ -72,8 +77,6 @@ public class LoginController {
     private Button creerCompteButton;
     @FXML
     private Button motDePasseOublieButton;
-    @FXML
-    private Button retourAccueilButton;
 
     private final AuthService authService = new AuthService();
     private final EtudiantDao etudiantDao = new EtudiantDao();
@@ -84,15 +87,16 @@ public class LoginController {
 
     @FXML
     public void initialize() {
+        MessageLabel.rendreDynamique(messageLabel);
         motDePasseVisibleField.textProperty().bindBidirectional(motDePasseField.textProperty());
 
         emailField.setOnAction(e -> onConnexionClick());
         motDePasseField.setOnAction(e -> onConnexionClick());
 
-        // L'image suit la largeur du panneau gauche.
-        imageGauche.fitWidthProperty().bind(panneauGauche.widthProperty());
         racine.widthProperty().addListener((obs, ancienne, nouvelle) -> adapterMiseEnPage(nouvelle.doubleValue()));
         adapterMiseEnPage(racine.getWidth());
+
+        apparitionCarte();
 
         String emailMemorise = PREFS.get(CLE_EMAIL_MEMORISE, "");
         if (!emailMemorise.isBlank()) {
@@ -102,19 +106,30 @@ public class LoginController {
         }
     }
 
-    /**
-     * Masque le panneau gauche en petite fenêtre et lui donne une largeur
-     * proportionnelle sinon.
-     */
+    /** Masque le bloc institutionnel en fenêtre étroite : la carte occupe alors tout l'espace. */
     private void adapterMiseEnPage(double largeur) {
         boolean compact = largeur < SEUIL_COMPACT;
-        panneauGauche.setVisible(!compact);
-        panneauGauche.setManaged(!compact);
+        blocInstitutionnel.setVisible(!compact);
+        blocInstitutionnel.setManaged(!compact);
+    }
 
-        double largeurGauche = Math.min(460.0, Math.max(300.0, largeur * 0.42));
-        panneauGauche.setMinWidth(largeurGauche);
-        panneauGauche.setPrefWidth(largeurGauche);
-        panneauGauche.setMaxWidth(largeurGauche);
+    /** Apparition discrète de la carte (une seule fois, sans boucle). */
+    private void apparitionCarte() {
+        carteConnexion.setOpacity(0.0);
+        carteConnexion.setTranslateY(10.0);
+
+        FadeTransition fondu = new FadeTransition(Duration.millis(260), carteConnexion);
+        fondu.setFromValue(0.0);
+        fondu.setToValue(1.0);
+        fondu.setDelay(Duration.millis(40));
+
+        TranslateTransition levee = new TranslateTransition(Duration.millis(260), carteConnexion);
+        levee.setFromY(10.0);
+        levee.setToY(0.0);
+        levee.setDelay(Duration.millis(40));
+
+        fondu.play();
+        levee.play();
     }
 
     @FXML
@@ -240,16 +255,6 @@ public class LoginController {
                     "Mentor-UADB - Mot de passe oublié");
         } catch (IOException e) {
             messageLabel.setText("Impossible d'ouvrir cet écran.");
-        }
-    }
-
-    @FXML
-    private void onRetourAccueilClick() {
-        try {
-            Stage stage = (Stage) retourAccueilButton.getScene().getWindow();
-            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/bienvenue.fxml", "Mentor-UADB");
-        } catch (IOException e) {
-            messageLabel.setText("Impossible d'ouvrir l'écran d'accueil.");
         }
     }
 }

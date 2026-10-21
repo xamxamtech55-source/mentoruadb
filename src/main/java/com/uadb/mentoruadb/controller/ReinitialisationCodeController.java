@@ -1,6 +1,7 @@
 package com.uadb.mentoruadb.controller;
 
 import com.uadb.mentoruadb.service.ReinitialisationService;
+import com.uadb.mentoruadb.util.MessageLabel;
 import com.uadb.mentoruadb.util.SceneNavigator;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -38,6 +39,11 @@ public class ReinitialisationCodeController {
     public void setContexte(String emailInstitutionnel, String emailRecuperation) {
         this.email = emailInstitutionnel;
         emailEnvoyeLabel.setText("Code envoyé à " + emailRecuperation);
+    }
+
+    @FXML
+    public void initialize() {
+        MessageLabel.rendreDynamique(messageLabel);
     }
 
     @FXML

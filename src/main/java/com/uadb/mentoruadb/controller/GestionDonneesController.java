@@ -9,14 +9,13 @@ import com.uadb.mentoruadb.model.Filiere;
 import com.uadb.mentoruadb.model.Matiere;
 import com.uadb.mentoruadb.model.Niveau;
 import com.uadb.mentoruadb.model.Ufr;
-import com.uadb.mentoruadb.util.SceneNavigator;
+import com.uadb.mentoruadb.util.DialogueUtil;
+import com.uadb.mentoruadb.util.MessageLabel;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -26,25 +25,24 @@ import java.util.Set;
 /** Contrôleur lié à fxml/gestion-donnees.fxml : arbre UFR → Filières → Matières + catalogue + niveaux. */
 public class GestionDonneesController {
 
-    // --- Onglet Organisation ---
+    // --- Section 1 : Organisation ---
     @FXML private TreeView<Object> organisationTree;
     @FXML private TextField ufrNomField;
     @FXML private TextField filiereNomField;
     @FXML private ListView<Niveau> niveauxListView;
     @FXML private ComboBox<Matiere> matiereRattacherComboBox;
 
-    // --- Onglet Catalogue des matières ---
+    // --- Section 2 : Catalogue des matières ---
     @FXML private TableView<Matiere> matiereTable;
     @FXML private TableColumn<Matiere, String> colMatiereNom;
     @FXML private TextField matiereNomField;
 
-    // --- Onglet Niveaux ---
+    // --- Section 3 : Niveaux ---
     @FXML private TableView<Niveau> niveauTable;
     @FXML private TableColumn<Niveau, String> colNiveauLibelle;
     @FXML private TextField niveauLibelleField;
 
     @FXML private Label messageLabel;
-    @FXML private Button retourButton;
 
     private final UfrDao ufrDao = new UfrDao();
     private final FiliereDao filiereDao = new FiliereDao();
@@ -82,6 +80,7 @@ public class GestionDonneesController {
             }
         });
 
+        MessageLabel.rendreDynamique(messageLabel);
         rafraichirTout();
     }
 
@@ -174,7 +173,7 @@ public class GestionDonneesController {
     }
 
     // ---------------------------------------------------------------
-    // Onglet Organisation : UFR
+    // Section Organisation : UFR
     // ---------------------------------------------------------------
 
     @FXML
@@ -195,7 +194,7 @@ public class GestionDonneesController {
     }
 
     // ---------------------------------------------------------------
-    // Onglet Organisation : Filières
+    // Section Organisation : Filières
     // ---------------------------------------------------------------
 
     @FXML
@@ -232,7 +231,7 @@ public class GestionDonneesController {
     }
 
     // ---------------------------------------------------------------
-    // Onglet Organisation : rattachement matière <-> filière
+    // Section Organisation : rattachement matière <-> filière
     // ---------------------------------------------------------------
 
     @FXML
@@ -279,7 +278,7 @@ public class GestionDonneesController {
     }
 
     // ---------------------------------------------------------------
-    // Onglet Organisation : suppression UFR / filière
+    // Section Organisation : suppression UFR / filière
     // ---------------------------------------------------------------
 
     @FXML
@@ -291,16 +290,29 @@ public class GestionDonneesController {
         }
 
         Object valeur = item.getValue();
+        String confirmation;
+        if (valeur instanceof Ufr) {
+            confirmation = "Supprimer l'UFR « " + ((Ufr) valeur).getNom() + " » ?\n"
+                    + "Ses filières y sont rattachées : la suppression sera refusée tant qu'elles existent.";
+        } else if (valeur instanceof Filiere) {
+            confirmation = "Supprimer la filière « " + ((Filiere) valeur).getNom() + " » ?\n"
+                    + "Les étudiants déjà inscrits empêcheront la suppression.";
+        } else {
+            messageLabel.setText("Pour une matière, utilise « Détacher la matière sélectionnée ».");
+            return;
+        }
+
+        if (!confirmer("Confirmer la suppression", confirmation)) {
+            return;
+        }
+
         try {
             if (valeur instanceof Ufr) {
                 ufrDao.delete(((Ufr) valeur).getIdUfr());
                 messageLabel.setText("UFR supprimée.");
-            } else if (valeur instanceof Filiere) {
+            } else {
                 filiereDao.delete(((Filiere) valeur).getIdFiliere());
                 messageLabel.setText("Filière supprimée.");
-            } else {
-                messageLabel.setText("Pour une matière, utilise « Détacher la matière sélectionnée ».");
-                return;
             }
             rafraichirTout();
         } catch (SQLException e) {
@@ -309,7 +321,7 @@ public class GestionDonneesController {
     }
 
     // ---------------------------------------------------------------
-    // Onglet Catalogue des matières
+    // Section Catalogue des matières
     // ---------------------------------------------------------------
 
     @FXML
@@ -336,6 +348,11 @@ public class GestionDonneesController {
             messageLabel.setText("Sélectionne une matière d'abord.");
             return;
         }
+        if (!confirmer("Confirmer la suppression",
+                "Supprimer définitivement la matière « " + matiere.getNom() + " » ?\n"
+                        + "Elle disparaîtra des filières où elle est rattachée.")) {
+            return;
+        }
         try {
             matiereDao.delete(matiere.getIdMatiere());
             rafraichirTout();
@@ -346,7 +363,7 @@ public class GestionDonneesController {
     }
 
     // ---------------------------------------------------------------
-    // Onglet Niveaux
+    // Section Niveaux
     // ---------------------------------------------------------------
 
     @FXML
@@ -373,6 +390,11 @@ public class GestionDonneesController {
             messageLabel.setText("Sélectionne un niveau d'abord.");
             return;
         }
+        if (!confirmer("Confirmer la suppression",
+                "Supprimer le niveau « " + niveau.getLibelle() + " » ?\n"
+                        + "Les étudiants de ce niveau empêcheront la suppression.")) {
+            return;
+        }
         try {
             niveauDao.delete(niveau.getIdNiveau());
             rafraichirTout();
@@ -382,17 +404,12 @@ public class GestionDonneesController {
         }
     }
 
-    // ---------------------------------------------------------------
-    // Navigation
-    // ---------------------------------------------------------------
-
-    @FXML
-    private void onRetourClick() {
-        try {
-            Stage stage = (Stage) retourButton.getScene().getWindow();
-            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/dashboard-admin.fxml", "Mentor-UADB - Administration");
-        } catch (IOException e) {
-            messageLabel.setText("Impossible de revenir au tableau de bord admin.");
-        }
+    private static boolean confirmer(String titre, String contenu) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(titre);
+        alert.setHeaderText(null);
+        alert.setContentText(null);
+        DialogueUtil.contenu(alert, contenu);
+        return alert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK;
     }
 }

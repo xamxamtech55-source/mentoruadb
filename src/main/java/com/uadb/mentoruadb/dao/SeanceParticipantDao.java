@@ -13,11 +13,16 @@ import java.util.List;
 public class SeanceParticipantDao {
 
     public void ajouter(int idSeance, int idEtudiant) throws SQLException {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            ajouter(idSeance, idEtudiant, conn);
+        }
+    }
+
+    /** Variante transactionnelle : la connexion appartient à l'appelant (création de séance de groupe). */
+    public void ajouter(int idSeance, int idEtudiant, Connection conn) throws SQLException {
         String sql = "INSERT INTO seance_participant (id_seance, id_etudiant) VALUES (?, ?)";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, idSeance);
             stmt.setInt(2, idEtudiant);
             stmt.executeUpdate();

@@ -2,23 +2,27 @@ package com.uadb.mentoruadb.controller;
 
 import com.uadb.mentoruadb.dao.MentorDao;
 import com.uadb.mentoruadb.dto.MentorDetailVue;
-import com.uadb.mentoruadb.model.Mentor;
-import com.uadb.mentoruadb.util.SceneNavigator;
+import com.uadb.mentoruadb.service.AdminService;
+import com.uadb.mentoruadb.util.DialogueUtil;
+import com.uadb.mentoruadb.util.MessageLabel;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Optional;
 
-/** Contrôleur lié à fxml/validation-mentors.fxml. */
+/**
+ * Contrôleur lié à fxml/validation-mentors.fxml (section du dashboard admin).
+ * Les décisions passent par AdminService (garde de statut, RG20, notifications RG27).
+ */
 public class ValidationMentorsController {
+
+    private static final String NIVEAU_INELIGIBLE = "Licence 1";
 
     @FXML private TableView<MentorDetailVue> candidatsTable;
     @FXML private TableColumn<MentorDetailVue, String> colEtudiant;
@@ -34,12 +38,14 @@ public class ValidationMentorsController {
     @FXML private Label modeValue;
     @FXML private Label capaciteValue;
     @FXML private Label biographieArea;
+    @FXML private Label eligibiliteLabel;
+    @FXML private Label aucuneCandidatureLabel;
     @FXML private Label messageLabel;
     @FXML private Button validerButton;
     @FXML private Button refuserButton;
-    @FXML private Button retourButton;
 
     private final MentorDao mentorDao = new MentorDao();
+    private final AdminService adminService = new AdminService();
 
     @FXML
     public void initialize() {
@@ -52,22 +58,25 @@ public class ValidationMentorsController {
         candidatsTable.getSelectionModel().selectedItemProperty().addListener((obs, ancien, candidat) ->
                 afficherDossier(candidat));
 
+        MessageLabel.rendreDynamique(messageLabel);
         rafraichir();
     }
 
     private void rafraichir() {
         try {
-            candidatsTable.setItems(FXCollections.observableArrayList(mentorDao.findEnAttenteAvecDetails()));
+            var candidats = mentorDao.findEnAttenteAvecDetails();
+            candidatsTable.setItems(FXCollections.observableArrayList(candidats));
+            aucuneCandidatureLabel.setVisible(candidats.isEmpty());
+            aucuneCandidatureLabel.setManaged(candidats.isEmpty());
             afficherDossier(null);
         } catch (SQLException e) {
-            e.printStackTrace();
             messageLabel.setText("Erreur de chargement des candidatures.");
         }
     }
 
     /**
      * Remplit la fiche du candidat sélectionné. Sans sélection, les champs sont vidés
-     * et les boutons Valider / Refuser sont désactivés pour éviter de valider la mauvaise ligne.
+     * et les boutons Valider / Refuser sont désactivés pour éviter de traiter la mauvaise ligne.
      */
     private void afficherDossier(MentorDetailVue candidat) {
         boolean selectionne = candidat != null;
@@ -84,6 +93,8 @@ public class ValidationMentorsController {
             modeValue.setText("");
             capaciteValue.setText("");
             biographieArea.setText("");
+            eligibiliteLabel.setVisible(false);
+            eligibiliteLabel.setManaged(false);
             return;
         }
 
@@ -98,6 +109,12 @@ public class ValidationMentorsController {
                 ? candidat.getNombreMaxMentores() + " étudiant(s) maximum"
                 : "Non renseignée");
         biographieArea.setText(ouNonRenseigne(candidat.getBiographie()));
+
+        // RG20 visible avant toute validation : Licence 1 ne peut pas être mentor.
+        boolean ineligne = candidat.getLibelleNiveau() != null
+                && NIVEAU_INELIGIBLE.equalsIgnoreCase(candidat.getLibelleNiveau());
+        eligibiliteLabel.setVisible(ineligne);
+        eligibiliteLabel.setManaged(ineligne);
     }
 
     /** Affiche explicitement qu'une information manque, plutôt qu'un champ vide indistinct. */
@@ -120,54 +137,75 @@ public class ValidationMentorsController {
 
     @FXML
     private void onValiderClick() {
-        changerStatut("VALIDE");
-    }
-
-    @FXML
-    private void onRefuserClick() {
-        changerStatut("REFUSE");
-    }
-
-    private void changerStatut(String statut) {
         MentorDetailVue candidat = candidatsTable.getSelectionModel().getSelectedItem();
         if (candidat == null) {
             messageLabel.setText("Sélectionne une candidature dans le tableau d'abord.");
             return;
         }
 
+        boolean confirme = confirmer("Valider la candidature",
+                "Valider la candidature de " + candidat.getNomComplet() + " (" + candidat.getEmail() + ") ?\n"
+                        + "Il deviendra mentor et pourra recevoir des demandes de mentorat.");
+        if (!confirme) {
+            return;
+        }
+
+        traiter(candidat, true);
+    }
+
+    @FXML
+    private void onRefuserClick() {
+        MentorDetailVue candidat = candidatsTable.getSelectionModel().getSelectedItem();
+        if (candidat == null) {
+            messageLabel.setText("Sélectionne une candidature dans le tableau d'abord.");
+            return;
+        }
+
+        boolean confirme = confirmer("Refuser la candidature",
+                "Refuser la candidature de " + candidat.getNomComplet() + " (" + candidat.getEmail() + ") ?\n"
+                        + "Son dossier sera marqué refusé et il sera notifié.");
+        if (!confirme) {
+            return;
+        }
+
+        traiter(candidat, false);
+    }
+
+    private void traiter(MentorDetailVue candidat, boolean validation) {
         try {
-            Optional<Mentor> mentorOpt = mentorDao.findById(candidat.getIdMentor());
-            if (mentorOpt.isEmpty()) {
-                messageLabel.setText("Candidature introuvable.");
-                return;
+            if (validation) {
+                adminService.validerCandidature(candidat.getIdMentor());
+            } else {
+                adminService.refuserCandidature(candidat.getIdMentor());
             }
-
-            Mentor mentor = mentorOpt.get();
-            mentor.setStatutValidation(statut);
-            mentorDao.update(mentor);
-
             succes("Candidature de " + candidat.getNomComplet() + " ("
                     + candidat.getEmail() + ") : "
-                    + ("VALIDE".equals(statut) ? "validée." : "refusée."));
+                    + (validation ? "validée." : "refusée."));
+            rafraichir();
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            // Candidature déjà traitée ou éligibilité refusée : on affiche le vrai motif.
+            messageLabel.getStyleClass().setAll("message-label");
+            messageLabel.setText(e.getMessage());
             rafraichir();
         } catch (SQLException e) {
+            messageLabel.getStyleClass().setAll("message-label");
             messageLabel.setText("Erreur lors de la mise à jour.");
         }
+    }
+
+    private static boolean confirmer(String titre, String contenu) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(titre);
+        alert.setHeaderText(null);
+        alert.setContentText(null);
+        DialogueUtil.contenu(alert, contenu);
+        return alert.showAndWait().orElse(javafx.scene.control.ButtonType.CANCEL)
+                == javafx.scene.control.ButtonType.OK;
     }
 
     /** Le message de confirmation n'est pas une erreur : il passe en vert. */
     private void succes(String texte) {
         messageLabel.getStyleClass().setAll("succes-label");
         messageLabel.setText(texte);
-    }
-
-    @FXML
-    private void onRetourClick() {
-        try {
-            Stage stage = (Stage) retourButton.getScene().getWindow();
-            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/dashboard-admin.fxml", "Mentor-UADB - Administration");
-        } catch (IOException e) {
-            messageLabel.setText("Impossible de revenir au tableau de bord admin.");
-        }
     }
 }

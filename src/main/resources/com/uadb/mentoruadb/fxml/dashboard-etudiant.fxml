@@ -19,16 +19,18 @@
 
     <!-- Barre du haut -->
     <top>
-        <HBox styleClass="topbar">
+        <HBox styleClass="topbar" alignment="CENTER_LEFT"><Button fx:id="hamburgerButton" text="☰" onAction="#onHamburgerClick" styleClass="hamburger-button" />
             <Label text="MentorUADB" styleClass="topbar-titre" />
             <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="etudiantHeaderLabel" styleClass="topbar-info" />
+            <Label text="   ·   " styleClass="topbar-info" />
             <Label text="Université Alioune Diop de Bambey" styleClass="topbar-info" />
         </HBox>
     </top>
 
     <!-- Barre latérale -->
     <left>
-        <VBox styleClass="sidebar" prefWidth="215.0" minWidth="215.0" spacing="3.0">
+        <VBox fx:id="sidebarPane" styleClass="sidebar" prefWidth="215.0" minWidth="215.0" spacing="3.0">
             <Label text="ESPACE ÉTUDIANT" styleClass="sidebar-section" />
 
             <ToggleButton text="Mes demandes" toggleGroup="$menuGroup" selected="true"
@@ -68,15 +70,49 @@
     <center>
         <VBox spacing="10.0">
             <padding>
-                <Insets top="16.0" right="20.0" bottom="12.0" left="20.0" />
+                <Insets top="14.0" right="20.0" bottom="12.0" left="20.0" />
             </padding>
 
-            <Label fx:id="bienvenueLabel" styleClass="title-label" wrapText="true" />
+            <Label fx:id="bienvenueLabel" text="Mon tableau de bord" styleClass="title-label" wrapText="true" />
 
             <Button fx:id="notificationButton" styleClass="notification-label" wrapText="true" visible="false" managed="false"
                     onAction="#onNotificationClick" maxWidth="Infinity" alignment="BASELINE_LEFT" />
             <Button fx:id="notificationsGeneriquesButton" styleClass="notification-label" wrapText="true" visible="false" managed="false"
                     onAction="#onNotificationsGeneriquesClick" maxWidth="Infinity" alignment="BASELINE_LEFT" />
+
+            <!-- Zone de synthèse : demandes, séances, ressources -->
+            <HBox spacing="12.0">
+                <VBox styleClass="ds-stat-card,ds-stat-card-compact" HBox.hgrow="ALWAYS" maxWidth="Infinity" spacing="2.0">
+                    <Label fx:id="statDemandesValue" text="0" styleClass="ds-stat-value" />
+                    <Label text="Demandes de mentorat" styleClass="ds-stat-label" wrapText="true" />
+                    <Label fx:id="statDemandesDetail" styleClass="ds-stat-label" wrapText="true" />
+                </VBox>
+                <VBox styleClass="ds-stat-card,ds-stat-card-compact" HBox.hgrow="ALWAYS" maxWidth="Infinity" spacing="2.0">
+                    <Label fx:id="statDemandesSeanceValue" text="0" styleClass="ds-stat-value" />
+                    <Label text="Demandes de séance" styleClass="ds-stat-label" wrapText="true" />
+                    <Label fx:id="statDemandesSeanceDetail" styleClass="ds-stat-label" wrapText="true" />
+                </VBox>
+                <VBox styleClass="ds-stat-card,ds-stat-card-compact" HBox.hgrow="ALWAYS" maxWidth="Infinity" spacing="2.0">
+                    <Label fx:id="statSeancesValue" text="0" styleClass="ds-stat-value" />
+                    <Label text="Séances" styleClass="ds-stat-label" wrapText="true" />
+                    <Label fx:id="statSeancesDetail" styleClass="ds-stat-label" wrapText="true" />
+                </VBox>
+                <VBox styleClass="ds-stat-card,ds-stat-card-compact" HBox.hgrow="ALWAYS" maxWidth="Infinity" spacing="2.0">
+                    <Label fx:id="statRessourcesValue" text="0" styleClass="ds-stat-value" />
+                    <Label text="Ressources" styleClass="ds-stat-label" wrapText="true" />
+                    <Label fx:id="statRessourcesDetail" styleClass="ds-stat-label" wrapText="true" />
+                </VBox>
+            </HBox>
+
+            <!-- Raccourcis -->
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <Button text="Trouver un mentor" onAction="#onRechercherMentorClick" styleClass="ds-btn,ds-btn-secondary" />
+                <Button text="Mon profil" onAction="#onProfilClick" styleClass="ds-btn,ds-btn-secondary" />
+                <Button fx:id="devenirMentorRaccourci" text="Devenir mentor" onAction="#onDevenirMentorClick" styleClass="ds-btn,ds-btn-secondary" />
+            </HBox>
+
+            <!-- Message de la rubrique active -->
+            <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />
 
             <StackPane fx:id="sectionsPane" VBox.vgrow="ALWAYS">
 
@@ -85,7 +121,7 @@
                     <VBox spacing="10.0" styleClass="contenu-page">
                         <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0" /></padding>
 
-                        <Button fx:id="rechercherMentorButton" text="Rechercher un mentor" onAction="#onRechercherMentorClick" />
+                        <Button fx:id="rechercherMentorButton" text="Rechercher un mentor" onAction="#onRechercherMentorClick" styleClass="ds-btn,ds-btn-secondary" />
 
                         <Label text="Mes demandes de mentorat" styleClass="subtitle-label" />
                         <TableView fx:id="demandesTable" prefHeight="150.0" minHeight="150.0">
@@ -102,7 +138,7 @@
                         <HBox spacing="10.0" alignment="CENTER_LEFT">
                             <DatePicker fx:id="dateSouhaiteePicker" promptText="Date souhaitée (facultatif)" />
                             <TextField fx:id="messageSeanceField" promptText="Message pour le mentor (facultatif)" HBox.hgrow="ALWAYS" />
-                            <Button text="Demander une séance" onAction="#onDemanderSeanceClick" />
+                            <Button text="Demander une séance" onAction="#onDemanderSeanceClick" styleClass="ds-btn" />
                         </HBox>
 
                         <Label text="Mes demandes de séance" styleClass="subtitle-label" />
@@ -124,6 +160,18 @@
                     <VBox spacing="10.0" styleClass="contenu-page">
                         <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0" /></padding>
 
+                        <Label text="Prochaines séances" styleClass="subtitle-label" />
+                        <TableView fx:id="prochainesSeancesTable" prefHeight="130.0" minHeight="110.0">
+                            <columns>
+                                <TableColumn fx:id="colProchMentor" text="Mentor" prefWidth="150.0" />
+                                <TableColumn fx:id="colProchMatiere" text="Matière" prefWidth="120.0" />
+                                <TableColumn fx:id="colProchDate" text="Date" prefWidth="100.0" />
+                                <TableColumn fx:id="colProchDebut" text="Début" prefWidth="80.0" />
+                                <TableColumn fx:id="colProchFin" text="Fin" prefWidth="80.0" />
+                                <TableColumn fx:id="colProchStatut" text="Statut" prefWidth="100.0" />
+                            </columns>
+                        </TableView>
+
                         <Label text="Séances de groupe à confirmer" styleClass="subtitle-label" />
                         <TableView fx:id="seancesAConfirmerTable" prefHeight="110.0" minHeight="110.0">
                             <columns>
@@ -133,9 +181,9 @@
                                 <TableColumn fx:id="colConfirmHeure" text="Heure" prefWidth="100.0" />
                             </columns>
                         </TableView>
-                        <Button text="Confirmer ma présence" onAction="#onConfirmerPresenceClick" />
+                        <Button text="Confirmer ma présence" onAction="#onConfirmerPresenceClick" styleClass="ds-btn" />
 
-                        <Label text="Mes séances" styleClass="subtitle-label" />
+                        <Label text="Toutes mes séances" styleClass="subtitle-label" />
                         <TableView fx:id="seancesTable" prefHeight="170.0" minHeight="170.0">
                             <columns>
                                 <TableColumn fx:id="colSeanceMentor" text="Mentor" prefWidth="150.0" />
@@ -152,7 +200,7 @@
                         <HBox spacing="10.0" alignment="CENTER_LEFT">
                             <ComboBox fx:id="noteComboBox" promptText="Note (1-5)" />
                             <TextField fx:id="commentaireField" promptText="Commentaire" HBox.hgrow="ALWAYS" />
-                            <Button text="Évaluer" onAction="#onEvaluerClick" />
+                            <Button text="Évaluer" onAction="#onEvaluerClick" styleClass="ds-btn" />
                         </HBox>
                     </VBox>
                 </ScrollPane>
@@ -186,12 +234,10 @@
                                 <TableColumn fx:id="colFichierDate" text="Date" prefWidth="100.0" />
                             </columns>
                         </TableView>
-                        <Button text="Ouvrir le fichier sélectionné" onAction="#onOuvrirFichierClick" />
+                        <Button text="Ouvrir le fichier sélectionné" onAction="#onOuvrirFichierClick" styleClass="ds-btn" />
                     </VBox>
                 </ScrollPane>
             </StackPane>
-
-            <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />
         </VBox>
     </center>
 </BorderPane>

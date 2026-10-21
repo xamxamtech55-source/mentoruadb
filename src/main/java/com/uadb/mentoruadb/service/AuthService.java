@@ -30,6 +30,12 @@ public class AuthService {
             return null; // mot de passe incorrect
         }
 
+        // Un compte désactivé (INACTIF) ne peut plus se connecter : même message que
+        // identifiants invalides pour ne pas révéler l'état du compte.
+        if (!"ACTIF".equals(utilisateur.getStatut())) {
+            return null;
+        }
+
         // Migration transparente : ancien mot de passe en clair -> hash.
         if (PasswordUtil.doitEtreMisAJour(valeurStockee)) {
             utilisateur.setMotDePasse(PasswordUtil.hacher(motDePasse));

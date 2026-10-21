@@ -73,6 +73,16 @@ public class NotificationDao {
         return resultats;
     }
 
+    /** Marque une notification comme lue (consultée par l'utilisateur). */
+    public void marquerLue(int idNotification) throws SQLException {
+        String sql = "UPDATE notification SET lue = 1 WHERE id_notification = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idNotification);
+            stmt.executeUpdate();
+        }
+    }
+
     /** Marque toutes les notifications non lues d'un utilisateur comme lues (appelé quand il les consulte). */
     public void marquerToutesLuesPourUtilisateur(int idUtilisateur) throws SQLException {
         String sql = "UPDATE notification SET lue = 1 WHERE id_utilisateur = ? AND lue = 0";

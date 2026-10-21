@@ -12,6 +12,7 @@ import com.uadb.mentoruadb.model.Etudiant;
 import com.uadb.mentoruadb.model.Expertise;
 import com.uadb.mentoruadb.model.Matiere;
 import com.uadb.mentoruadb.model.Mentor;
+import com.uadb.mentoruadb.util.MessageLabel;
 import com.uadb.mentoruadb.util.SceneNavigator;
 
 import javafx.collections.FXCollections;
@@ -39,6 +40,7 @@ public class DevenirMentorController {
     @FXML
     public void initialize() {
         matieresListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        MessageLabel.rendreDynamique(messageLabel);
     }
 
     /** Appelée manuellement depuis DashboardEtudiantController après le chargement de cet écran. */

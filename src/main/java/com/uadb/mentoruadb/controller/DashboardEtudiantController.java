@@ -21,6 +21,7 @@ import com.uadb.mentoruadb.model.Mentor;
 import com.uadb.mentoruadb.model.Niveau;
 import com.uadb.mentoruadb.model.Notification;
 import com.uadb.mentoruadb.service.MentoratService;
+import com.uadb.mentoruadb.util.MessageLabel;
 import com.uadb.mentoruadb.util.SceneNavigator;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -32,6 +33,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
@@ -47,6 +49,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 /** Contrôleur lié à fxml/dashboard-etudiant.fxml. */
 public class DashboardEtudiantController {
@@ -155,6 +158,10 @@ public class DashboardEtudiantController {
     private Label messageLabel;
     @FXML
     private StackPane sectionsPane;
+    @FXML
+    private Button hamburgerButton;
+    @FXML
+    private VBox sidebarPane;
 
     private final MentorDao mentorDao = new MentorDao();
     private final DemandeMentoratDao demandeDao = new DemandeMentoratDao();
@@ -220,6 +227,9 @@ public class DashboardEtudiantController {
         colEvalDate.setCellValueFactory(new PropertyValueFactory<>("dateEvaluation"));
 
         noteComboBox.setItems(FXCollections.observableArrayList(1, 2, 3, 4, 5));
+
+        MessageLabel.rendreDynamique(messageLabel);
+        hamburgerButton.setTooltip(new Tooltip("Masquer le menu"));
     }
 
     /**
@@ -483,6 +493,18 @@ public class DashboardEtudiantController {
             bienvenueLabel.setText("Erreur lors de l'accès à l'espace mentor.");
         } catch (IOException e) {
             bienvenueLabel.setText("Impossible d'ouvrir le tableau de bord mentor.");
+        }
+    }
+
+    @FXML
+    private void onHamburgerClick() {
+        if (sidebarPane != null) {
+            sidebarPane.setVisible(!sidebarPane.isVisible());
+            sidebarPane.setManaged(sidebarPane.isVisible());
+            Tooltip infobulle = hamburgerButton.getTooltip();
+            if (infobulle != null) {
+                infobulle.setText(sidebarPane.isVisible() ? "Masquer le menu" : "Afficher le menu");
+            }
         }
     }
 

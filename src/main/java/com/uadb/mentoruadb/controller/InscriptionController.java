@@ -6,6 +6,7 @@ import com.uadb.mentoruadb.model.Filiere;
 import com.uadb.mentoruadb.model.Niveau;
 import com.uadb.mentoruadb.model.Ufr;
 import com.uadb.mentoruadb.service.InscriptionService;
+import com.uadb.mentoruadb.util.MessageLabel;
 import com.uadb.mentoruadb.util.SceneNavigator;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -46,6 +47,7 @@ public class InscriptionController {
     @FXML
     public void initialize() {
         motDePasseVisibleField.textProperty().bindBidirectional(motDePasseField.textProperty());
+        MessageLabel.rendreDynamique(messageLabel);
 
         try {
             ufrComboBox.getItems().setAll(ufrDao.findAll());
@@ -102,6 +104,19 @@ public class InscriptionController {
             } catch (SQLException e) {
                 messageLabel.setText("Erreur de chargement des niveaux.");
             }
+        });
+
+        masquerMessageVide(messageLabel);
+    }
+
+    /** Masque le bandeau de message tant qu'il n'a pas de contenu (évite un cadre vide). */
+    private static void masquerMessageVide(Label label) {
+        label.setVisible(false);
+        label.setManaged(false);
+        label.textProperty().addListener((obs, ancien, nouveau) -> {
+            boolean vide = nouveau == null || nouveau.isBlank();
+            label.setVisible(!vide);
+            label.setManaged(!vide);
         });
     }
 

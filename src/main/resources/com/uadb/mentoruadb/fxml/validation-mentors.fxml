@@ -16,8 +16,12 @@
                 <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
             </padding>
 
-            <Label text="Candidatures « devenir mentor » en attente" styleClass="title-label" />
-            <Label text="Vérifie l'identité et le dossier du candidat avant de valider ou de refuser." styleClass="subtitle-label" />
+            <Label text="Validation des mentorats" styleClass="title-label" />
+            <Label text="Vérifiez le dossier du candidat avant de statuer."
+                   styleClass="subtitle-label" wrapText="true" />
+
+            <Label fx:id="aucuneCandidatureLabel" text="Aucune candidature en attente — rien à traiter pour le moment."
+                   styleClass="ds-empty" wrapText="true" visible="false" managed="false" />
 
             <TableView fx:id="candidatsTable" prefHeight="165.0">
                 <columns>
@@ -56,10 +60,12 @@
                 </GridPane>
             </VBox>
 
+            <Label fx:id="eligibiliteLabel" visible="false" managed="false" wrapText="true" styleClass="ds-message,ds-message-warning"
+                   text="RG20 : un étudiant de Licence 1 ne peut pas être mentor — la validation sera refusée." />
+
             <HBox spacing="10.0" alignment="CENTER_LEFT">
-                <Button fx:id="validerButton" text="Valider le candidat" onAction="#onValiderClick" styleClass="action-button" />
-                <Button fx:id="refuserButton" text="Refuser" onAction="#onRefuserClick" styleClass="action-button,refuser-button" />
-                <Button fx:id="retourButton" visible="false" managed="false" text="Retour" onAction="#onRetourClick" styleClass="action-button" />
+                <Button fx:id="validerButton" text="Valider le candidat" onAction="#onValiderClick" styleClass="ds-btn,ds-btn-primary" />
+                <Button fx:id="refuserButton" text="Refuser" onAction="#onRefuserClick" styleClass="ds-btn,ds-btn-danger" />
             </HBox>
 
             <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />

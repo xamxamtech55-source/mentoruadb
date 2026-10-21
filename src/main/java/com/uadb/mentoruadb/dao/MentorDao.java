@@ -2,6 +2,7 @@ package com.uadb.mentoruadb.dao;
 
 import com.uadb.mentoruadb.config.DatabaseConnection;
 import com.uadb.mentoruadb.dto.MentorDetailVue;
+import com.uadb.mentoruadb.dto.MentorRechercheVue;
 import com.uadb.mentoruadb.dto.MentorSuggestionVue;
 import com.uadb.mentoruadb.model.Mentor;
 
@@ -138,6 +139,91 @@ public class MentorDao implements Dao<Mentor, Integer> {
                             rs.getString("libelle_niveau"),
                             rs.getString("matieres"),
                             note != null ? note + "/5" : "pas encore noté"
+                    ));
+                }
+            }
+        }
+        return resultats;
+    }
+
+    /**
+     * Recherche les mentors validés (jamais un candidat ou un mentor refusé), éventuellement
+     * filtrés par UFR, filière, niveau et/ou matière. L'étudiant qui consulte est toujours
+     * exclu (pas d'auto-sélection). Pour chaque mentor : matières maîtrisées, note moyenne
+     * réelle, mode de préférence et capacité (mentorés acceptés / maximum).
+     */
+    public List<MentorRechercheVue> rechercherMentorsValides(Integer idUfr, Integer idFiliere,
+                                                             Integer idNiveau, Integer idMatiere,
+                                                             int idEtudiantExclu) throws SQLException {
+        StringBuilder sql = new StringBuilder("""
+                SELECT me.id_mentor, u.prenom, u.nom, f.nom AS nom_filiere, n.libelle AS libelle_niveau,
+                       GROUP_CONCAT(DISTINCT mat.nom ORDER BY mat.nom SEPARATOR ', ') AS matieres,
+                       (SELECT ROUND(AVG(ev.note), 1)
+                        FROM evaluation ev
+                        JOIN seance s ON ev.id_seance = s.id_seance
+                        LEFT JOIN demande_mentorat d ON s.id_demande = d.id_demande
+                        WHERE COALESCE(s.id_mentor, d.id_mentor) = me.id_mentor) AS note_moyenne,
+                       me.mode_preference, me.nombre_max_mentores,
+                       (SELECT COUNT(*) FROM demande_mentorat dm
+                        WHERE dm.id_mentor = me.id_mentor AND dm.statut = 'ACCEPTEE') AS nombre_mentores
+                FROM mentor me
+                JOIN etudiant e ON me.id_etudiant = e.id_etudiant
+                JOIN utilisateur u ON e.id_utilisateur = u.id_utilisateur
+                JOIN filiere f ON e.id_filiere = f.id_filiere
+                JOIN niveau n ON e.id_niveau = n.id_niveau
+                JOIN expertise ex ON ex.id_mentor = me.id_mentor
+                JOIN matiere mat ON ex.id_matiere = mat.id_matiere
+                WHERE me.statut_validation = 'VALIDE' AND me.id_etudiant <> ?
+                """);
+
+        List<Object> parametres = new ArrayList<>();
+        parametres.add(idEtudiantExclu);
+
+        if (idUfr != null) {
+            sql.append(" AND f.id_ufr = ?");
+            parametres.add(idUfr);
+        }
+        if (idFiliere != null) {
+            sql.append(" AND e.id_filiere = ?");
+            parametres.add(idFiliere);
+        }
+        if (idNiveau != null) {
+            sql.append(" AND e.id_niveau = ?");
+            parametres.add(idNiveau);
+        }
+        if (idMatiere != null) {
+            sql.append(" AND EXISTS (SELECT 1 FROM expertise ex2"
+                    + " WHERE ex2.id_mentor = me.id_mentor AND ex2.id_matiere = ?)");
+            parametres.add(idMatiere);
+        }
+
+        sql.append("""
+                GROUP BY me.id_mentor, u.prenom, u.nom, f.nom, n.libelle, me.mode_preference, me.nombre_max_mentores
+                ORDER BY note_moyenne IS NULL, note_moyenne DESC, u.nom, u.prenom
+                """);
+
+        List<MentorRechercheVue> resultats = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+
+            for (int i = 0; i < parametres.size(); i++) {
+                stmt.setObject(i + 1, parametres.get(i));
+            }
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    double noteBrute = rs.getDouble("note_moyenne");
+                    Double note = rs.wasNull() ? null : noteBrute;
+                    resultats.add(new MentorRechercheVue(
+                            rs.getInt("id_mentor"),
+                            rs.getString("prenom") + " " + rs.getString("nom"),
+                            rs.getString("nom_filiere"),
+                            rs.getString("libelle_niveau"),
+                            rs.getString("matieres"),
+                            note,
+                            rs.getString("mode_preference"),
+                            (Integer) rs.getObject("nombre_max_mentores"),
+                            rs.getInt("nombre_mentores")
                     ));
                 }
             }

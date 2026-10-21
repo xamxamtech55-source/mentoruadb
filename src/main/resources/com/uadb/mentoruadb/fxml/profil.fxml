@@ -2,45 +2,102 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
 <ScrollPane fitToWidth="true" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.uadb.mentoruadb.controller.ProfilController">
+            fx:controller="com.uadb.mentoruadb.controller.ProfilController" styleClass="acc-auth-scroll">
     <HBox alignment="CENTER">
-        <VBox spacing="12.0" prefWidth="860.0" maxWidth="860.0">
+        <VBox spacing="12.0" prefWidth="880.0" maxWidth="880.0">
             <padding>
                 <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
             </padding>
 
             <Label text="Mon profil" styleClass="title-label" />
+            <Label text="Consulte tes informations et mets à jour tes coordonnées." styleClass="subtitle-label" wrapText="true" />
 
-            <Label fx:id="emailLabel" />
-            <TextField fx:id="telephoneField" promptText="Téléphone" maxWidth="300.0" />
-            <TextField fx:id="emailRecuperationField" promptText="Email de récupération (Gmail, ...)" maxWidth="300.0" />
-            <Label text="Cet email personnel reçoit le code de réinitialisation du mot de passe" wrapText="true" />
+            <!-- Informations du compte (lecture seule) -->
+            <VBox styleClass="ds-card" spacing="8.0">
+                <Label text="Informations du compte" styleClass="ds-section-title" />
+                <Label text="Contrôlées par l'établissement : non modifiables ici."
+                       styleClass="ds-help" wrapText="true" />
+                <GridPane hgap="16.0" vgap="6.0">
+                    <Label text="Nom complet" styleClass="ds-label" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                    <Label fx:id="nomCompletLabel" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-            <HBox spacing="10.0" alignment="CENTER_LEFT">
-                <Button text="Choisir une photo..." onAction="#onChoisirPhotoClick" />
-                <Label fx:id="photoLabel" text="Aucune photo" />
-            </HBox>
+                    <Label text="Email institutionnel" styleClass="ds-label" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                    <Label fx:id="emailLabel" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-            <TextField fx:id="numeroCarteField" promptText="Numéro de carte d'étudiant" maxWidth="300.0" />
+                    <Label text="Rôle" styleClass="ds-label" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                    <Label fx:id="roleLabel" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
+                    <Label text="Statut du compte" styleClass="ds-label" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                    <Label fx:id="statutLabel" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                </GridPane>
+            </VBox>
+
+            <!-- Informations académiques (lecture seule) -->
+            <VBox styleClass="ds-card" spacing="8.0">
+                <Label text="Informations académiques" styleClass="ds-section-title" />
+                <Label text="Issues de ton inscription : non modifiables ici."
+                       styleClass="ds-help" wrapText="true" />
+                <GridPane hgap="16.0" vgap="6.0">
+                    <Label text="Filière" styleClass="ds-label" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                    <Label fx:id="filiereLabel" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                    <Label text="Niveau" styleClass="ds-label" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                    <Label fx:id="niveauLabel" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                    <Label text="Numéro de carte d'étudiant" styleClass="ds-label" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                    <Label fx:id="numeroCarteLabel" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                </GridPane>
+            </VBox>
+
+            <!-- Coordonnées (modifiables) -->
+            <VBox styleClass="ds-card" spacing="8.0">
+                <Label text="Coordonnées et photo" styleClass="ds-section-title" />
+                <Label text="Modifiables par toi." styleClass="ds-help" wrapText="true" />
+
+                <Label text="Téléphone" styleClass="ds-label" />
+                <TextField fx:id="telephoneField" promptText="Téléphone" maxWidth="320.0" />
+
+                <Label text="Email de récupération" styleClass="ds-label" />
+                <TextField fx:id="emailRecuperationField" promptText="Email de récupération (Gmail, ...)" maxWidth="320.0" />
+                <Label text="Cet email personnel reçoit le code de réinitialisation du mot de passe"
+                       styleClass="ds-help" wrapText="true" />
+
+                <Label text="Photo de profil" styleClass="ds-label" />
+                <HBox spacing="10.0" alignment="CENTER_LEFT">
+                    <Button text="Choisir une photo..." onAction="#onChoisirPhotoClick" styleClass="ds-btn,ds-btn-secondary" />
+                    <Label fx:id="photoLabel" text="Aucune photo" />
+                </HBox>
+            </VBox>
+
+            <!-- Candidature mentor en cours -->
             <Label fx:id="statutCandidatureLabel" styleClass="statut-candidature-label" wrapText="true"
                    visible="false" managed="false" />
 
-            <Separator fx:id="separateurMentor" />
-            <Label fx:id="titreMentorLabel" text="Profil mentor" styleClass="subtitle-label" />
+            <!-- Profil mentor (si applicable) -->
+            <VBox styleClass="ds-card" fx:id="carteMentor" visible="false" managed="false" spacing="8.0">
+                <Label text="Profil mentor" styleClass="ds-section-title" />
 
-            <TextArea fx:id="biographieField" promptText="Biographie" prefRowCount="3" wrapText="true" />
-            <TextField fx:id="experienceField" promptText="Expérience (ex: 2 ans de tutorat)" maxWidth="300.0" />
-            <ComboBox fx:id="modePreferenceComboBox" promptText="Mode de préférence" maxWidth="300.0" />
-            <TextField fx:id="nombreMaxMentoresField" promptText="Nombre max de mentorés" maxWidth="300.0" />
+                <Label text="Biographie" styleClass="ds-label" />
+                <TextArea fx:id="biographieField" promptText="Biographie" prefRowCount="3" wrapText="true" />
 
-            <HBox spacing="10.0">
-                <Button text="Enregistrer" onAction="#onEnregistrerClick" />
-                <Button fx:id="retourButton" text="Retour" onAction="#onRetourClick" styleClass="lien-button" />
+                <Label text="Expérience" styleClass="ds-label" />
+                <TextField fx:id="experienceField" promptText="Expérience (ex: 2 ans de tutorat)" maxWidth="320.0" />
+
+                <Label text="Mode de préférence" styleClass="ds-label" />
+                <ComboBox fx:id="modePreferenceComboBox" promptText="Mode de préférence" maxWidth="320.0" />
+
+                <Label text="Nombre max de mentorés" styleClass="ds-label" />
+                <TextField fx:id="nombreMaxMentoresField" promptText="Nombre max de mentorés" maxWidth="320.0" />
+            </VBox>
+
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <Button text="Enregistrer" onAction="#onEnregistrerClick" styleClass="ds-btn" />
+                <Button fx:id="retourButton" text="Retour" onAction="#onRetourClick" styleClass="ds-btn,ds-btn-ghost" />
             </HBox>
 
             <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />

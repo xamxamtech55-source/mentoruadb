@@ -1,0 +1,581 @@
+/* ============================================================================
+   MENTORUADB — DESIGN SYSTEM (theme.css)
+   ----------------------------------------------------------------------------
+   Charte graphique réutilisable, écrite en CSS JavaFX (pas de CSS web).
+   Cette feuille est chargée APRÈS style.css : elle fait autorité sur les
+   couleurs, la typographie et l'état des composants partagés. Les styles
+   spécifiques à un écran (préfixes .acc-, .bienvenue-, .login-) restent dans
+   style.css et ne sont pas redéfinis ici.
+
+   Palette de référence (proposition de design, harmonisée avec l'identité
+   institutionnelle bleu/blanc de l'UADB) :
+     Bleu principal      #163B70
+     Bleu secondaire     #2166A5
+     Fond général        #F2F6FC
+     Surface (cartes)    #FFFFFF
+     Texte principal     #172B4D
+     Texte secondaire    #66758A
+     Succès              #237A57
+     En attente          #B7791F
+     Erreur / refus      #B42318
+
+   Convention : les tolérances de couleur sont des "looked-up colors" définies
+   sur .root et référencées par -fx-*. Un composant réutilisable porte le
+   préfixe .ds- (design system) ; les classes métier existantes
+   (.title-label, .message-label, .statut-*, …) sont simplement reliées aux
+   tokens pour uniformiser l'existant sans modifier les FXML.
+   ============================================================================ */
+
+/* ---------------------------------------------------------------------------
+   1. TOKENS (variables de couleur réutilisables)
+   --------------------------------------------------------------------------- */
+.root {
+    /* Marque institutionnelle */
+    -ds-marine: #0B2F6B;              /* bandeaux, barres latérales */
+    -ds-primary: #163B70;             /* actions principales */
+    -ds-primary-hover: #2166A5;       /* bleu secondaire / survol */
+    -ds-primary-pressed: #102C54;
+    -ds-primary-soft: #E7F0FF;        /* fonds bleutés, sélections */
+
+    /* Fonds et surfaces */
+    -ds-bg: #F2F6FC;
+    -ds-surface: #FFFFFF;
+    -ds-border: #D7E0EC;
+    -ds-border-strong: #B9C7DA;
+    -ds-row-alt: #F7FAFE;
+
+    /* Texte */
+    -ds-text: #172B4D;
+    -ds-text-muted: #66758A;
+    -ds-text-on-primary: #FFFFFF;
+
+    /* États */
+    -ds-success: #237A57;
+    -ds-success-bg: #E6F4EE;
+    -ds-warning: #B7791F;
+    -ds-warning-bg: #FDF3E2;
+    -ds-danger: #B42318;
+    -ds-danger-bg: #FBEAE8;
+    -ds-info: #2166A5;
+    -ds-info-bg: #E7F0FF;
+    -ds-neutral-bg: #EEF2F7;
+
+    /* Focus (accessibilité clavier) */
+    -ds-focus: #2166A5;
+
+    /* Rétro-compatibilité : rejoue les anciens tokens -uadb-* sur la nouvelle
+       palette, pour que les règles déjà écrites dans style.css héritent du
+       design system sans être réécrites écran par écran. */
+    -uadb-marine: -ds-marine;
+    -uadb-bleu: -ds-primary;
+    -uadb-bleu-clair: -ds-primary-soft;
+    -uadb-erreur: -ds-danger;
+    -uadb-fond: -ds-bg;
+    -uadb-texte-2: -ds-text-muted;
+    -uadb-bordure: -ds-border;
+}
+
+/* ---------------------------------------------------------------------------
+   2. TYPOGRAPHIE ET HIÉRARCHIE DES TITRES
+   --------------------------------------------------------------------------- */
+
+/* Titre de page */
+.ds-title,
+.title-label {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -ds-text;
+}
+
+/* Sous-titre / texte d'appui */
+.ds-subtitle,
+.subtitle-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: -ds-text-muted;
+}
+
+/* Titre de section (à l'intérieur d'une carte) */
+.ds-section-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -ds-primary;
+}
+
+/* Étiquette de champ de formulaire */
+.ds-label,
+.acc-libelle,
+.login-champ-libelle {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -ds-text;
+}
+
+/* Libellé discret / aide */
+.ds-help,
+.acc-texte-gris,
+.login-aide {
+    -fx-font-size: 12px;
+    -fx-text-fill: -ds-text-muted;
+}
+
+/* ---------------------------------------------------------------------------
+   3. BOUTONS
+   Règle de base : bouton principal bleu. Les variantes sont des classes
+   additives (.ds-btn-secondary, .ds-btn-ghost, .ds-btn-danger).
+   ENF-06 : les boutons s'adaptent au contenu (pas de texte tronqué) ; leur
+   largeur par défaut n'est PAS forcée ici, sauf pour .ds-btn qui réinitialise
+   la largeur héritée de style.css.
+   --------------------------------------------------------------------------- */
+
+.button {
+    -fx-background-color: -ds-primary;
+    -fx-text-fill: -ds-text-on-primary;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: -ds-primary-hover;
+}
+
+.button:pressed {
+    -fx-background-color: -ds-primary-pressed;
+}
+
+/* Base réutilisable : largeur au contenu, coins arrondis cohérents */
+.ds-btn {
+    -fx-pref-width: -1;
+    -fx-min-width: 0;
+    -fx-padding: 9 16 9 16;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.ds-btn-primary {
+    -fx-background-color: -ds-primary;
+    -fx-text-fill: -ds-text-on-primary;
+}
+
+.ds-btn-primary:hover {
+    -fx-background-color: -ds-primary-hover;
+}
+
+.ds-btn-secondary {
+    -fx-background-color: -ds-surface;
+    -fx-text-fill: -ds-primary;
+    -fx-border-color: -ds-primary;
+    -fx-border-width: 1.2;
+}
+
+.ds-btn-secondary:hover {
+    -fx-background-color: -ds-primary-soft;
+}
+
+.ds-btn-ghost {
+    -fx-background-color: transparent;
+    -fx-text-fill: -ds-primary;
+}
+
+.ds-btn-ghost:hover {
+    -fx-background-color: -ds-primary-soft;
+}
+
+.ds-btn-danger {
+    -fx-background-color: -ds-surface;
+    -fx-text-fill: -ds-danger;
+    -fx-border-color: -ds-danger;
+    -fx-border-width: 1.2;
+}
+
+.ds-btn-danger:hover {
+    -fx-background-color: -ds-danger-bg;
+}
+
+/* Bouton plein largeur (formulaires) */
+.ds-btn-block {
+    -fx-pref-width: Infinity;
+    -fx-max-width: Infinity;
+}
+
+/* ---------------------------------------------------------------------------
+   4. CHAMPS DE SAISIE, LISTES DÉROULANTES, CASES À COCHER
+   --------------------------------------------------------------------------- */
+
+.text-field,
+.password-field,
+.text-area {
+    -fx-background-color: -ds-surface;
+    -fx-border-color: -ds-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-text-fill: -ds-text;
+    -fx-prompt-text-fill: #9AA8BC;
+}
+
+.text-field:focused,
+.password-field:focused,
+.text-area:focused {
+    -fx-border-color: -ds-focus;
+}
+
+.text-area .content {
+    -fx-background-color: -ds-surface;
+}
+
+.combo-box,
+.combo-box-base {
+    -fx-background-color: -ds-surface;
+    -fx-border-color: -ds-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.combo-box:focused,
+.combo-box-base:focused {
+    -fx-border-color: -ds-focus;
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: -ds-text;
+}
+
+.check-box {
+    -fx-text-fill: -ds-text;
+    -fx-font-size: 12px;
+}
+
+.check-box .box {
+    -fx-background-color: -ds-surface;
+    -fx-border-color: -ds-border-strong;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.check-box:selected .box {
+    -fx-background-color: -ds-primary;
+    -fx-border-color: -ds-primary;
+}
+
+.check-box:selected .mark {
+    -fx-background-color: -ds-text-on-primary;
+}
+
+/* ---------------------------------------------------------------------------
+   5. TABLEAUX, LISTES, ARBRES
+   La sélection utilise la couleur + le gras (pas seulement la couleur) pour
+   rester lisible et ne pas dépendre uniquement du contraste chromatique.
+   --------------------------------------------------------------------------- */
+
+.table-view {
+    -fx-background-color: -ds-surface;
+    -fx-border-color: -ds-border;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: -ds-primary;
+    -fx-background-radius: 8 8 0 0;
+}
+
+.table-view .column-header,
+.table-view .filler {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: -ds-text-on-primary;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell {
+    -fx-background-color: -ds-surface;
+    -fx-border-color: transparent transparent -ds-border transparent;
+    -fx-table-cell-border-color: transparent;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: -ds-row-alt;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: -ds-primary;
+}
+
+.table-row-cell:selected .table-cell {
+    -fx-text-fill: -ds-text-on-primary;
+    -fx-font-weight: bold;
+}
+
+.table-cell {
+    -fx-text-fill: -ds-text;
+    -fx-alignment: CENTER-LEFT;
+}
+
+.list-view {
+    -fx-background-color: -ds-surface;
+    -fx-border-color: -ds-border;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.list-cell:odd {
+    -fx-background-color: -ds-row-alt;
+}
+
+.list-cell:selected {
+    -fx-background-color: -ds-primary-soft;
+    -fx-text-fill: -ds-text;
+}
+
+.tree-view {
+    -fx-background-color: -ds-surface;
+    -fx-border-color: -ds-border;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.tree-cell:selected {
+    -fx-background-color: -ds-primary-soft;
+    -fx-text-fill: -ds-text;
+}
+
+/* ---------------------------------------------------------------------------
+   6. CARTES ET CARTES STATISTIQUES
+   --------------------------------------------------------------------------- */
+
+.ds-card {
+    -fx-background-color: -ds-surface;
+    -fx-background-radius: 12;
+    -fx-border-color: -ds-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(gaussian, rgba(11, 47, 107, 0.08), 16, 0, 0, 4);
+}
+
+.ds-card-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -ds-text;
+}
+
+.ds-stat-card {
+    -fx-background-color: -ds-surface;
+    -fx-background-radius: 12;
+    -fx-border-color: -ds-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-padding: 18;
+    -fx-effect: dropshadow(gaussian, rgba(11, 47, 107, 0.08), 16, 0, 0, 4);
+}
+
+.ds-stat-value {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -ds-primary;
+}
+
+.ds-stat-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: -ds-text-muted;
+}
+
+/* Variante compacte (bandeau de synthèse du tableau de bord) */
+.ds-stat-card-compact {
+    -fx-padding: 12;
+}
+
+.ds-stat-card-compact .ds-stat-value {
+    -fx-font-size: 22px;
+}
+
+.ds-stat-card-compact .ds-stat-label {
+    -fx-font-size: 11px;
+}
+
+/* ---------------------------------------------------------------------------
+   7. BADGES DE STATUT
+   Le libellé (texte) porte l'information ; la couleur la renforce. Les badges
+   ont aussi une bordure pour distinguer la forme, pas seulement la teinte.
+   --------------------------------------------------------------------------- */
+
+.ds-badge {
+    -fx-padding: 3 10 3 10;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-border-width: 1;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.ds-badge-success,
+.statut-valide {
+    -fx-background-color: -ds-success-bg;
+    -fx-border-color: -ds-success;
+    -fx-text-fill: -ds-success;
+}
+
+.ds-badge-warning,
+.statut-attente,
+.notification-label,
+.statut-candidature-label {
+    -fx-background-color: -ds-warning-bg;
+    -fx-border-color: -ds-warning;
+    -fx-text-fill: -ds-warning;
+}
+
+.ds-badge-danger,
+.statut-refuse {
+    -fx-background-color: -ds-danger-bg;
+    -fx-border-color: -ds-danger;
+    -fx-text-fill: -ds-danger;
+}
+
+.ds-badge-neutral {
+    -fx-background-color: -ds-neutral-bg;
+    -fx-border-color: -ds-border-strong;
+    -fx-text-fill: -ds-text-muted;
+}
+
+/* Les anciennes classes .statut-* ne définissaient que le texte : on complète
+   avec l'apparence de badge pour homogénéiser. */
+.statut-valide,
+.statut-attente,
+.statut-refuse {
+    -fx-padding: 3 10 3 10;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-border-width: 1;
+    -fx-font-weight: bold;
+}
+
+/* ---------------------------------------------------------------------------
+   8. MESSAGES ET ALERTES (erreur / succès / information / avertissement)
+   --------------------------------------------------------------------------- */
+
+.ds-message,
+.message-label,
+.succes-label,
+.acc-message {
+    -fx-font-size: 12px;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-padding: 8 12 8 12;
+    -fx-wrap-text: true;
+}
+
+.message-label,
+.acc-message {
+    -fx-background-color: -ds-danger-bg;
+    -fx-border-color: -ds-danger;
+    -fx-text-fill: -ds-danger;
+}
+
+.succes-label {
+    -fx-background-color: -ds-success-bg;
+    -fx-border-color: -ds-success;
+    -fx-text-fill: -ds-success;
+}
+
+.ds-message-info {
+    -fx-background-color: -ds-info-bg;
+    -fx-border-color: -ds-info;
+    -fx-text-fill: -ds-info;
+}
+
+.ds-message-warning {
+    -fx-background-color: -ds-warning-bg;
+    -fx-border-color: -ds-warning;
+    -fx-text-fill: -ds-warning;
+}
+
+/* ---------------------------------------------------------------------------
+   9. DIALOGUES DE CONFIRMATION (Alert / Dialog)
+   --------------------------------------------------------------------------- */
+
+.dialog-pane {
+    -fx-background-color: -ds-surface;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: -ds-primary-soft;
+}
+
+.dialog-pane .header-panel .label {
+    -fx-text-fill: -ds-primary;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.dialog-pane .content.label {
+    -fx-text-fill: -ds-text;
+}
+
+.dialog-pane .button {
+    -fx-background-color: -ds-primary;
+    -fx-text-fill: -ds-text-on-primary;
+    -fx-background-radius: 8;
+    -fx-padding: 7 16 7 16;
+}
+
+.dialog-pane .button:hover {
+    -fx-background-color: -ds-primary-hover;
+}
+
+/* ---------------------------------------------------------------------------
+   10. FICHE CANDIDAT / DOSSIERS (classes existantes reliées aux tokens)
+   --------------------------------------------------------------------------- */
+
+.dossier-candidat {
+    -fx-background-color: -ds-bg;
+    -fx-border-color: -ds-border;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 12;
+}
+
+.dossier-titre {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -ds-text;
+}
+
+.dossier-libelle {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -ds-text-muted;
+}
+
+.dossier-valeur {
+    -fx-font-size: 12px;
+    -fx-text-fill: -ds-text;
+}
+
+/* ---------------------------------------------------------------------------
+   11. ÉTATS DE CHARGEMENT ET LISTES VIDES
+   --------------------------------------------------------------------------- */
+
+.ds-empty {
+    -fx-text-fill: -ds-text-muted;
+    -fx-font-style: italic;
+    -fx-font-size: 13px;
+    -fx-padding: 20;
+    -fx-text-alignment: center;
+}
+
+.progress-indicator {
+    -fx-progress-color: -ds-primary;
+}
+
+.progress-bar {
+    -fx-accent: -ds-primary;
+}

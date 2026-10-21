@@ -5,36 +5,40 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="TOP_CENTER" spacing="0.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.uadb.mentoruadb.controller.SeanceGroupeController">
-    <VBox spacing="12.0" maxWidth="620.0" VBox.vgrow="ALWAYS">
-        <padding>
-            <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
-        </padding>
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.uadb.mentoruadb.controller.SeanceGroupeController"
+            fitToWidth="true" hbarPolicy="NEVER" styleClass="racine">
+    <VBox alignment="TOP_CENTER" spacing="0.0">
+        <VBox spacing="12.0" maxWidth="620.0" VBox.vgrow="ALWAYS" styleClass="ds-card">
+            <padding>
+                <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+            </padding>
 
-        <Label text="Créer une séance de groupe" styleClass="title-label" />
-        <Label text="Tous les étudiants ayant une demande acceptée avec toi sur la matière choisie seront invités automatiquement." wrapText="true" />
+            <Label text="Créer une séance de groupe" styleClass="title-label" />
+            <Label text="Tous les étudiants ayant une demande acceptée avec toi sur la matière choisie seront invités automatiquement — chacun recevra une notification et devra confirmer sa présence." wrapText="true" styleClass="ds-help" />
 
-        <ComboBox fx:id="matiereComboBox" promptText="Matière" maxWidth="Infinity" />
-        <DatePicker fx:id="dateSeancePicker" promptText="Date" maxWidth="Infinity" />
+            <ComboBox fx:id="matiereComboBox" promptText="Matière" maxWidth="Infinity" />
+            <DatePicker fx:id="dateSeancePicker" promptText="Date (aujourd'hui ou plus tard)" maxWidth="Infinity" />
 
-        <HBox spacing="10.0" alignment="CENTER_LEFT">
-            <TextField fx:id="heureDebutField" promptText="Début (HH:mm)" prefWidth="100.0" />
-            <TextField fx:id="heureFinField" promptText="Fin (HH:mm)" prefWidth="100.0" />
-            <ComboBox fx:id="modaliteComboBox" promptText="Modalité" maxWidth="Infinity" HBox.hgrow="ALWAYS" />
-        </HBox>
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <TextField fx:id="heureDebutField" promptText="Début (HH:mm)" prefWidth="100.0" />
+                <TextField fx:id="heureFinField" promptText="Fin (HH:mm)" prefWidth="100.0" />
+                <ComboBox fx:id="modaliteComboBox" promptText="Modalité" maxWidth="Infinity" HBox.hgrow="ALWAYS" />
+            </HBox>
 
-        <TextField fx:id="lieuField" promptText="Salle ou lien (visio)" maxWidth="Infinity" />
+            <TextField fx:id="lieuField" promptText="Salle ou lien de réunion" maxWidth="Infinity" />
 
-        <HBox spacing="10.0">
-            <Button text="Créer la séance" onAction="#onCreerClick" />
-            <Button fx:id="retourButton" text="Retour" onAction="#onRetourClick" styleClass="lien-button" />
-        </HBox>
+            <HBox spacing="10.0">
+                <Button text="Créer la séance" onAction="#onCreerClick" styleClass="ds-btn,ds-btn-primary" />
+                <Button fx:id="retourButton" text="Retour" onAction="#onRetourClick" styleClass="ds-btn,ds-btn-secondary" />
+            </HBox>
 
-        <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />
+            <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />
+        </VBox>
     </VBox>
-</VBox>
+</ScrollPane>

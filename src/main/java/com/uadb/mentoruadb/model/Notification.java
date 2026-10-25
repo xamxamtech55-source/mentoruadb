@@ -1,7 +1,10 @@
 package com.uadb.mentoruadb.model;
 
+// ==================== DÉBUT IMPORTS ====================
 import java.time.LocalDateTime;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /** Entité NOTIFICATION : message adressé au compte utilisateur d'un étudiant ou d'un mentor. */
 public class Notification {
     private int idNotification;
@@ -35,3 +38,4 @@ public class Notification {
     public LocalDateTime getDateCreation() { return dateCreation; }
     public void setDateCreation(LocalDateTime dateCreation) { this.dateCreation = dateCreation; }
 }
+// ==================== FIN CLASSE ====================

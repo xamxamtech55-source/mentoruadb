@@ -2,9 +2,9 @@
 -- MIGRATION 005 — email de récupération (reçoit le code de réinitialisation)
 -- Sûre à relancer plusieurs fois (idempotente) : n'ajoute que ce qui manque.
 --
--- Usage :   mysql -u root -p < database/migration_005_email_recuperation.sql
+-- Usage :   mysql -u root -p < database/migrations/migration_005_email_recuperation.sql
 --
--- Une base neuve n'en a pas besoin : schema.sql contient déjà tout cela.
+-- Une base neuve n'en a pas besoin : database/schema/schema.sql contient déjà tout cela.
 -- ============================================================
 
 USE mentoruadb;

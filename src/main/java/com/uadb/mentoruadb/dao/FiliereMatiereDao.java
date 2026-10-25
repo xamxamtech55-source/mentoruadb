@@ -1,11 +1,14 @@
 package com.uadb.mentoruadb.dao;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.config.DatabaseConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /** Table d'association pure (clé composite id_filiere + id_matiere) -> pas d'interface Dao<T,ID>. */
 public class FiliereMatiereDao {
 
@@ -33,3 +36,4 @@ public class FiliereMatiereDao {
         }
     }
 }
+// ==================== FIN CLASSE ====================

@@ -1,17 +1,14 @@
 package com.uadb.mentoruadb.controller;
 
+// ==================== DÉBUT IMPORTS ====================
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
-import com.uadb.mentoruadb.dao.ExpertiseDao;
 import com.uadb.mentoruadb.dao.FiliereDao;
-import com.uadb.mentoruadb.dao.MentorDao;
 import com.uadb.mentoruadb.model.Etudiant;
-import com.uadb.mentoruadb.model.Expertise;
 import com.uadb.mentoruadb.model.Matiere;
-import com.uadb.mentoruadb.model.Mentor;
+import com.uadb.mentoruadb.service.CandidatureMentorService;
 import com.uadb.mentoruadb.util.MessageLabel;
 import com.uadb.mentoruadb.util.SceneNavigator;
 
@@ -22,7 +19,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.stage.Stage;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /** Contrôleur lié à fxml/devenir-mentor.fxml. */
 public class DevenirMentorController {
 
@@ -31,8 +30,7 @@ public class DevenirMentorController {
     @FXML private Button retourButton;
 
     private final FiliereDao filiereDao = new FiliereDao();
-    private final MentorDao mentorDao = new MentorDao();
-    private final ExpertiseDao expertiseDao = new ExpertiseDao();
+    private final CandidatureMentorService candidatureService = new CandidatureMentorService();
 
     private Etudiant etudiantConnecte;
     private String prenomConnecte;
@@ -68,22 +66,13 @@ public class DevenirMentorController {
             return;
         }
 
+        List<Integer> idMatieres = matieresChoisies.stream().map(Matiere::getIdMatiere).toList();
+
         try {
-            Optional<Mentor> mentorExistant = mentorDao.findByEtudiant(etudiantConnecte.getIdEtudiant());
-            if (mentorExistant.isPresent()) {
-                messageLabel.setText("Tu as déjà une candidature mentor (statut : "
-                        + mentorExistant.get().getStatutValidation() + ").");
-                return;
-            }
-
-            Mentor mentor = new Mentor(0, etudiantConnecte.getIdEtudiant(), "EN_ATTENTE");
-            mentor = mentorDao.create(mentor);
-
-            for (Matiere matiere : matieresChoisies) {
-                expertiseDao.ajouter(new Expertise(mentor.getIdMentor(), matiere.getIdMatiere()));
-            }
-
+            candidatureService.soumettreCandidature(etudiantConnecte.getIdEtudiant(), idMatieres);
             messageLabel.setText("Candidature envoyée ! En attente de validation par un administrateur.");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            messageLabel.setText(e.getMessage());
         } catch (SQLException e) {
             messageLabel.setText("Erreur lors de l'envoi de la candidature.");
         }
@@ -102,3 +91,4 @@ public class DevenirMentorController {
         }
     }
 }
+// ==================== FIN CLASSE ====================

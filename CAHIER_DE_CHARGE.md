@@ -525,7 +525,8 @@ Ces limites sont **assumées et documentées**, et non des défauts bloquants po
 | Livrable | Emplacement |
 |---|---|
 | Code source complet | `src/main/java`, `src/main/resources` |
-| Scripts de base de données | `database/schema.sql`, `database/data.sql`, `database/migration_00*.sql` |
+| Scripts de base de données | `database/schema/schema.sql`, `database/seeds/data.sql`, `database/migrations/migration_00*.sql` |
+| Modèles de conception | `docs/conception/` (MCD, MPD) |
 | Documentation | `README.md`, `CAHIER_DE_CHARGE.md` |
 | Dépôt versionné | GitHub — branche `main` |
 | Fichier d'installation | Non produit (application launchée par Maven) |

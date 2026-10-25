@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.controller;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.dao.FiliereDao;
 import com.uadb.mentoruadb.dao.FiliereMatiereDao;
 import com.uadb.mentoruadb.dao.MatiereDao;
@@ -21,7 +22,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /** Contrôleur lié à fxml/gestion-donnees.fxml : arbre UFR → Filières → Matières + catalogue + niveaux. */
 public class GestionDonneesController {
 
@@ -413,3 +416,4 @@ public class GestionDonneesController {
         return alert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK;
     }
 }
+// ==================== FIN CLASSE ====================

@@ -58,6 +58,7 @@
 
     <!-- Contenu : les écrans existants, intégrés tels quels -->
     <center>
+        <ScrollPane fx:id="scrollContenu" fitToWidth="true" hbarPolicy="NEVER" styleClass="dashboard-scroll">
         <VBox spacing="8.0">
             <padding>
                 <Insets top="16.0" right="20.0" bottom="12.0" left="20.0" />
@@ -98,7 +99,7 @@
             <!-- Message de la rubrique active -->
             <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />
 
-            <StackPane fx:id="sectionsPane" VBox.vgrow="ALWAYS">
+            <StackPane fx:id="sectionsPane">
                 <StackPane fx:id="secValidation">
                     <fx:include source="validation-mentors.fxml" />
                 </StackPane>
@@ -113,5 +114,6 @@
                 </StackPane>
             </StackPane>
         </VBox>
+        </ScrollPane>
     </center>
 </BorderPane>

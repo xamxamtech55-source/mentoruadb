@@ -1,20 +1,26 @@
 package com.uadb.mentoruadb.controller;
 
-import com.uadb.mentoruadb.dao.EtudiantDao;
-import com.uadb.mentoruadb.model.Etudiant;
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.model.Utilisateur;
 import com.uadb.mentoruadb.service.AuthService;
+import com.uadb.mentoruadb.util.ChampTelephone;
 import com.uadb.mentoruadb.util.MessageLabel;
 import com.uadb.mentoruadb.util.SceneNavigator;
+import com.uadb.mentoruadb.util.Validateur;
 import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -22,43 +28,77 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Contrôleur lié à fxml/login.fxml : écran fusionné d'accueil et de connexion.
  * Fond panoramique (photo + voile bleu nuit), bloc institutionnel à gauche,
- * carte de connexion flottante à droite.
- * Redirige chaque rôle vers son propre espace : ADMIN vers l'administration,
- * ETUDIANT et MENTOR vers l'espace étudiant.
+ * carte de connexion flottante à droite. La page s'adapte à la taille de la
+ * fenêtre (formulaire resserré sur les écrans peu hauts) pour rester lisible
+ * sans barre de défilement. Formulaire des étudiants et des mentors : le
+ * numéro de carte y est obligatoire. Les administrateurs passent par le bouton
+ * « Accès administrateur » qui ouvre l'écran de connexion dédié.
  */
 public class LoginController {
+
+    private static final Logger LOGGER = Logger.getLogger(LoginController.class.getName());
 
     /** Stockage local : seul l'email est mémorisé, jamais le mot de passe. */
     private static final Preferences PREFS = Preferences.userNodeForPackage(LoginController.class);
     private static final String CLE_EMAIL_MEMORISE = "email_memorise";
 
     /** En dessous de cette largeur, le bloc institutionnel est masqué. */
-    private static final double SEUIL_COMPACT = 760.0;
+    private static final double SEUIL_COMPACT = 820.0;
+    /** En dessous de cette hauteur, le formulaire passe en mode resserré. */
+    private static final double SEUIL_HAUTEUR_COMPACT = 700.0;
+    /** En dessous de cette hauteur, on masque les éléments décoratifs. */
+    private static final double SEUIL_HAUTEUR_MINIMAL = 540.0;
+    /** Largeur maximale réservée au bloc institutionnel (part de la zone utile). */
+    private static final double PART_BLOC_INSTITUTIONNEL = 0.45;
 
-    private static final String TITRE_DEFAUT = "Connectez-vous à votre espace";
-    private static final String SOUS_TITRE_DEFAUT = "Retrouvez votre espace MentorUADB.";
-    private static final String BOUTON_DEFAUT = "Se connecter  →";
-    private static final String BOUTON_ADMIN_DEFAUT = "✔  Accès administrateur";
-
+    @FXML
+    private ScrollPane scrollRacine;
     @FXML
     private StackPane racine;
     @FXML
+    private HBox conteneurHero;
+    @FXML
     private VBox blocInstitutionnel;
     @FXML
+    private Label citationLabel;
+    @FXML
+    private Label deviseLabel;
+    @FXML
+    private Label piluleLabel;
+    @FXML
+    private VBox zoneCarte;
+    @FXML
     private VBox carteConnexion;
+    @FXML
+    private Region espaceSousTitre;
+    @FXML
+    private Region espaceAvantMotDePasse;
+    @FXML
+    private Region espaceApresMotDePasse;
+    @FXML
+    private Region espaceAvantConnexion;
+    @FXML
+    private Region espaceAvantPied;
     @FXML
     private Label titreLabel;
     @FXML
     private Label sousTitreLabel;
     @FXML
+    private Label piedLabel;
+    @FXML
     private TextField emailField;
+    @FXML
+    private TextField numeroCarteField;
     @FXML
     private CheckBox souvenirCheckBox;
     @FXML
@@ -70,20 +110,18 @@ public class LoginController {
     @FXML
     private Button connexionButton;
     @FXML
-    private Button accesAdminButton;
-    @FXML
     private Label messageLabel;
     @FXML
-    private Button creerCompteButton;
-    @FXML
     private Button motDePasseOublieButton;
+    @FXML
+    private Button premiereConnexionButton;
+    @FXML
+    private Button accesAdminButton;
 
     private final AuthService authService = new AuthService();
-    private final EtudiantDao etudiantDao = new EtudiantDao();
 
     private boolean motDePasseVisible = false;
-    /** true = mode « accès administrateur » : seul un compte ADMIN peut entrer. */
-    private boolean modeAdmin = false;
+    private boolean hauteurMinimale = false;
 
     @FXML
     public void initialize() {
@@ -92,9 +130,19 @@ public class LoginController {
 
         emailField.setOnAction(e -> onConnexionClick());
         motDePasseField.setOnAction(e -> onConnexionClick());
+        ChampTelephone.chiffres(numeroCarteField, 7);
 
-        racine.widthProperty().addListener((obs, ancienne, nouvelle) -> adapterMiseEnPage(nouvelle.doubleValue()));
-        adapterMiseEnPage(racine.getWidth());
+        // Le contenu occupe au moins la hauteur visible (pas de bande vide en bas).
+        racine.minHeightProperty().bind(Bindings.createDoubleBinding(
+                () -> scrollRacine.getViewportBounds().getHeight(), scrollRacine.viewportBoundsProperty()));
+
+        racine.widthProperty().addListener((obs, ancienne, nouvelle) -> adapterMiseEnPage());
+        adapterMiseEnPage();
+
+        // Pas de barre de défilement : le formulaire se resserre quand la hauteur baisse.
+        scrollRacine.viewportBoundsProperty().addListener(
+                (obs, ancienne, nouvelle) -> adapterHauteur(nouvelle.getHeight()));
+        adapterHauteur(scrollRacine.getViewportBounds().getHeight());
 
         apparitionCarte();
 
@@ -106,11 +154,82 @@ public class LoginController {
         }
     }
 
-    /** Masque le bloc institutionnel en fenêtre étroite : la carte occupe alors tout l'espace. */
-    private void adapterMiseEnPage(double largeur) {
-        boolean compact = largeur < SEUIL_COMPACT;
-        blocInstitutionnel.setVisible(!compact);
-        blocInstitutionnel.setManaged(!compact);
+    /** Pré-remplit l'email et affiche un message (retour d'un autre écran). */
+    public void prefillerEmailEtMessage(String email, String message) {
+        if (email != null && !email.isBlank()) {
+            emailField.setText(email);
+        }
+        if (message != null && !message.isBlank()) {
+            messageLabel.setText(message);
+        }
+        Platform.runLater(motDePasseField::requestFocus);
+    }
+
+    /**
+     * Répartit la largeur entre le bloc institutionnel et la carte : le bloc
+     * garde une part limitée pour que le formulaire conserve sa largeur
+     * confortable (évite les retours à la ligne qui allongent la page).
+     * Masque le bloc institutionnel en fenêtre étroite.
+     */
+    private void adapterMiseEnPage() {
+        double largeur = racine.getWidth();
+        boolean masquerBloc = largeur < SEUIL_COMPACT || hauteurMinimale;
+        blocInstitutionnel.setVisible(!masquerBloc);
+        blocInstitutionnel.setManaged(!masquerBloc);
+
+        if (!masquerBloc) {
+            double marges = conteneurHero.getPadding().getLeft() + conteneurHero.getPadding().getRight();
+            double largeurUtile = Math.max(0.0, largeur - marges);
+            double largeurBloc = Math.min(520.0, largeurUtile * PART_BLOC_INSTITUTIONNEL);
+            blocInstitutionnel.setMinWidth(largeurBloc);
+            blocInstitutionnel.setPrefWidth(largeurBloc);
+            blocInstitutionnel.setMaxWidth(largeurBloc);
+        }
+        zoneCarte.setMinWidth(0.0);
+    }
+
+    /**
+     * Resserre le formulaire sur les écrans peu hauts pour que la page tienne
+     * sans barre de défilement (le ScrollPane ne reste qu'en secours).
+     */
+    private void adapterHauteur(double hauteur) {
+        if (hauteur <= 0) {
+            return;
+        }
+        boolean compact = hauteur < SEUIL_HAUTEUR_COMPACT;
+        hauteurMinimale = hauteur < SEUIL_HAUTEUR_MINIMAL;
+
+        carteConnexion.setSpacing(hauteurMinimale ? 3.0 : (compact ? 4.0 : 6.0));
+        if (compact) {
+            if (!carteConnexion.getStyleClass().contains("acc-carte-compacte")) {
+                carteConnexion.getStyleClass().add("acc-carte-compacte");
+            }
+        } else {
+            carteConnexion.getStyleClass().remove("acc-carte-compacte");
+        }
+        double margeHorizontale = compact ? 24.0 : 56.0;
+        conteneurHero.setPadding(new Insets(compact ? 12.0 : 24.0, margeHorizontale,
+                compact ? 12.0 : 24.0, margeHorizontale));
+        adapterMiseEnPage();
+
+        sousTitreLabel.setVisible(!hauteurMinimale);
+        sousTitreLabel.setManaged(!hauteurMinimale);
+        piedLabel.setVisible(!hauteurMinimale);
+        piedLabel.setManaged(!hauteurMinimale);
+
+        boolean decorInstitutionnel = !hauteurMinimale && hauteur >= 700.0;
+        citationLabel.setVisible(decorInstitutionnel);
+        citationLabel.setManaged(decorInstitutionnel);
+        deviseLabel.setVisible(decorInstitutionnel);
+        deviseLabel.setManaged(decorInstitutionnel);
+        piluleLabel.setVisible(decorInstitutionnel);
+        piluleLabel.setManaged(decorInstitutionnel);
+
+        for (Region espace : new Region[]{espaceSousTitre, espaceAvantMotDePasse,
+                espaceApresMotDePasse, espaceAvantConnexion, espaceAvantPied}) {
+            espace.setVisible(!compact);
+            espace.setManaged(!compact);
+        }
     }
 
     /** Apparition discrète de la carte (une seule fois, sans boucle). */
@@ -139,85 +258,93 @@ public class LoginController {
         motDePasseField.setManaged(!motDePasseVisible);
         motDePasseVisibleField.setVisible(motDePasseVisible);
         motDePasseVisibleField.setManaged(motDePasseVisible);
-        toggleMotDePasseButton.setText(motDePasseVisible ? "🙈" : "👁");
-    }
-
-    /** Bascule entre la connexion étudiant et la connexion administrateur. */
-    @FXML
-    private void onAccesAdminClick() {
-        modeAdmin = !modeAdmin;
-        messageLabel.setText("");
-        if (modeAdmin) {
-            titreLabel.setText("Accès administrateur");
-            sousTitreLabel.setText("Espace réservé aux comptes administrateurs de l'UADB.");
-            connexionButton.setText("Se connecter en administrateur  →");
-            accesAdminButton.setText("← Connexion étudiant");
-        } else {
-            titreLabel.setText(TITRE_DEFAUT);
-            sousTitreLabel.setText(SOUS_TITRE_DEFAUT);
-            connexionButton.setText(BOUTON_DEFAUT);
-            accesAdminButton.setText(BOUTON_ADMIN_DEFAUT);
-        }
+        toggleMotDePasseButton.setText(motDePasseVisible ? "Masquer" : "Afficher");
     }
 
     @FXML
     private void onConnexionClick() {
-        String email = emailField.getText();
-        String motDePasse = motDePasseField.getText();
+        String email = emailField.getText() == null ? "" : emailField.getText().trim();
+        String carte = numeroCarteField.getText() == null ? "" : numeroCarteField.getText().trim();
+        String motDePasse = motDePasseField.getText() == null ? "" : motDePasseField.getText();
 
         if (email.isBlank() || motDePasse.isBlank()) {
             messageLabel.setText("Renseigne l'email et le mot de passe.");
             return;
         }
+        if (!Validateur.emailValide(email)) {
+            messageLabel.setText("L'adresse email est invalide.");
+            return;
+        }
+        if (!carte.isEmpty() && !Validateur.numeroCarteValide(carte)) {
+            messageLabel.setText("Le numéro de carte doit contenir exactement 7 chiffres.");
+            return;
+        }
 
         try {
-            Utilisateur utilisateur = authService.connecter(email, motDePasse);
+            Utilisateur utilisateur = authService.connecter(email, carte, motDePasse);
             if (utilisateur == null) {
-                messageLabel.setText("Email ou mot de passe incorrect.");
+                messageLabel.setText("Email, numéro de carte ou mot de passe incorrect.");
                 return;
             }
 
-            // En mode administrateur, seul le rôle ADMIN est accepté.
-            if (modeAdmin && !"ADMIN".equals(utilisateur.getRole())) {
-                messageLabel.setText("Ce compte n'a pas accès à l'espace administrateur.");
+            // Séparation des espaces : un administrateur ne se connecte pas ici.
+            if ("ADMIN".equals(utilisateur.getRole())) {
+                messageLabel.setText("Compte administrateur : utilisez le bouton « Accès administrateur ».");
                 return;
             }
 
             memoriserEmail(email);
 
-            switch (utilisateur.getRole()) {
-                case "ETUDIANT", "MENTOR" -> ouvrirEspaceEtudiant(utilisateur);
-                case "ADMIN" -> ouvrirEspaceAdmin(utilisateur);
-                default -> messageLabel.setText("Rôle non reconnu : " + utilisateur.getRole());
+            if (utilisateur.isMustChangePassword()) {
+                ouvrirChangementObligatoire(utilisateur);
+                return;
             }
+
+            SessionNavigation.ouvrirEspace((Stage) racine.getScene().getWindow(), utilisateur);
 
         } catch (SQLException e) {
             messageLabel.setText("Erreur de connexion à la base de données.");
         } catch (IOException e) {
             messageLabel.setText("Impossible d'ouvrir le tableau de bord.");
+        } catch (IllegalStateException e) {
+            messageLabel.setText(e.getMessage());
         }
     }
 
-    /** Espace étudiant : valable pour l'étudiant simple comme pour le mentor. */
-    private void ouvrirEspaceEtudiant(Utilisateur utilisateur) throws SQLException, IOException {
-        Optional<Etudiant> etudiantOpt = etudiantDao.findByUtilisateur(utilisateur.getIdUtilisateur());
-        if (etudiantOpt.isEmpty()) {
-            messageLabel.setText("Profil étudiant introuvable pour ce compte.");
-            return;
-        }
-
+    private void ouvrirChangementObligatoire(Utilisateur utilisateur) throws IOException {
         Stage stage = (Stage) racine.getScene().getWindow();
-        DashboardEtudiantController controller = SceneNavigator.switchToAndGetController(
-                stage, "/com/uadb/mentoruadb/fxml/dashboard-etudiant.fxml", "Mentor-UADB - Tableau de bord");
-        controller.chargerDonnees(etudiantOpt.get(), utilisateur.getPrenom());
+        ChangementMotDePasseObligatoireController controller = SceneNavigator.switchToAndGetController(
+                stage, "/com/uadb/mentoruadb/fxml/changement-mot-de-passe-obligatoire.fxml",
+                "Mentor-UADB - Nouveau mot de passe");
+        controller.initialiser(utilisateur);
     }
 
-    /** Espace administrateur, distinct de l'espace étudiant. */
-    private void ouvrirEspaceAdmin(Utilisateur utilisateur) throws IOException {
-        Stage stage = (Stage) racine.getScene().getWindow();
-        DashboardAdminController controller = SceneNavigator.switchToAndGetController(
-                stage, "/com/uadb/mentoruadb/fxml/dashboard-admin.fxml", "Mentor-UADB - Administration");
-        controller.chargerDonnees(utilisateur.getPrenom());
+    /** Ouvre l'écran de connexion réservé aux administrateurs. */
+    @FXML
+    private void onAccesAdminClick() {
+        try {
+            Stage stage = (Stage) accesAdminButton.getScene().getWindow();
+            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/login-admin.fxml",
+                    "Mentor-UADB - Accès administrateur");
+        } catch (IOException e) {
+            messageLabel.setText("Impossible d'ouvrir l'accès administrateur.");
+        }
+    }
+
+    @FXML
+    private void onPremiereConnexionClick() {
+        try {
+            if (premiereConnexionButton == null || premiereConnexionButton.getScene() == null) {
+                messageLabel.setText("Impossible d'ouvrir la première connexion.");
+                return;
+            }
+            Stage stage = (Stage) premiereConnexionButton.getScene().getWindow();
+            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/activation-demande.fxml",
+                    "Mentor-UADB - Première connexion");
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Echec d'ouverture de l'ecran activation-demande", e);
+            messageLabel.setText("Impossible d'ouvrir la première connexion. Vérifie les ressources (FXML/CSS) ou les logs.");
+        }
     }
 
     /**
@@ -238,16 +365,6 @@ public class LoginController {
     }
 
     @FXML
-    private void onCreerCompteClick() {
-        try {
-            Stage stage = (Stage) creerCompteButton.getScene().getWindow();
-            SceneNavigator.switchTo(stage, "/com/uadb/mentoruadb/fxml/inscription.fxml", "Mentor-UADB - Inscription");
-        } catch (IOException e) {
-            messageLabel.setText("Impossible d'ouvrir l'écran d'inscription.");
-        }
-    }
-
-    @FXML
     private void onMotDePasseOublieClick() {
         try {
             Stage stage = (Stage) motDePasseOublieButton.getScene().getWindow();
@@ -258,3 +375,4 @@ public class LoginController {
         }
     }
 }
+// ==================== FIN CLASSE ====================

@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.controller;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.dao.DemandeMentoratDao;
 import com.uadb.mentoruadb.dao.DemandeSeanceDao;
 import com.uadb.mentoruadb.dao.EvaluationDao;
@@ -29,6 +30,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -41,7 +43,10 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,7 +55,9 @@ import javafx.scene.Node;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /** Contrôleur lié à fxml/dashboard-etudiant.fxml. */
 public class DashboardEtudiantController {
 
@@ -129,6 +136,21 @@ public class DashboardEtudiantController {
     private TableColumn<SeanceVue, String> colSeanceStatut;
 
     @FXML
+    private TableView<SeanceVue> prochainesSeancesTable;
+    @FXML
+    private TableColumn<SeanceVue, String> colProchMentor;
+    @FXML
+    private TableColumn<SeanceVue, String> colProchMatiere;
+    @FXML
+    private TableColumn<SeanceVue, String> colProchDate;
+    @FXML
+    private TableColumn<SeanceVue, String> colProchDebut;
+    @FXML
+    private TableColumn<SeanceVue, String> colProchFin;
+    @FXML
+    private TableColumn<SeanceVue, String> colProchStatut;
+
+    @FXML
     private TableView<Fichier> fichiersTable;
     @FXML
     private TableColumn<Fichier, String> colFichierNom;
@@ -159,9 +181,29 @@ public class DashboardEtudiantController {
     @FXML
     private StackPane sectionsPane;
     @FXML
+    private ScrollPane scrollContenu;
+    @FXML
     private Button hamburgerButton;
     @FXML
     private VBox sidebarPane;
+
+    // Zone de synthèse.
+    @FXML
+    private Label statDemandesValue;
+    @FXML
+    private Label statDemandesDetail;
+    @FXML
+    private Label statDemandesSeanceValue;
+    @FXML
+    private Label statDemandesSeanceDetail;
+    @FXML
+    private Label statSeancesValue;
+    @FXML
+    private Label statSeancesDetail;
+    @FXML
+    private Label statRessourcesValue;
+    @FXML
+    private Label statRessourcesDetail;
 
     private final MentorDao mentorDao = new MentorDao();
     private final DemandeMentoratDao demandeDao = new DemandeMentoratDao();
@@ -207,6 +249,14 @@ public class DashboardEtudiantController {
         colSeanceHeureFin.setCellValueFactory(new PropertyValueFactory<>("heureFin"));
         colSeanceStatut.setCellValueFactory(new PropertyValueFactory<>("statut"));
         seancesTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+        colProchMentor.setCellValueFactory(new PropertyValueFactory<>("nomMentor"));
+        colProchMatiere.setCellValueFactory(new PropertyValueFactory<>("nomMatiere"));
+        colProchDate.setCellValueFactory(new PropertyValueFactory<>("dateSeance"));
+        colProchDebut.setCellValueFactory(new PropertyValueFactory<>("heureDebut"));
+        colProchFin.setCellValueFactory(new PropertyValueFactory<>("heureFin"));
+        colProchStatut.setCellValueFactory(new PropertyValueFactory<>("statut"));
+        prochainesSeancesTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         colFichierNom.setCellValueFactory(new PropertyValueFactory<>("nomFichier"));
         colFichierDate.setCellValueFactory(new PropertyValueFactory<>("dateUpload"));
@@ -254,22 +304,32 @@ public class DashboardEtudiantController {
             seancesAConfirmerTable.setItems(FXCollections.observableArrayList(
                     seanceDao.findGroupesAConfirmerByEtudiant(etudiant.getIdEtudiant())));
 
-            demandesTable.setItems(FXCollections.observableArrayList(
-                    demandeDao.findByEtudiantAvecDetails(etudiant.getIdEtudiant())));
+            List<DemandeVue> demandes = demandeDao.findByEtudiantAvecDetails(etudiant.getIdEtudiant());
+            demandesTable.setItems(FXCollections.observableArrayList(demandes));
 
-            demandeSeanceTable.setItems(FXCollections.observableArrayList(
-                    demandeSeanceDao.findByEtudiantAvecDetails(etudiant.getIdEtudiant())));
+            List<DemandeSeanceVue> demandesSeance = demandeSeanceDao.findByEtudiantAvecDetails(etudiant.getIdEtudiant());
+            demandeSeanceTable.setItems(FXCollections.observableArrayList(demandesSeance));
 
             List<SeanceVue> toutesLesSeances = new ArrayList<>();
             toutesLesSeances.addAll(seanceDao.findByEtudiantAvecDetails(etudiant.getIdEtudiant()));
             toutesLesSeances.addAll(seanceDao.findGroupesByEtudiantAvecDetails(etudiant.getIdEtudiant()));
             seancesTable.setItems(FXCollections.observableArrayList(toutesLesSeances));
 
-            fichiersTable.setItems(FXCollections.observableArrayList(
-                    fichierDao.findVisiblesParEtudiant(etudiant.getIdEtudiant())));
+            List<SeanceVue> prochaines = toutesLesSeances.stream()
+                    .filter(s -> s.getStatut() != null && s.getStatut().startsWith("PLANIFIEE"))
+                    .filter(s -> s.getDateSeance() != null && !s.getDateSeance().isBefore(LocalDate.now()))
+                    .sorted(Comparator.comparing(SeanceVue::getDateSeance)
+                            .thenComparing(s -> s.getHeureDebut() == null ? LocalTime.MIN : s.getHeureDebut()))
+                    .toList();
+            prochainesSeancesTable.setItems(FXCollections.observableArrayList(prochaines));
+
+            List<Fichier> fichiers = fichierDao.findVisiblesParEtudiant(etudiant.getIdEtudiant());
+            fichiersTable.setItems(FXCollections.observableArrayList(fichiers));
 
             evaluationsTable.setItems(FXCollections.observableArrayList(
                     evaluationDao.findByEtudiantAvecDetails(etudiant.getIdEtudiant())));
+
+            majStatistiques(demandes, demandesSeance, toutesLesSeances, fichiers);
 
             seancesGroupeNonVues = seanceDao.findGroupesAVenirByEtudiant(etudiant.getIdEtudiant());
             if (!seancesGroupeNonVues.isEmpty()) {
@@ -304,6 +364,41 @@ public class DashboardEtudiantController {
         } catch (SQLException e) {
             bienvenueLabel.setText("Erreur de chargement des données.");
         }
+    }
+
+    /**
+     * Met à jour les cartes de synthèse : elles suivent toujours le dernier
+     * rafraîchissement des tableaux.
+     */
+    private void majStatistiques(List<DemandeVue> demandes, List<DemandeSeanceVue> demandesSeance,
+                                  List<SeanceVue> seances, List<Fichier> fichiers) {
+        long demandesEnAttente = demandes.stream().filter(d -> "EN_ATTENTE".equals(d.getStatut())).count();
+        long relationsAcceptees = demandes.stream().filter(d -> "ACCEPTEE".equals(d.getStatut())).count();
+
+        statDemandesValue.setText(String.valueOf(demandes.size()));
+        statDemandesDetail.setText(demandesEnAttente > 0
+                ? demandesEnAttente + " en attente"
+                : (relationsAcceptees > 0 ? relationsAcceptees + " relation(s) acceptée(s)"
+                : "aucune demande en attente"));
+
+        long demandesSeanceEnAttente = demandesSeance.stream()
+                .filter(d -> "EN_ATTENTE".equals(d.getStatut())).count();
+        statDemandesSeanceValue.setText(String.valueOf(demandesSeance.size()));
+        statDemandesSeanceDetail.setText(demandesSeanceEnAttente > 0
+                ? demandesSeanceEnAttente + " en attente"
+                : "aucune demande en attente");
+
+        long aVenir = seances.stream()
+                .filter(s -> s.getStatut() != null && s.getStatut().startsWith("PLANIFIEE")).count();
+        long realisees = seances.stream()
+                .filter(s -> s.getStatut() != null && s.getStatut().startsWith("REALISEE")).count();
+        statSeancesValue.setText(String.valueOf(seances.size()));
+        statSeancesDetail.setText(aVenir + " à venir · " + realisees + " réalisée(s)");
+
+        statRessourcesValue.setText(String.valueOf(fichiers.size()));
+        statRessourcesDetail.setText(fichiers.isEmpty()
+                ? "aucun fichier partagé"
+                : "fichier(s) partagé(s) par mes mentors");
     }
 
     @FXML
@@ -522,6 +617,7 @@ public class DashboardEtudiantController {
             section.setVisible(visible);
             section.setManaged(visible);
         }
+        scrollContenu.setVvalue(0);
     }
 
     @FXML
@@ -622,3 +718,4 @@ public class DashboardEtudiantController {
         }
     }
 }
+// ==================== FIN CLASSE ====================

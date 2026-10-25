@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.controller;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.dao.FiliereDao;
 import com.uadb.mentoruadb.dao.MentorDao;
 import com.uadb.mentoruadb.dao.NiveauDao;
@@ -7,8 +8,10 @@ import com.uadb.mentoruadb.dao.UtilisateurDao;
 import com.uadb.mentoruadb.model.Etudiant;
 import com.uadb.mentoruadb.model.Mentor;
 import com.uadb.mentoruadb.model.Utilisateur;
+import com.uadb.mentoruadb.util.ChampTelephone;
 import com.uadb.mentoruadb.util.MessageLabel;
 import com.uadb.mentoruadb.util.SceneNavigator;
+import com.uadb.mentoruadb.util.Validateur;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -22,7 +25,9 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.Optional;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Contrôleur lié à fxml/profil.fxml.
  * Sépare les données modifiables (coordonnées, photo, profil mentor) des données
@@ -71,6 +76,7 @@ public class ProfilController {
     public void initialize() {
         modePreferenceComboBox.setItems(FXCollections.observableArrayList("EN_LIGNE", "PRESENTIEL", "LES_DEUX"));
         MessageLabel.rendreDynamique(messageLabel);
+        ChampTelephone.formater(telephoneField);
     }
 
     /** Appelée manuellement depuis DashboardEtudiantController après le chargement de cet écran. */
@@ -101,7 +107,7 @@ public class ProfilController {
             numeroCarteLabel.setText(carte == null || carte.isBlank() ? "Non renseigné" : carte);
 
             // Coordonnées (modifiables)
-            telephoneField.setText(utilisateurConnecte.getTelephone());
+            telephoneField.setText(Validateur.formaterTelephone(utilisateurConnecte.getTelephone()));
             emailRecuperationField.setText(utilisateurConnecte.getEmailRecuperation());
             photoLabel.setText(utilisateurConnecte.getPhoto() != null ? utilisateurConnecte.getPhoto() : "Aucune photo");
 
@@ -162,7 +168,12 @@ public class ProfilController {
                 photoChoisie = null;
             }
 
-            utilisateurConnecte.setTelephone(telephoneField.getText());
+            String telephone = Validateur.normaliserTelephone(telephoneField.getText());
+            if (!telephone.isEmpty() && !Validateur.telephoneValide(telephone)) {
+                messageLabel.setText("Numéro de téléphone invalide : 9 chiffres attendus (ex. 77 123 45 67).");
+                return;
+            }
+            utilisateurConnecte.setTelephone(telephone.isEmpty() ? null : telephone);
 
             String emailRecuperation = emailRecuperationField.getText() == null
                     ? "" : emailRecuperationField.getText().trim();
@@ -215,3 +226,4 @@ public class ProfilController {
         }
     }
 }
+// ==================== FIN CLASSE ====================

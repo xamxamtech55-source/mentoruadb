@@ -1,8 +1,11 @@
 package com.uadb.mentoruadb.dto;
 
+// ==================== DÉBUT IMPORTS ====================
 import java.time.LocalDate;
 import java.time.LocalTime;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Vue combinée (séance individuelle ou de groupe) pour les tableaux "Prochaines séances"
  * et "Séances terminées" du dashboard mentor (pas une entité de la base).
@@ -51,3 +54,4 @@ public class SeancePlanifieeVue {
     public LocalTime getHeureFin() { return heureFin; }
     public String getStatut() { return statut; }
 }
+// ==================== FIN CLASSE ====================

@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.util;
 
+// ==================== DÉBUT IMPORTS ====================
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.nio.charset.StandardCharsets;
@@ -7,7 +8,9 @@ import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Base64;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Hachage et vérification des mots de passe (PBKDF2-HMAC-SHA256, sel aléatoire par mot de passe).
  * Aucune dépendance externe : tout vient du JDK.
@@ -93,3 +96,4 @@ public final class PasswordUtil {
         }
     }
 }
+// ==================== FIN CLASSE ====================

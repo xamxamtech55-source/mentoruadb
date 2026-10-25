@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.dto;
 
+// ==================== DÉBUT CLASSE ====================
 /** Mentor suggéré à un étudiant (pas une entité de la base). */
 public class MentorSuggestionVue {
     private final int idMentor;
@@ -26,3 +27,4 @@ public class MentorSuggestionVue {
     public String getMatieres() { return matieres; }
     public String getNoteMoyenne() { return noteMoyenne; }
 }
+// ==================== FIN CLASSE ====================

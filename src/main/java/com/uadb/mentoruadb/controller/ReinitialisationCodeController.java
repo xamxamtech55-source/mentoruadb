@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.controller;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.service.ReinitialisationService;
 import com.uadb.mentoruadb.util.MessageLabel;
 import com.uadb.mentoruadb.util.SceneNavigator;
@@ -12,7 +13,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.SQLException;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Contrôleur lié à fxml/reinitialisation-code.fxml (étape 2 : saisie du code reçu par mail).
  * L'email est transmis par MotDePasseOublieController via setEmail().
@@ -81,3 +84,4 @@ public class ReinitialisationCodeController {
         }
     }
 }
+// ==================== FIN CLASSE ====================

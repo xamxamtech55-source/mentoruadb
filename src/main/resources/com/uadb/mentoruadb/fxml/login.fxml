@@ -18,65 +18,67 @@
   Écran fusionné accueil + connexion : hero panoramique avec carte flottante.
   Fond photo (bat.jpg, recadrage cover via CSS) + voile bleu nuit + bloc
   institutionnel à gauche + carte de connexion à droite.
+  La page s'adapte à la hauteur de la fenêtre : formulaire compact (espacements
+  et marges réduits) dès que la hauteur est faible, sans barre de défilement.
+  La racine reste un ScrollPane en secours pour les écrans très bas.
   NOTE : bat.jpg (547x365) n'est PAS une photo authentique vérifiée du campus
   (provenance non vérifiable) — image décorative, à remplacer par une photo HD
   du campus si disponible.
 -->
-<StackPane fx:id="racine" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.uadb.mentoruadb.controller.LoginController"
-      styleClass="acc-login-racine">
-  <children>
-    <!-- Arrière-plan panoramique : recadrage cover centré, repli bleu si absente -->
-    <Region styleClass="acc-hero-fond"/>
-    <!-- Superposition bleu nuit pour la lisibilité (plus dense à gauche) -->
-    <Region styleClass="acc-voile-hero"/>
-    <HBox alignment="CENTER_LEFT" spacing="0.0" HBox.hgrow="ALWAYS">
-      <padding>
-        <Insets top="36.0" right="56.0" bottom="36.0" left="56.0"/>
-      </padding>
+<ScrollPane fx:id="scrollRacine" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            styleClass="acc-hero-scroll"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.uadb.mentoruadb.controller.LoginController">
+  <content>
+    <StackPane fx:id="racine" styleClass="acc-login-racine" minHeight="560.0">
       <children>
-        <!-- Bloc institutionnel : masqué en fenêtre étroite -->
-        <VBox fx:id="blocInstitutionnel" spacing="14.0" alignment="CENTER_LEFT"
-                             HBox.hgrow="ALWAYS" maxWidth="520.0">
+        <!-- Arrière-plan panoramique : recadrage cover centré, repli bleu si absente -->
+        <Region styleClass="acc-hero-fond"/>
+        <!-- Superposition bleu nuit pour la lisibilité (plus dense à gauche) -->
+        <Region styleClass="acc-voile-hero"/>
+        <HBox fx:id="conteneurHero" alignment="CENTER_LEFT" spacing="0.0" HBox.hgrow="ALWAYS">
+          <padding>
+            <Insets top="24.0" right="56.0" bottom="24.0" left="56.0"/>
+          </padding>
           <children>
-            <StackPane styleClass="acc-logo-cercle" prefWidth="84.0" prefHeight="84.0"
-                                           maxWidth="84.0" maxHeight="84.0">
+            <!-- Bloc institutionnel : masqué en fenêtre étroite -->
+            <VBox fx:id="blocInstitutionnel" spacing="14.0" alignment="CENTER_LEFT"
+                                 HBox.hgrow="ALWAYS" maxWidth="520.0">
               <children>
-                <ImageView fitHeight="84.0" fitWidth="84.0" preserveRatio="true">
-                  <image>
-                    <Image url="@../images/logo-uadb.png"/>
-                  </image>
-                </ImageView>
-              </children>
-            </StackPane>
-            <Label text="MentorUADB" styleClass="acc-hero-marque"/>
-            <Label text="Réussissez votre parcours universitaire avec le bon mentor."
-                                   wrapText="true" styleClass="acc-hero-titre"/>
-            <Label text="Trouvez un accompagnement adapté à votre filière, vos matières et vos objectifs."
-                                   wrapText="true" styleClass="acc-hero-texte"/>
-            <Region prefHeight="10.0"/>
-            <Label text="« L'excellence est ma constance, l'éthique ma vertu »"
-                                   wrapText="true" styleClass="acc-citation-bas"/>
-            <Label text="Devise de l'Université Alioune Diop de Bambey"
-                                   wrapText="true" styleClass="acc-logo-sous"/>
-            <Region prefHeight="6.0"/>
-            <Label text="UADB - Bambey" styleClass="acc-pilule-sombre"
-                                   maxWidth="Infinity" alignment="CENTER"/>
-          </children>
-        </VBox>
-        <!-- Zone droite : carte de connexion centrée, défilement seulement si hauteur insuffisante -->
-        <VBox fx:id="zoneCarte" HBox.hgrow="ALWAYS" alignment="CENTER">
-          <children>
-            <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER"
-                                vbarPolicy="AS_NEEDED" focusTraversable="false"
-                                styleClass="acc-carte-scroll">
-              <padding>
-                <Insets top="8.0" right="18.0" bottom="8.0" left="18.0"/>
-              </padding>
-              <content>
-                <StackPane>
+                <StackPane styleClass="acc-logo-cercle" prefWidth="84.0" prefHeight="84.0"
+                                               maxWidth="84.0" maxHeight="84.0">
                   <children>
-                    <VBox fx:id="carteConnexion" alignment="CENTER_LEFT" spacing="8.0"
+                    <ImageView fitHeight="84.0" fitWidth="84.0" preserveRatio="true">
+                      <image>
+                        <Image url="@../images/logo-uadb.png"/>
+                      </image>
+                    </ImageView>
+                  </children>
+                </StackPane>
+                <Label text="MentorUADB" styleClass="acc-hero-marque"/>
+                <Label text="Réussissez votre parcours universitaire avec le bon mentor."
+                                       wrapText="true" styleClass="acc-hero-titre"/>
+                <Label text="Trouvez un accompagnement adapté à votre filière, vos matières et vos objectifs."
+                                       wrapText="true" styleClass="acc-hero-texte"/>
+                <Region prefHeight="10.0"/>
+                <Label fx:id="citationLabel" text="« L'excellence est ma constance, l'éthique ma vertu »"
+                                       wrapText="true" styleClass="acc-citation-bas"/>
+                <Label fx:id="deviseLabel" text="Devise de l'Université Alioune Diop de Bambey"
+                                       wrapText="true" styleClass="acc-logo-sous"/>
+                <Region prefHeight="6.0"/>
+                <Label fx:id="piluleLabel" text="UADB - Bambey" styleClass="acc-pilule-sombre"
+                                       maxWidth="Infinity" alignment="CENTER"/>
+              </children>
+            </VBox>
+            <!-- Zone droite : carte de connexion centrée -->
+            <VBox fx:id="zoneCarte" HBox.hgrow="ALWAYS" alignment="CENTER">
+              <children>
+                <StackPane>
+                  <padding>
+                    <Insets top="8.0" right="18.0" bottom="8.0" left="18.0"/>
+                  </padding>
+                  <children>
+                    <VBox fx:id="carteConnexion" alignment="CENTER_LEFT" spacing="6.0"
                                                maxWidth="420.0" prefWidth="400.0"
                                                styleClass="acc-carte-flottante">
                       <children>
@@ -85,11 +87,14 @@
                         <Label fx:id="sousTitreLabel"
                                                        text="Retrouvez votre espace MentorUADB."
                                                        wrapText="true" styleClass="acc-texte-gris" />
-                        <Region prefHeight="8.0"/>
+                        <Region fx:id="espaceSousTitre" prefHeight="8.0"/>
                         <Label text="Identifiant" styleClass="acc-libelle"/>
                         <TextField fx:id="emailField" promptText="Email institutionnel (prenom.nom@uadb.edu.sn)"
                                                               maxWidth="Infinity" styleClass="acc-champ" />
-                        <Region prefHeight="4.0"/>
+                        <Label text="Numéro de carte d'étudiant" styleClass="acc-libelle"/>
+                        <TextField fx:id="numeroCarteField" promptText="7 chiffres"
+                                                              maxWidth="Infinity" styleClass="acc-champ" />
+                        <Region fx:id="espaceAvantMotDePasse" prefHeight="4.0"/>
                         <Label text="Mot de passe" styleClass="acc-libelle"/>
                         <StackPane maxWidth="Infinity">
                           <children>
@@ -107,7 +112,7 @@
                             </Button>
                           </children>
                         </StackPane>
-                        <Region prefHeight="4.0"/>
+                        <Region fx:id="espaceApresMotDePasse" prefHeight="4.0"/>
                         <HBox alignment="CENTER_LEFT" maxWidth="Infinity">
                           <children>
                             <CheckBox fx:id="souvenirCheckBox" text="Se souvenir de moi"/>
@@ -116,38 +121,34 @@
                                                                             onAction="#onMotDePasseOublieClick" styleClass="acc-lien" />
                           </children>
                         </HBox>
-                        <Region prefHeight="6.0"/>
-                        <Button fx:id="connexionButton" text="Se connecter  →" maxWidth="Infinity"
+                        <Region fx:id="espaceAvantConnexion" prefHeight="6.0"/>
+                        <Button fx:id="connexionButton" text="Connexion" maxWidth="Infinity"
                                                                 onAction="#onConnexionClick" styleClass="acc-bouton-principal" />
                         <Label fx:id="messageLabel" wrapText="true" maxWidth="Infinity" styleClass="acc-message"/>
-                        <HBox alignment="CENTER" spacing="10.0" maxWidth="Infinity">
-                          <children>
-                            <Region styleClass="acc-ligne" HBox.hgrow="ALWAYS" prefHeight="1.0" maxHeight="1.0"/>
-                            <Label text="Ou" styleClass="acc-ou"/>
-                            <Region styleClass="acc-ligne" HBox.hgrow="ALWAYS" prefHeight="1.0" maxHeight="1.0"/>
-                          </children>
-                        </HBox>
-                        <Button fx:id="accesAdminButton" text="✔  Accès administrateur" maxWidth="Infinity"
-                                                                onAction="#onAccesAdminClick" styleClass="acc-bouton-secondaire" />
                         <HBox alignment="CENTER" spacing="4.0" maxWidth="Infinity">
                           <children>
-                            <Label text="Vous n'avez pas de compte ?" styleClass="acc-texte-gris" wrapText="true"/>
-                            <Button fx:id="creerCompteButton" text="Créer un compte"
-                                                                        onAction="#onCreerCompteClick" styleClass="acc-lien" />
+                            <Button fx:id="premiereConnexionButton" text="Première connexion ? Créer mon compte"
+                        onAction="#onPremiereConnexionClick" styleClass="acc-lien" />
                           </children>
                         </HBox>
-                        <Region prefHeight="8.0"/>
-                        <Label text="Université Alioune Diop de Bambey" styleClass="acc-pied"
+                        <HBox alignment="CENTER" spacing="4.0" maxWidth="Infinity">
+                          <children>
+                            <Button fx:id="accesAdminButton" text="Accès administrateur"
+                        onAction="#onAccesAdminClick" styleClass="acc-lien" />
+                          </children>
+                        </HBox>
+                        <Region fx:id="espaceAvantPied" prefHeight="8.0"/>
+                        <Label fx:id="piedLabel" text="Université Alioune Diop de Bambey" styleClass="acc-pied"
                                                                maxWidth="Infinity" alignment="CENTER" wrapText="true" />
                       </children>
                     </VBox>
                   </children>
                 </StackPane>
-              </content>
-            </ScrollPane>
+              </children>
+            </VBox>
           </children>
-        </VBox>
+        </HBox>
       </children>
-    </HBox>
-  </children>
-</StackPane>
+    </StackPane>
+  </content>
+</ScrollPane>

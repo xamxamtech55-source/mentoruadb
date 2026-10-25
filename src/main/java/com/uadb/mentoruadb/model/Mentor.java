@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.model;
 
+// ==================== DÉBUT CLASSE ====================
 /** Entité MENTOR (étudiant validé). */
 public class Mentor {
     private int idMentor;
@@ -49,3 +50,4 @@ public class Mentor {
     public Integer getNombreMaxMentores() { return nombreMaxMentores; }
     public void setNombreMaxMentores(Integer nombreMaxMentores) { this.nombreMaxMentores = nombreMaxMentores; }
 }
+// ==================== FIN CLASSE ====================

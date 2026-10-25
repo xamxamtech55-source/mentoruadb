@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.util;
 
+// ==================== DÉBUT IMPORTS ====================
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
@@ -8,7 +9,9 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Centralise le changement d'écran pour éviter de dupliquer le code de
  * chargement FXML.
@@ -83,3 +86,4 @@ public class SceneNavigator {
         }
     }
 }
+// ==================== FIN CLASSE ====================

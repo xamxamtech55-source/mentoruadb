@@ -1,7 +1,10 @@
 package com.uadb.mentoruadb.dto;
 
+// ==================== DÉBUT IMPORTS ====================
 import java.time.LocalDate;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /** Vue enrichie d'une évaluation reçue par un mentor, pour l'affichage (pas une entité de la base). */
 public class EvaluationVue {
     private final int idEvaluation;
@@ -28,3 +31,4 @@ public class EvaluationVue {
     public String getCommentaire() { return commentaire; }
     public LocalDate getDateEvaluation() { return dateEvaluation; }
 }
+// ==================== FIN CLASSE ====================

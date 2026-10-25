@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.dao;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.config.DatabaseConnection;
 import com.uadb.mentoruadb.model.Filiere;
 import com.uadb.mentoruadb.model.Matiere;
@@ -9,7 +10,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 public class FiliereDao implements Dao<Filiere, Integer> {
 
     @Override
@@ -171,3 +174,4 @@ public class FiliereDao implements Dao<Filiere, Integer> {
         return new Filiere(rs.getInt("id_filiere"), rs.getString("nom"), rs.getInt("id_ufr"));
     }
 }
+// ==================== FIN CLASSE ====================

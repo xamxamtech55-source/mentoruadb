@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.dto;
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Vue enrichie d'un mentor avec son identité et son parcours (pas une entité de la base).
  * Contient l'identité (email, téléphone, n° de carte) pour que l'administrateur puisse
@@ -53,3 +54,4 @@ public class MentorDetailVue {
     public String getModePreference() { return modePreference; }
     public Integer getNombreMaxMentores() { return nombreMaxMentores; }
 }
+// ==================== FIN CLASSE ====================

@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.dao;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.config.DatabaseConnection;
 import com.uadb.mentoruadb.model.Ufr;
 
@@ -11,7 +12,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 public class UfrDao implements Dao<Ufr, Integer> {
 
     @Override
@@ -93,3 +96,4 @@ public class UfrDao implements Dao<Ufr, Integer> {
         return new Ufr(rs.getInt("id_ufr"), rs.getString("nom"));
     }
 }
+// ==================== FIN CLASSE ====================

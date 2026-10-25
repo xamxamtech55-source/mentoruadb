@@ -1,9 +1,12 @@
 package com.uadb.mentoruadb.util;
 
+// ==================== DÉBUT IMPORTS ====================
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Boîtes de dialogue homogènes : le contenu texte est toujours borné en
  * largeur (retour à la ligne forcé) et défilant quand il peut être long.
@@ -43,3 +46,4 @@ public final class DialogueUtil {
         return label;
     }
 }
+// ==================== FIN CLASSE ====================

@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.controller;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.dao.UtilisateurDao;
 import com.uadb.mentoruadb.model.Utilisateur;
 import com.uadb.mentoruadb.util.DialogueUtil;
@@ -15,7 +16,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.sql.SQLException;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /** Contrôleur lié à fxml/gestion-utilisateurs.fxml. Le mot de passe n'est jamais affiché (exigence sécurité). */
 public class GestionUtilisateursController {
 
@@ -160,3 +163,4 @@ public class GestionUtilisateursController {
         messageLabel.setText(texte);
     }
 }
+// ==================== FIN CLASSE ====================

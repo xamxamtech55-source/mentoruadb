@@ -1,7 +1,10 @@
 package com.uadb.mentoruadb.model;
 
+// ==================== DÉBUT IMPORTS ====================
 import java.time.LocalDate;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /** Entité DEMANDE_MENTORAT. */
 public class DemandeMentorat {
     private int idDemande;
@@ -41,3 +44,4 @@ public class DemandeMentorat {
     public String getStatut() { return statut; }
     public void setStatut(String statut) { this.statut = statut; }
 }
+// ==================== FIN CLASSE ====================

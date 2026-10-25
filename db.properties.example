@@ -5,3 +5,8 @@
 db.url=jdbc:mysql://localhost:3306/mentoruadb?useSSL=false&serverTimezone=UTC
 db.user=root
 db.password=
+# Base référentielle universitaire (lecture seule).
+# Variables d'environnement prioritaires : MENTORUADB_REF_URL / MENTORUADB_REF_USER / MENTORUADB_REF_PASSWORD
+ref.url=jdbc:mysql://localhost:3306/referentiel_uadb?useSSL=false&serverTimezone=UTC
+ref.user=root
+ref.password=

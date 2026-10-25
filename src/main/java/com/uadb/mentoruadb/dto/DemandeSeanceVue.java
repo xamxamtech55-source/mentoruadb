@@ -1,8 +1,11 @@
 package com.uadb.mentoruadb.dto;
 
+// ==================== DÉBUT IMPORTS ====================
 import java.time.LocalDate;
 import java.time.LocalTime;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /** Vue enrichie d'une demande de séance, côté étudiant (pas une entité de la base). */
 public class DemandeSeanceVue {
     private final int idDemandeSeance;
@@ -38,3 +41,4 @@ public class DemandeSeanceVue {
     public LocalTime getHeureDebut() { return heureDebut; }
     public LocalTime getHeureFin() { return heureFin; }
 }
+// ==================== FIN CLASSE ====================

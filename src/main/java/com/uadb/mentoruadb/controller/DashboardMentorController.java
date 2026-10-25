@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.controller;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.dao.DemandeMentoratDao;
 import com.uadb.mentoruadb.dao.DemandeSeanceDao;
 import com.uadb.mentoruadb.dao.EvaluationDao;
@@ -14,6 +15,7 @@ import com.uadb.mentoruadb.dto.DestinataireVue;
 import com.uadb.mentoruadb.dto.EvaluationVue;
 import com.uadb.mentoruadb.dto.SeanceGroupeVue;
 import com.uadb.mentoruadb.dto.SeanceMentorVue;
+import com.uadb.mentoruadb.dto.SeanceResumeVue;
 import com.uadb.mentoruadb.model.Etudiant;
 import com.uadb.mentoruadb.model.Fichier;
 import com.uadb.mentoruadb.model.Matiere;
@@ -39,15 +41,20 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+// ==================== FIN IMPORTS ====================
+// ==================== DÉBUT CLASSE ====================
 /** Contrôleur lié à fxml/dashboard-mentor.fxml. */
 public class DashboardMentorController {
 
     @FXML private Label bienvenueLabel;
+    @FXML private Label mentorHeaderLabel;
     @FXML private Button deconnexionButton;
     @FXML private Button hamburgerButton;
     @FXML private VBox sidebarPane;
@@ -83,6 +90,20 @@ public class DashboardMentorController {
     @FXML private TableColumn<SeanceMentorVue, String> colSeanceHeureFin;
     @FXML private TableColumn<SeanceMentorVue, String> colSeanceStatut;
 
+    @FXML private TableView<SeanceResumeVue> prochainesSeancesTable;
+    @FXML private TableColumn<SeanceResumeVue, String> colProchQui;
+    @FXML private TableColumn<SeanceResumeVue, String> colProchMatiere;
+    @FXML private TableColumn<SeanceResumeVue, String> colProchDate;
+    @FXML private TableColumn<SeanceResumeVue, String> colProchDebut;
+    @FXML private TableColumn<SeanceResumeVue, String> colProchFin;
+    @FXML private TableColumn<SeanceResumeVue, String> colProchStatut;
+
+    @FXML private TableView<SeanceResumeVue> termineesSeancesTable;
+    @FXML private TableColumn<SeanceResumeVue, String> colTermQui;
+    @FXML private TableColumn<SeanceResumeVue, String> colTermMatiere;
+    @FXML private TableColumn<SeanceResumeVue, String> colTermDate;
+    @FXML private TableColumn<SeanceResumeVue, String> colTermHeure;
+
     @FXML private TableView<SeanceGroupeVue> seancesGroupeTable;
     @FXML private TableColumn<SeanceGroupeVue, String> colGroupeMatiere;
     @FXML private TableColumn<SeanceGroupeVue, String> colGroupeDate;
@@ -106,6 +127,28 @@ public class DashboardMentorController {
 
     @FXML private Label messageLabel;
     @FXML private StackPane sectionsPane;
+    @FXML private ScrollPane scrollContenu;
+
+    // Boutons d'action : activés uniquement sur une ligne sélectionnée au bon statut.
+    @FXML private Button accepterDemandeButton;
+    @FXML private Button refuserDemandeButton;
+    @FXML private Button accepterSeanceButton;
+    @FXML private Button refuserSeanceButton;
+    @FXML private Button marquerRealiseeButton;
+    @FXML private Button annulerSeanceButton;
+    @FXML private Button marquerGroupeRealiseeButton;
+    @FXML private Button annulerGroupeButton;
+
+    // Zone de synthèse.
+    @FXML private Label statDemandesValue;
+    @FXML private Label statDemandesDetail;
+    @FXML private Label statProchainesValue;
+    @FXML private Label statProchainesDetail;
+    @FXML private Label statTermineesValue;
+    @FXML private Label statTermineesDetail;
+    @FXML private Label statEvaluationsValue;
+    @FXML private Label statEvaluationsDetail;
+    @FXML private Label evaluationsResumeLabel;
     private final DemandeMentoratDao demandeDao = new DemandeMentoratDao();
     private final DemandeSeanceDao demandeSeanceDao = new DemandeSeanceDao();
     private final SeanceDao seanceDao = new SeanceDao();
@@ -151,6 +194,20 @@ public class DashboardMentorController {
         colGroupeParticipation.setCellValueFactory(new PropertyValueFactory<>("participation"));
         seancesGroupeTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
+        colProchQui.setCellValueFactory(new PropertyValueFactory<>("qui"));
+        colProchMatiere.setCellValueFactory(new PropertyValueFactory<>("nomMatiere"));
+        colProchDate.setCellValueFactory(new PropertyValueFactory<>("dateSeance"));
+        colProchDebut.setCellValueFactory(new PropertyValueFactory<>("heureDebut"));
+        colProchFin.setCellValueFactory(new PropertyValueFactory<>("heureFin"));
+        colProchStatut.setCellValueFactory(new PropertyValueFactory<>("statut"));
+        prochainesSeancesTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+        colTermQui.setCellValueFactory(new PropertyValueFactory<>("qui"));
+        colTermMatiere.setCellValueFactory(new PropertyValueFactory<>("nomMatiere"));
+        colTermDate.setCellValueFactory(new PropertyValueFactory<>("dateSeance"));
+        colTermHeure.setCellValueFactory(new PropertyValueFactory<>("heureDebut"));
+        termineesSeancesTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
         colEvalEtudiant.setCellValueFactory(new PropertyValueFactory<>("nomEtudiant"));
         colEvalMatiere.setCellValueFactory(new PropertyValueFactory<>("nomMatiere"));
         colEvalNote.setCellValueFactory(new PropertyValueFactory<>("note"));
@@ -169,6 +226,17 @@ public class DashboardMentorController {
 
         MessageLabel.rendreDynamique(messageLabel);
         hamburgerButton.setTooltip(new Tooltip("Masquer le menu"));
+
+        // Les boutons d'action ne sont actifs que sur une ligne sélectionnée (et au bon statut).
+        demandesTable.getSelectionModel().selectedItemProperty()
+                .addListener((obs, ancienne, nouvelle) -> majEtatBoutons());
+        demandeSeanceTable.getSelectionModel().selectedItemProperty()
+                .addListener((obs, ancienne, nouvelle) -> majEtatBoutons());
+        seancesTable.getSelectionModel().selectedItemProperty()
+                .addListener((obs, ancienne, nouvelle) -> majEtatBoutons());
+        seancesGroupeTable.getSelectionModel().selectedItemProperty()
+                .addListener((obs, ancienne, nouvelle) -> majEtatBoutons());
+        majEtatBoutons();
     }
 
     /** Appelée manuellement après le chargement de cet écran, pour lui transmettre le mentor connecté. */
@@ -187,26 +255,49 @@ public class DashboardMentorController {
 
     private void rafraichir() {
         bienvenueLabel.setText("Espace mentor — " + prenomConnecte);
+        mentorHeaderLabel.setText(prenomConnecte + " — mentor validé");
 
         try {
-            demandesTable.setItems(FXCollections.observableArrayList(
-                    demandeDao.findByMentorAvecDetails(mentorConnecte.getIdMentor())
-            ));
-            demandeSeanceTable.setItems(FXCollections.observableArrayList(
-                    demandeSeanceDao.findByMentorAvecDetails(mentorConnecte.getIdMentor())
-            ));
-            seancesTable.setItems(FXCollections.observableArrayList(
-                    seanceDao.findByMentorAvecDetails(mentorConnecte.getIdMentor())
-            ));
-            seancesGroupeTable.setItems(FXCollections.observableArrayList(
-                    seanceDao.findGroupesByMentorAvecDetails(mentorConnecte.getIdMentor())
-            ));
-            evaluationsTable.setItems(FXCollections.observableArrayList(
-                    evaluationDao.findByMentorAvecDetails(mentorConnecte.getIdMentor())
-            ));
+            List<DemandeRecueVue> demandes = demandeDao.findByMentorAvecDetails(mentorConnecte.getIdMentor());
+            List<DemandeSeanceRecueVue> demandesSeance = demandeSeanceDao.findByMentorAvecDetails(mentorConnecte.getIdMentor());
+            List<SeanceMentorVue> seances = seanceDao.findByMentorAvecDetails(mentorConnecte.getIdMentor());
+            List<SeanceGroupeVue> seancesGroupe = seanceDao.findGroupesByMentorAvecDetails(mentorConnecte.getIdMentor());
+            List<EvaluationVue> evaluations = evaluationDao.findByMentorAvecDetails(mentorConnecte.getIdMentor());
+
+            demandesTable.setItems(FXCollections.observableArrayList(demandes));
+            demandeSeanceTable.setItems(FXCollections.observableArrayList(demandesSeance));
+            seancesTable.setItems(FXCollections.observableArrayList(seances));
+            seancesGroupeTable.setItems(FXCollections.observableArrayList(seancesGroupe));
+            evaluationsTable.setItems(FXCollections.observableArrayList(evaluations));
             fichiersTable.setItems(FXCollections.observableArrayList(
                     fichierDao.findByMentor(mentorConnecte.getIdMentor())
             ));
+
+            // Tableaux de synthèse : prochaines séances (individuelles + groupe) et séances terminées.
+            List<SeanceResumeVue> toutesLesSeances = new ArrayList<>();
+            for (SeanceMentorVue seance : seances) {
+                toutesLesSeances.add(resumeDe(seance));
+            }
+            for (SeanceGroupeVue seance : seancesGroupe) {
+                toutesLesSeances.add(resumeDe(seance));
+            }
+
+            List<SeanceResumeVue> prochaines = toutesLesSeances.stream()
+                    .filter(s -> "PLANIFIEE".equals(s.getStatut()))
+                    .filter(s -> s.getDateSeance() != null && !s.getDateSeance().isBefore(LocalDate.now()))
+                    .sorted(Comparator.comparing(SeanceResumeVue::getDateSeance)
+                            .thenComparing(s -> s.getHeureDebut() == null ? LocalTime.MIN : s.getHeureDebut()))
+                    .toList();
+            List<SeanceResumeVue> terminees = toutesLesSeances.stream()
+                    .filter(s -> "REALISEE".equals(s.getStatut()))
+                    .filter(s -> s.getDateSeance() != null)
+                    .sorted(Comparator.comparing(SeanceResumeVue::getDateSeance).reversed())
+                    .toList();
+
+            prochainesSeancesTable.setItems(FXCollections.observableArrayList(prochaines));
+            termineesSeancesTable.setItems(FXCollections.observableArrayList(terminees));
+
+            majStatistiques(demandes, demandesSeance, prochaines, terminees, evaluations);
 
             int nbNonLues = notificationDao.findNonLuesByUtilisateur(etudiantConnecte.getIdUtilisateur()).size();
             if (nbNonLues > 0) {
@@ -220,6 +311,97 @@ public class DashboardMentorController {
         } catch (SQLException e) {
             messageLabel.setText("Erreur de chargement des données.");
         }
+
+        majEtatBoutons();
+    }
+
+    /** Convertit une séance individuelle en ligne de synthèse. */
+    private SeanceResumeVue resumeDe(SeanceMentorVue seance) {
+        return new SeanceResumeVue(seance.getIdSeance(), seance.getNomEtudiant(), seance.getNomMatiere(),
+                seance.getDateSeance(), seance.getHeureDebut(), seance.getHeureFin(), seance.getStatut(), "INDIVIDUELLE");
+    }
+
+    /** Convertit une séance de groupe en ligne de synthèse (« qui » = nombre de confirmés). */
+    private SeanceResumeVue resumeDe(SeanceGroupeVue seance) {
+        return new SeanceResumeVue(seance.getIdSeance(),
+                "Groupe (" + seance.getNombreConfirmes() + "/" + seance.getNombreInvites() + ")",
+                seance.getNomMatiere(), seance.getDateSeance(), seance.getHeureDebut(), seance.getHeureFin(),
+                seance.getStatut(), "GROUPE");
+    }
+
+    /** Met à jour les 4 cartes de synthèse (les valeurs suivent toujours le dernier rafraîchissement). */
+    private void majStatistiques(List<DemandeRecueVue> demandes, List<DemandeSeanceRecueVue> demandesSeance,
+                                  List<SeanceResumeVue> prochaines, List<SeanceResumeVue> terminees,
+                                  List<EvaluationVue> evaluations) {
+        long demandesEnAttente = demandes.stream().filter(d -> "EN_ATTENTE".equals(d.getStatut())).count();
+        long demandesSeanceEnAttente = demandesSeance.stream().filter(d -> "EN_ATTENTE".equals(d.getStatut())).count();
+
+        statDemandesValue.setText(String.valueOf(demandes.size()));
+        statDemandesDetail.setText(demandesEnAttente > 0
+                ? demandesEnAttente + " en attente"
+                : (demandesSeanceEnAttente > 0 ? demandesSeanceEnAttente + " demande(s) de séance en attente"
+                : "aucune demande en attente"));
+
+        statProchainesValue.setText(String.valueOf(prochaines.size()));
+        statProchainesDetail.setText(prochaines.isEmpty()
+                ? "aucune séance planifiée"
+                : "prochaine le " + formatDate(prochaines.get(0).getDateSeance()));
+
+        statTermineesValue.setText(String.valueOf(terminees.size()));
+        statTermineesDetail.setText(terminees.isEmpty() ? "aucune séance réalisée" : "séances réalisées");
+
+        double moyenne = evaluations.stream().mapToInt(EvaluationVue::getNote).average().orElse(0);
+        statEvaluationsValue.setText(String.valueOf(evaluations.size()));
+        statEvaluationsDetail.setText(evaluations.isEmpty()
+                ? "aucune évaluation"
+                : String.format(Locale.FRANCE, "moyenne %.1f/5", moyenne));
+
+        evaluationsResumeLabel.setText(evaluations.isEmpty()
+                ? "Aucune évaluation reçue pour le moment."
+                : evaluations.size() + " évaluation(s) reçue(s) — moyenne "
+                + String.format(Locale.FRANCE, "%.1f/5", moyenne));
+    }
+
+    private static String formatDate(LocalDate date) {
+        return date == null ? "-" : date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
+
+    /**
+     * Renvoie la ligne sélectionnée, mais UNIQUEMENT si une seule ligne est sélectionnée :
+     * les actions unitaires (accepter, refuser, planifier, annuler) portent sur une demande
+     * précise, il ne faut donc jamais agir par surprise sur une ligne tirée d'une sélection
+     * multiple. Renvoie null si 0 ou plusieurs lignes sont sélectionnées.
+     */
+    private static <T> T selectionUnique(TableView<T> table) {
+        List<T> selection = new ArrayList<>(table.getSelectionModel().getSelectedItems());
+        return selection.size() == 1 ? selection.get(0) : null;
+    }
+
+    /**
+     * Active les boutons d'action selon la ligne sélectionnée : une demande (de mentorat ou de
+     * séance) ne peut être traitée qu'en attente, une séance ne peut être modifiée que si elle est
+     * planifiée. Sans sélection (ou avec plusieurs lignes), tout reste désactivé.
+     */
+    private void majEtatBoutons() {
+        DemandeRecueVue demande = selectionUnique(demandesTable);
+        boolean demandeEnAttente = demande != null && "EN_ATTENTE".equals(demande.getStatut());
+        accepterDemandeButton.setDisable(!demandeEnAttente);
+        refuserDemandeButton.setDisable(!demandeEnAttente);
+
+        DemandeSeanceRecueVue demandeSeance = selectionUnique(demandeSeanceTable);
+        boolean demandeSeanceEnAttente = demandeSeance != null && "EN_ATTENTE".equals(demandeSeance.getStatut());
+        accepterSeanceButton.setDisable(!demandeSeanceEnAttente);
+        refuserSeanceButton.setDisable(!demandeSeanceEnAttente);
+
+        SeanceMentorVue seance = selectionUnique(seancesTable);
+        boolean seancePlanifiee = seance != null && "PLANIFIEE".equals(seance.getStatut());
+        marquerRealiseeButton.setDisable(!seancePlanifiee);
+        annulerSeanceButton.setDisable(!seancePlanifiee);
+
+        SeanceGroupeVue seanceGroupe = selectionUnique(seancesGroupeTable);
+        boolean groupePlanifie = seanceGroupe != null && "PLANIFIEE".equals(seanceGroupe.getStatut());
+        marquerGroupeRealiseeButton.setDisable(!groupePlanifie);
+        annulerGroupeButton.setDisable(!groupePlanifie);
     }
 
     @FXML
@@ -241,9 +423,13 @@ public class DashboardMentorController {
 
     @FXML
     private void onAccepterClick() {
-        DemandeRecueVue demande = demandesTable.getSelectionModel().getSelectedItem();
+        DemandeRecueVue demande = selectionUnique(demandesTable);
         if (demande == null) {
-            messageLabel.setText("Sélectionne une demande dans le tableau d'abord.");
+            messageLabel.setText("Sélectionne une seule demande de mentorat dans le tableau.");
+            return;
+        }
+        if (!"EN_ATTENTE".equals(demande.getStatut())) {
+            messageLabel.setText("Cette demande a déjà été traitée.");
             return;
         }
 
@@ -260,9 +446,13 @@ public class DashboardMentorController {
 
     @FXML
     private void onRefuserClick() {
-        DemandeRecueVue demande = demandesTable.getSelectionModel().getSelectedItem();
+        DemandeRecueVue demande = selectionUnique(demandesTable);
         if (demande == null) {
-            messageLabel.setText("Sélectionne une demande dans le tableau d'abord.");
+            messageLabel.setText("Sélectionne une seule demande de mentorat dans le tableau.");
+            return;
+        }
+        if (!"EN_ATTENTE".equals(demande.getStatut())) {
+            messageLabel.setText("Cette demande a déjà été traitée.");
             return;
         }
 
@@ -298,9 +488,13 @@ public class DashboardMentorController {
     /** Planifie la séance (date/heure/modalité/lieu saisis ci-dessous) pour la demande de séance sélectionnée. */
     @FXML
     private void onPlanifierSeanceClick() {
-        DemandeSeanceRecueVue demandeSeance = demandeSeanceTable.getSelectionModel().getSelectedItem();
+        DemandeSeanceRecueVue demandeSeance = selectionUnique(demandeSeanceTable);
         if (demandeSeance == null) {
-            messageLabel.setText("Sélectionne une demande de séance dans le tableau d'abord.");
+            messageLabel.setText("Sélectionne une seule demande de séance dans le tableau.");
+            return;
+        }
+        if (!"EN_ATTENTE".equals(demandeSeance.getStatut())) {
+            messageLabel.setText("Cette demande de séance a déjà été traitée.");
             return;
         }
         String modalite = modaliteComboBox.getValue();
@@ -336,9 +530,13 @@ public class DashboardMentorController {
 
     @FXML
     private void onRefuserSeanceClick() {
-        DemandeSeanceRecueVue demandeSeance = demandeSeanceTable.getSelectionModel().getSelectedItem();
+        DemandeSeanceRecueVue demandeSeance = selectionUnique(demandeSeanceTable);
         if (demandeSeance == null) {
-            messageLabel.setText("Sélectionne une demande de séance dans le tableau d'abord.");
+            messageLabel.setText("Sélectionne une seule demande de séance dans le tableau.");
+            return;
+        }
+        if (!"EN_ATTENTE".equals(demandeSeance.getStatut())) {
+            messageLabel.setText("Cette demande de séance a déjà été traitée.");
             return;
         }
 
@@ -373,9 +571,13 @@ public class DashboardMentorController {
 
     @FXML
     private void onMarquerRealiseeClick() {
-        SeanceMentorVue seance = seancesTable.getSelectionModel().getSelectedItem();
+        SeanceMentorVue seance = selectionUnique(seancesTable);
         if (seance == null) {
-            messageLabel.setText("Sélectionne une séance dans le tableau d'abord.");
+            messageLabel.setText("Sélectionne une seule séance dans le tableau.");
+            return;
+        }
+        if (!"PLANIFIEE".equals(seance.getStatut())) {
+            messageLabel.setText("Seule une séance planifiée peut être marquée comme réalisée.");
             return;
         }
 
@@ -392,9 +594,13 @@ public class DashboardMentorController {
 
     @FXML
     private void onAnnulerClick() {
-        SeanceMentorVue seance = seancesTable.getSelectionModel().getSelectedItem();
+        SeanceMentorVue seance = selectionUnique(seancesTable);
         if (seance == null) {
-            messageLabel.setText("Sélectionne une séance dans le tableau d'abord.");
+            messageLabel.setText("Sélectionne une seule séance dans le tableau.");
+            return;
+        }
+        if (!"PLANIFIEE".equals(seance.getStatut())) {
+            messageLabel.setText("Seule une séance planifiée peut être annulée.");
             return;
         }
 
@@ -553,6 +759,7 @@ public class DashboardMentorController {
             section.setVisible(visible);
             section.setManaged(visible);
         }
+        scrollContenu.setVvalue(0);
     }
 
     @FXML
@@ -581,9 +788,9 @@ public class DashboardMentorController {
 
     @FXML
     private void onConsulterDemandeClick() {
-        DemandeRecueVue demande = demandesTable.getSelectionModel().getSelectedItem();
+        DemandeRecueVue demande = selectionUnique(demandesTable);
         if (demande == null) {
-            messageLabel.setText("Sélectionne une demande dans le tableau d'abord.");
+            messageLabel.setText("Sélectionne une seule demande dans le tableau.");
             return;
         }
         messageLabel.setText("Demande de " + demande.getNomEtudiant() + " pour " + demande.getNomMatiere()
@@ -592,9 +799,9 @@ public class DashboardMentorController {
 
     @FXML
     private void onConsulterDemandeSeanceClick() {
-        DemandeSeanceRecueVue demandeSeance = demandeSeanceTable.getSelectionModel().getSelectedItem();
+        DemandeSeanceRecueVue demandeSeance = selectionUnique(demandeSeanceTable);
         if (demandeSeance == null) {
-            messageLabel.setText("Sélectionne une demande de séance dans le tableau d'abord.");
+            messageLabel.setText("Sélectionne une seule demande de séance dans le tableau.");
             return;
         }
         StringBuilder details = new StringBuilder("Demande de " + demandeSeance.getNomEtudiant() + " pour "
@@ -609,9 +816,13 @@ public class DashboardMentorController {
 
     @FXML
     private void onGroupeMarquerRealiseeClick() {
-        SeanceGroupeVue seance = seancesGroupeTable.getSelectionModel().getSelectedItem();
+        SeanceGroupeVue seance = selectionUnique(seancesGroupeTable);
         if (seance == null) {
-            messageLabel.setText("Sélectionne une séance de groupe dans le tableau d'abord.");
+            messageLabel.setText("Sélectionne une seule séance de groupe dans le tableau.");
+            return;
+        }
+        if (!"PLANIFIEE".equals(seance.getStatut())) {
+            messageLabel.setText("Seule une séance planifiée peut être marquée comme réalisée.");
             return;
         }
 
@@ -628,9 +839,13 @@ public class DashboardMentorController {
 
     @FXML
     private void onGroupeAnnulerClick() {
-        SeanceGroupeVue seance = seancesGroupeTable.getSelectionModel().getSelectedItem();
+        SeanceGroupeVue seance = selectionUnique(seancesGroupeTable);
         if (seance == null) {
-            messageLabel.setText("Sélectionne une séance de groupe dans le tableau d'abord.");
+            messageLabel.setText("Sélectionne une seule séance de groupe dans le tableau.");
+            return;
+        }
+        if (!"PLANIFIEE".equals(seance.getStatut())) {
+            messageLabel.setText("Seule une séance planifiée peut être annulée.");
             return;
         }
 
@@ -714,3 +929,4 @@ public class DashboardMentorController {
         }
     }
 }
+// ==================== FIN CLASSE ====================

@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.service;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.dao.EtudiantDao;
 import com.uadb.mentoruadb.dao.ReinitialisationDao;
 import com.uadb.mentoruadb.dao.UtilisateurDao;
@@ -8,13 +9,16 @@ import com.uadb.mentoruadb.model.ReinitialisationMotDePasse;
 import com.uadb.mentoruadb.model.Utilisateur;
 import com.uadb.mentoruadb.util.MailUtil;
 import com.uadb.mentoruadb.util.PasswordUtil;
+import com.uadb.mentoruadb.util.Validateur;
 import jakarta.mail.MessagingException;
 
 import java.security.SecureRandom;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Optional;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Réinitialisation de mot de passe en deux temps :
  *   1. envoyerCode(email, numeroCarte)  -> vérifie l'identité puis envoie un code à 6 chiffres par mail
@@ -40,16 +44,17 @@ public class ReinitialisationService {
      * Vérifie email institutionnel + numéro de carte, génère le code, le stocke haché et l'envoie
      * à l'adresse de réception choisie (n'importe quel Gmail ou autre) ; si {@code emailRecuperation}
      * est vide, on retombe sur l'EMAIL DE RÉCUPÉRATION du compte (renseigné dans « Mon profil »).
-     * Retourne l'adresse à laquelle le code est parti, ou Optional.empty() si l'identité ne
-     * correspond à aucun compte ou si aucune adresse de réception n'est disponible : l'appelant
-     * affiche alors exactement le même message que pour un envoi réussi, pour ne rien révéler
-     * sur les comptes existants.
+     * Retourne l'adresse à laquelle le code est parti, ou Optional.empty() si aucune adresse de
+     * réception n'est disponible (l'appelant affiche alors un message neutre).
+     * Si le compte existe mais que le numéro de carte ne correspond pas, on lève une
+     * IllegalArgumentException avec un message clair : c'est la demande explicite du porteur du
+     * projet (l'étudiant doit pouvoir corriger sa saisie). Un email inconnu garde en revanche un
+     * message neutre, pour ne pas révéler l'existence d'un compte.
      */
     public Optional<String> envoyerCode(String email, String numeroCarte,
                                         String emailRecuperation) throws SQLException, MessagingException {
-        if (!MailUtil.estConfigure()) {
-            throw new MessagingException("Serveur mail non configuré : copie mail.properties.example en "
-                    + "mail.properties et renseigne un mot de passe d'application Gmail.");
+        if (!Validateur.numeroCarteValide(numeroCarte)) {
+            throw new IllegalArgumentException("Le numéro de carte doit contenir exactement 7 chiffres.");
         }
 
         Optional<Utilisateur> resultatUtilisateur = utilisateurDao.findByEmail(email.trim());
@@ -62,8 +67,8 @@ public class ReinitialisationService {
             return Optional.empty();
         }
         String carteEnregistree = resultatEtudiant.get().getNumeroCarte();
-        if (carteEnregistree == null || !carteEnregistree.equals(numeroCarte.trim())) {
-            return Optional.empty();
+        if (carteEnregistree == null || !carteEnregistree.trim().equals(numeroCarte.trim())) {
+            throw new IllegalArgumentException("Le numéro de carte ne correspond pas à ce compte.");
         }
 
         String destination = emailRecuperation == null ? "" : emailRecuperation.trim();
@@ -72,6 +77,11 @@ public class ReinitialisationService {
         }
         if (destination == null || destination.isBlank()) {
             return Optional.empty();
+        }
+
+        if (!MailUtil.estConfigure()) {
+            throw new MessagingException("Serveur mail non configuré : copie mail.properties.example en "
+                    + "mail.properties et renseigne un mot de passe d'application Gmail.");
         }
 
         String code = genererCode();
@@ -147,3 +157,4 @@ public class ReinitialisationService {
                 + "— Mentor UADB, Université Alioune Diop de Bambey";
     }
 }
+// ==================== FIN CLASSE ====================

@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.dao;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.config.DatabaseConnection;
 import com.uadb.mentoruadb.dto.SeanceGroupeVue;
 import com.uadb.mentoruadb.dto.SeanceMentorVue;
@@ -10,7 +11,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 public class SeanceDao implements Dao<Seance, Integer> {
 
     @Override
@@ -421,3 +424,4 @@ public class SeanceDao implements Dao<Seance, Integer> {
         );
     }
 }
+// ==================== FIN CLASSE ====================

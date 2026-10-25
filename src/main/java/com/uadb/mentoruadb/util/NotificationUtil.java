@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.util;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.dao.NotificationDao;
 import com.uadb.mentoruadb.model.Notification;
 import javafx.scene.control.Alert;
@@ -7,7 +8,9 @@ import javafx.scene.control.Alert;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Affichage des notifications d'un compte : le contenu complet (date + message)
  * est présenté dans une boîte de dialogue ; à la fermeture de celle-ci, chaque
@@ -60,3 +63,4 @@ public final class NotificationUtil {
         return true;
     }
 }
+// ==================== FIN CLASSE ====================

@@ -2,9 +2,9 @@
 -- MIGRATION 003 — demandes de séance + notifications
 -- Sûre à relancer plusieurs fois (idempotente) : ne crée que ce qui manque.
 --
--- Usage :   mysql -u root -p < database/migration_003_demande_seance_notifications.sql
+-- Usage :   mysql -u root -p < database/migrations/migration_003_demande_seance_notifications.sql
 --
--- Une base neuve n'en a pas besoin : schema.sql contient déjà tout cela.
+-- Une base neuve n'en a pas besoin : database/schema/schema.sql contient déjà tout cela.
 -- =========================================================
 
 USE mentoruadb;

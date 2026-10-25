@@ -1,8 +1,11 @@
 package com.uadb.mentoruadb.dto;
 
+// ==================== DÉBUT IMPORTS ====================
 import java.time.LocalDate;
 import java.time.LocalTime;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /** Vue enrichie d'une séance (individuelle ou de groupe), pour l'affichage (pas une entité de la base). */
 public class SeanceVue {
     private final int idSeance;
@@ -35,3 +38,4 @@ public class SeanceVue {
     public String getStatut() { return statut; }
     public String getTypeSeance() { return typeSeance; }
 }
+// ==================== FIN CLASSE ====================

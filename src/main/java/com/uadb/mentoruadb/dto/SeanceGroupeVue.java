@@ -1,8 +1,11 @@
 package com.uadb.mentoruadb.dto;
 
+// ==================== DÉBUT IMPORTS ====================
 import java.time.LocalDate;
 import java.time.LocalTime;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /** Vue d'une séance de groupe pour le dashboard mentor (pas une entité de la base). */
 public class SeanceGroupeVue {
     private final int idSeance;
@@ -46,3 +49,4 @@ public class SeanceGroupeVue {
         return nombreConfirmes + " / " + nombreInvites + " confirmé(s)";
     }
 }
+// ==================== FIN CLASSE ====================

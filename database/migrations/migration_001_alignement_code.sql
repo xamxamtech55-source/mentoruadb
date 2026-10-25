@@ -2,10 +2,10 @@
 -- MIGRATION 001 — aligner une base EXISTANTE sur le code
 -- Sûre à relancer plusieurs fois (idempotente) : n'ajoute que ce qui manque.
 --
--- Usage :   mysql -u root -p < database/migration_001_alignement_code.sql
+-- Usage :   mysql -u root -p < database/migrations/migration_001_alignement_code.sql
 -- À faire : sauvegarder la base avant (mysqldump -u root -p mentoruadb > sauvegarde.sql)
 --
--- Une base neuve n'en a pas besoin : schema.sql contient déjà tout cela.
+-- Une base neuve n'en a pas besoin : database/schema/schema.sql contient déjà tout cela.
 -- =========================================================
 
 USE mentoruadb;

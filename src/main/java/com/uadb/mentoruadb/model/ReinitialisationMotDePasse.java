@@ -1,7 +1,10 @@
 package com.uadb.mentoruadb.model;
 
+// ==================== DÉBUT IMPORTS ====================
 import java.time.LocalDateTime;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Entité REINITIALISATION_MOT_DE_PASSE : demande de réinitialisation en cours.
  * Le code à 6 chiffres n'est stocké que sous forme de haché (PasswordUtil) :
@@ -52,3 +55,4 @@ public class ReinitialisationMotDePasse {
     public LocalDateTime getDateCreation() { return dateCreation; }
     public void setDateCreation(LocalDateTime dateCreation) { this.dateCreation = dateCreation; }
 }
+// ==================== FIN CLASSE ====================

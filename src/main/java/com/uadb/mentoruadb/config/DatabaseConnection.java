@@ -1,5 +1,7 @@
 package com.uadb.mentoruadb.config;
 
+/*Les imports */
+// ==================== DÉBUT IMPORTS ====================
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -8,23 +10,30 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
+// ==================== FIN IMPORTS ====================
 
+/*Fin des imports */
+// ==================== DÉBUT CLASSE ====================
 /**
  * Fournit une connexion JDBC vers la base MySQL "mentoruadb".
  *
  * Configuration (par ordre de priorité) :
- *   1. variables d'environnement MENTORUADB_DB_URL, MENTORUADB_DB_USER, MENTORUADB_DB_PASSWORD
- *   2. fichier db.properties à la racine du projet (clés db.url, db.user, db.password) — voir db.properties.example,
- *      ce fichier est ignoré par Git : il ne doit jamais être commité
- *   3. valeurs par défaut pour un MySQL local de développement (root, sans mot de passe)
+ * 1. variables d'environnement MENTORUADB_DB_URL, MENTORUADB_DB_USER,
+ * MENTORUADB_DB_PASSWORD
+ * 2. fichier db.properties à la racine du projet (clés db.url, db.user,
+ * db.password) — voir db.properties.example,
+ * ce fichier est ignoré par Git : il ne doit jamais être commité
+ * 3. valeurs par défaut pour un MySQL local de développement (root, sans mot de
+ * passe)
  *
- * Chaque appel à getConnection() renvoie une NOUVELLE connexion. L'appelant la ferme (try-with-resources,
- * comme le font déjà tous les DAO). Il n'y a donc plus de connexion partagée entre les écrans.
+ * Chaque appel à getConnection() renvoie une NOUVELLE connexion. L'appelant la
+ * ferme (try-with-resources,
+ * comme le font déjà tous les DAO). Il n'y a donc plus de connexion partagée
+ * entre les écrans.
  */
 public final class DatabaseConnection {
 
-    private static final String URL_PAR_DEFAUT =
-            "jdbc:mysql://localhost:3306/mentoruadb?useSSL=false&serverTimezone=UTC";
+    private static final String URL_PAR_DEFAUT = "jdbc:mysql://localhost:3306/mentoruadb?useSSL=false&serverTimezone=UTC";
     private static final String UTILISATEUR_PAR_DEFAUT = "root";
     private static final String MOT_DE_PASSE_PAR_DEFAUT = "";
 
@@ -85,3 +94,4 @@ public final class DatabaseConnection {
         }
     }
 }
+// ==================== FIN CLASSE ====================

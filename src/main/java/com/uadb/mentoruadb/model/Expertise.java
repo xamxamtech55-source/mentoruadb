@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.model;
 
+// ==================== DÉBUT CLASSE ====================
 /** Entité EXPERTISE : association Mentor <-> Matiere. */
 public class Expertise {
     private int idMentor;
@@ -18,3 +19,4 @@ public class Expertise {
     public int getIdMatiere() { return idMatiere; }
     public void setIdMatiere(int idMatiere) { this.idMatiere = idMatiere; }
 }
+// ==================== FIN CLASSE ====================

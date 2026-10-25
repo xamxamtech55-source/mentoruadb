@@ -1,8 +1,11 @@
 package com.uadb.mentoruadb.model;
 
+// ==================== DÉBUT IMPORTS ====================
 import java.time.LocalDate;
 import java.time.LocalTime;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /** Entité SEANCE : individuelle (liée à une demande) ou de groupe (liée à un mentor + une matière). */
 public class Seance {
     private int idSeance;
@@ -84,3 +87,4 @@ public class Seance {
     public String getLieu() { return lieu; }
     public void setLieu(String lieu) { this.lieu = lieu; }
 }
+// ==================== FIN CLASSE ====================

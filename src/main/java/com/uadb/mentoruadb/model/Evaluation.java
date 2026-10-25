@@ -1,7 +1,10 @@
 package com.uadb.mentoruadb.model;
 
+// ==================== DÉBUT IMPORTS ====================
 import java.time.LocalDate;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /** Entité EVALUATION : notée par un étudiant précis, pour une séance (individuelle ou de groupe). */
 public class Evaluation {
     private int idEvaluation;
@@ -40,3 +43,4 @@ public class Evaluation {
     public LocalDate getDateEvaluation() { return dateEvaluation; }
     public void setDateEvaluation(LocalDate dateEvaluation) { this.dateEvaluation = dateEvaluation; }
 }
+// ==================== FIN CLASSE ====================

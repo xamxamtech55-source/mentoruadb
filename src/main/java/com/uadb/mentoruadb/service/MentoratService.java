@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.service;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.config.DatabaseConnection;
 import com.uadb.mentoruadb.dao.DemandeMentoratDao;
 import com.uadb.mentoruadb.dao.DemandeSeanceDao;
@@ -27,7 +28,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Cycle de vie complet du mentorat, en deux étapes bien séparées :
  *
@@ -350,3 +353,4 @@ public class MentoratService {
         return matiereDao.findById(idMatiere).map(Matiere::getNom).orElse("une matière");
     }
 }
+// ==================== FIN CLASSE ====================

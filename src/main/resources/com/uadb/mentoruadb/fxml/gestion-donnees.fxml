@@ -5,10 +5,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<ScrollPane fitToWidth="true" hbarPolicy="NEVER"
-            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.uadb.mentoruadb.controller.GestionDonneesController">
-  <content>
     <VBox spacing="15.0">
       <padding>
         <Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/>
@@ -105,5 +103,4 @@
         </children>
       </VBox>
     </VBox>
-  </content>
-</ScrollPane>
+</VBox>

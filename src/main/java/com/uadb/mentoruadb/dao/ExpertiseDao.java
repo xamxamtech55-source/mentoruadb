@@ -1,21 +1,29 @@
 package com.uadb.mentoruadb.dao;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.config.DatabaseConnection;
 import com.uadb.mentoruadb.model.Expertise;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /** Pas de clé unique simple ici (clé composite id_mentor + id_matiere) -> pas d'interface Dao<T,ID>. */
 public class ExpertiseDao {
 
     public void ajouter(Expertise expertise) throws SQLException {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            ajouter(expertise, conn);
+        }
+    }
+
+    /** Variante transactionnelle : utilise la connexion fournie et NE la ferme PAS. */
+    public void ajouter(Expertise expertise, Connection conn) throws SQLException {
         String sql = "INSERT INTO expertise (id_mentor, id_matiere) VALUES (?, ?)";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, expertise.getIdMentor());
             stmt.setInt(2, expertise.getIdMatiere());
             stmt.executeUpdate();
@@ -132,3 +140,4 @@ public class ExpertiseDao {
         return resultats;
     }
 }
+// ==================== FIN CLASSE ====================

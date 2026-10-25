@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.dao;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.config.DatabaseConnection;
 import com.uadb.mentoruadb.model.Matiere;
 
@@ -7,7 +8,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 public class MatiereDao implements Dao<Matiere, Integer> {
 
     @Override
@@ -88,3 +91,4 @@ public class MatiereDao implements Dao<Matiere, Integer> {
         return new Matiere(rs.getInt("id_matiere"), rs.getString("nom"));
     }
 }
+// ==================== FIN CLASSE ====================

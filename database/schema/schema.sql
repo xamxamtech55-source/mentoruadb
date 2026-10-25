@@ -14,6 +14,9 @@ CREATE DATABASE IF NOT EXISTS mentoruadb
 
 USE mentoruadb;
 
+-- Les transactions et les clés étrangères exigent InnoDB.
+SET default_storage_engine = InnoDB;
+
 
 -- =========================================================
 -- 2. TABLE UTILISATEUR
@@ -39,7 +42,11 @@ CREATE TABLE utilisateur (
 
     -- Adresse personnelle (Gmail, autre) qui reçoit le code de réinitialisation du mot de passe.
     -- NULL = pas de récupération possible par mail tant que l'étudiant ne l'a pas renseignée dans « Mon profil ».
-                             email_recuperation VARCHAR(150) NULL
+                             email_recuperation VARCHAR(150) NULL,
+
+    -- 1 = mot de passe provisoire : l'accès aux fonctionnalités est bloqué tant que
+    -- l'utilisateur n'a pas défini son mot de passe personnel.
+                             must_change_password TINYINT(1) NOT NULL DEFAULT 0
 );
 
 
@@ -98,6 +105,48 @@ CREATE TABLE filiere_niveau (
 
 
 -- =========================================================
+-- 6 bis. TABLE REFERENTIEL_ETUDIANT
+-- Référentiel universitaire de confiance (données fictives au départ).
+-- Seule source autorisée pour le niveau académique, la filière, l'UFR,
+-- le statut d'inscription et l'année académique d'un étudiant.
+-- Remplacer plus tard le peuplement par un connecteur vers le système
+-- universitaire officiel : le reste du code ne change pas.
+-- =========================================================
+
+CREATE TABLE referentiel_etudiant (
+                                    id_referentiel INT AUTO_INCREMENT PRIMARY KEY,
+
+                                    numero_carte VARCHAR(20) NOT NULL,
+                                    email_institutionnel VARCHAR(150) NOT NULL,
+                                    email_personnel VARCHAR(150) NOT NULL,
+
+                                    nom VARCHAR(100) NOT NULL,
+                                    prenom VARCHAR(100) NOT NULL,
+
+                                    statut_inscription ENUM('ACTIF', 'INACTIF') NOT NULL DEFAULT 'ACTIF',
+
+                                    id_filiere INT NOT NULL,
+                                    id_niveau INT NOT NULL,
+                                    annee_academique VARCHAR(20) NOT NULL,
+
+                                    date_mise_a_jour DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+                                    CONSTRAINT uq_referentiel_carte UNIQUE (numero_carte),
+                                    CONSTRAINT uq_referentiel_email UNIQUE (email_institutionnel),
+
+                                    CONSTRAINT fk_referentiel_filiere FOREIGN KEY (id_filiere)
+                                        REFERENCES filiere(id_filiere) ON UPDATE CASCADE ON DELETE RESTRICT,
+
+                                    CONSTRAINT fk_referentiel_niveau FOREIGN KEY (id_niveau)
+                                        REFERENCES niveau(id_niveau) ON UPDATE CASCADE ON DELETE RESTRICT,
+
+    -- Le couple filière/niveau doit exister (même règle que etudiant).
+                                    CONSTRAINT fk_referentiel_filiere_niveau FOREIGN KEY (id_filiere, id_niveau)
+                                        REFERENCES filiere_niveau(id_filiere, id_niveau) ON UPDATE CASCADE ON DELETE RESTRICT
+);
+
+
+-- =========================================================
 -- 7. TABLE ETUDIANT
 -- =========================================================
 
@@ -110,8 +159,18 @@ CREATE TABLE etudiant (
     -- Champ de profil (identification académique)
                           numero_carte VARCHAR(50) NULL,
 
+    -- Dossier universitaire vérifié : sa présence indique que le niveau et la
+    -- filière du profil proviennent du référentiel de confiance.
+                          id_referentiel INT NULL,
+
+                          CONSTRAINT uq_etudiant_referentiel UNIQUE (id_referentiel),
+                          CONSTRAINT uq_etudiant_numero_carte UNIQUE (numero_carte),
+
                           CONSTRAINT fk_etudiant_utilisateur FOREIGN KEY (id_utilisateur)
                               REFERENCES utilisateur(id_utilisateur) ON UPDATE CASCADE ON DELETE CASCADE,
+
+                          CONSTRAINT fk_etudiant_referentiel FOREIGN KEY (id_referentiel)
+                              REFERENCES referentiel_etudiant(id_referentiel) ON UPDATE CASCADE ON DELETE SET NULL,
 
     /*
        Cette clé étrangère composite garantit que le niveau
@@ -120,6 +179,47 @@ CREATE TABLE etudiant (
                           CONSTRAINT fk_etudiant_filiere_niveau FOREIGN KEY (id_filiere, id_niveau)
                               REFERENCES filiere_niveau(id_filiere, id_niveau) ON UPDATE CASCADE ON DELETE RESTRICT
 );
+
+
+-- =========================================================
+-- 7 bis. TABLE ACTIVATION_COMPTE
+-- Vérification du dossier universitaire puis création/activation du compte.
+-- Le code d'activation et le ticket de définition du mot de passe ne sont
+-- jamais stockés en clair (PBKDF2).
+-- =========================================================
+
+CREATE TABLE activation_compte (
+                                   id_activation INT AUTO_INCREMENT PRIMARY KEY,
+
+                                   id_referentiel INT NOT NULL,
+    -- Rempli dès que le compte applicatif a été créé (après validation du code).
+                                   id_utilisateur INT NULL,
+
+                                   code_hash VARCHAR(255) NOT NULL,
+    -- 1 = code déjà validé : il ne peut plus resservir, seul le ticket agit.
+                                   code_utilise TINYINT(1) NOT NULL DEFAULT 0,
+                                   etat ENUM('CODE_EN_ATTENTE', 'CODE_VALIDE', 'MOT_DE_PASSE_A_DEFINIR',
+                                             'UTILISE', 'ANNULE') NOT NULL DEFAULT 'CODE_EN_ATTENTE',
+                                   ticket_hash VARCHAR(255) NULL,
+
+    -- Simple canal d'envoi : jamais une preuve d'identité universitaire.
+                                   destinataire VARCHAR(150) NOT NULL,
+
+                                   date_expiration DATETIME NOT NULL,
+                                   tentatives TINYINT NOT NULL DEFAULT 0,
+                                   utilise TINYINT(1) NOT NULL DEFAULT 0,
+                                   date_creation DATETIME NOT NULL,
+
+                                   CONSTRAINT fk_activation_referentiel FOREIGN KEY (id_referentiel)
+                                       REFERENCES referentiel_etudiant(id_referentiel) ON UPDATE CASCADE ON DELETE CASCADE,
+
+                                   CONSTRAINT fk_activation_utilisateur FOREIGN KEY (id_utilisateur)
+                                       REFERENCES utilisateur(id_utilisateur) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE INDEX idx_activation_referentiel ON activation_compte (id_referentiel, utilise);
+CREATE INDEX idx_activation_utilisateur ON activation_compte (id_utilisateur, utilise);
+CREATE INDEX idx_activation_ticket ON activation_compte (ticket_hash);
 
 
 -- =========================================================

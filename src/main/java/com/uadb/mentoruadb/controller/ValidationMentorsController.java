@@ -1,10 +1,12 @@
 package com.uadb.mentoruadb.controller;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.dao.MentorDao;
 import com.uadb.mentoruadb.dto.MentorDetailVue;
 import com.uadb.mentoruadb.service.AdminService;
 import com.uadb.mentoruadb.util.DialogueUtil;
 import com.uadb.mentoruadb.util.MessageLabel;
+import com.uadb.mentoruadb.util.Validateur;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -15,7 +17,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.sql.SQLException;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Contrôleur lié à fxml/validation-mentors.fxml (section du dashboard admin).
  * Les décisions passent par AdminService (garde de statut, RG20, notifications RG27).
@@ -100,7 +104,7 @@ public class ValidationMentorsController {
 
         identiteValue.setText(candidat.getNomComplet());
         emailValue.setText(ouNonRenseigne(candidat.getEmail()));
-        telephoneValue.setText(ouNonRenseigne(candidat.getTelephone()));
+        telephoneValue.setText(ouNonRenseigne(Validateur.formaterTelephone(candidat.getTelephone())));
         carteValue.setText(ouNonRenseigne(candidat.getNumeroCarte()));
         formationValue.setText(candidat.getNomFiliere() + " — " + candidat.getLibelleNiveau());
         experienceDetailValue.setText(ouNonRenseigne(candidat.getExperience()));
@@ -209,3 +213,4 @@ public class ValidationMentorsController {
         messageLabel.setText(texte);
     }
 }
+// ==================== FIN CLASSE ====================

@@ -1,7 +1,10 @@
 package com.uadb.mentoruadb.dto;
 
+// ==================== DÉBUT IMPORTS ====================
 import java.time.LocalDate;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /** Vue enrichie d'une demande de mentorat, pour l'affichage dans un tableau (pas une entité de la base). */
 public class DemandeVue {
     private final int idDemande;
@@ -24,3 +27,4 @@ public class DemandeVue {
     public LocalDate getDateDemande() { return dateDemande; }
     public String getStatut() { return statut; }
 }
+// ==================== FIN CLASSE ====================

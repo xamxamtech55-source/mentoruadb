@@ -2,9 +2,9 @@
 -- MIGRATION 002 — partage individuel de fichier
 -- Sûre à relancer plusieurs fois (idempotente) : n'ajoute que ce qui manque.
 --
--- Usage :   mysql -u root -p < database/migration_002_partage_fichier_individuel.sql
+-- Usage :   mysql -u root -p < database/migrations/migration_002_partage_fichier_individuel.sql
 --
--- Une base neuve n'en a pas besoin : schema.sql contient déjà tout cela.
+-- Une base neuve n'en a pas besoin : database/schema/schema.sql contient déjà tout cela.
 -- =========================================================
 
 USE mentoruadb;

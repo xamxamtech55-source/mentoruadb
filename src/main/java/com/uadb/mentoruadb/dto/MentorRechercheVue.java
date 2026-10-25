@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.dto;
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Résultat enrichi d'une recherche de mentor (mentor validé), pour l'affichage en lignes.
  * Ne contient que des données réellement présentes en base (pas de disponibilité inventée) :
@@ -67,3 +68,4 @@ public class MentorRechercheVue {
         return mode + " · " + capacite;
     }
 }
+// ==================== FIN CLASSE ====================

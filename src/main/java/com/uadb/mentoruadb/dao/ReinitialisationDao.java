@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.dao;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.config.DatabaseConnection;
 import com.uadb.mentoruadb.model.ReinitialisationMotDePasse;
 
@@ -10,7 +11,9 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Optional;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Demandes de réinitialisation de mot de passe (code envoyé par mail).
  * Le code n'est stocké que haché : cette couche ne voit que le haché.
@@ -93,3 +96,4 @@ public class ReinitialisationDao {
         );
     }
 }
+// ==================== FIN CLASSE ====================

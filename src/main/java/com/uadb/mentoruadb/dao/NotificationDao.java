@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.dao;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.config.DatabaseConnection;
 import com.uadb.mentoruadb.model.Notification;
 
@@ -7,7 +8,9 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Notifications génériques adressées au compte utilisateur d'un étudiant ou d'un mentor.
  * creerPourEtudiant / creerPourMentor résolvent directement en SQL (id_etudiant -> id_utilisateur,
@@ -103,3 +106,4 @@ public class NotificationDao {
         );
     }
 }
+// ==================== FIN CLASSE ====================

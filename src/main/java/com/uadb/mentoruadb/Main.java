@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb;
 
+// ==================== DÉBUT IMPORTS ====================
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -10,7 +11,9 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Point d'entrée de l'application Mentor-UADB.
  * Charge l'écran fusionné d'accueil et de connexion au démarrage.
@@ -61,3 +64,4 @@ public class Main extends Application {
         launch(args);
     }
 }
+// ==================== FIN CLASSE ====================

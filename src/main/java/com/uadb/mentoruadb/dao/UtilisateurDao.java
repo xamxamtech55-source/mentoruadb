@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.dao;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.config.DatabaseConnection;
 import com.uadb.mentoruadb.model.Utilisateur;
 
@@ -11,7 +12,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 public class UtilisateurDao implements Dao<Utilisateur, Integer> {
 
     @Override
@@ -23,8 +26,9 @@ public class UtilisateurDao implements Dao<Utilisateur, Integer> {
 
     /** Variante transactionnelle : utilise la connexion fournie et NE la ferme PAS (c'est à l'appelant de le faire). */
     public Utilisateur create(Utilisateur u, Connection conn) throws SQLException {
-        String sql = "INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, role, statut, telephone, photo, email_recuperation) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, role, statut, telephone, photo, "
+                + "email_recuperation, must_change_password) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -37,6 +41,7 @@ public class UtilisateurDao implements Dao<Utilisateur, Integer> {
             stmt.setString(7, u.getTelephone());
             stmt.setString(8, u.getPhoto());
             stmt.setString(9, u.getEmailRecuperation());
+            stmt.setBoolean(10, u.isMustChangePassword());
 
             stmt.executeUpdate();
 
@@ -102,11 +107,17 @@ public class UtilisateurDao implements Dao<Utilisateur, Integer> {
 
     @Override
     public void update(Utilisateur u) throws SQLException {
-        String sql = "UPDATE utilisateur SET nom=?, prenom=?, email=?, mot_de_passe=?, role=?, statut=?, " +
-                "telephone=?, photo=?, email_recuperation=? WHERE id_utilisateur=?";
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            update(u, conn);
+        }
+    }
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+    /** Variante transactionnelle : utilise la connexion fournie et NE la ferme PAS. */
+    public void update(Utilisateur u, Connection conn) throws SQLException {
+        String sql = "UPDATE utilisateur SET nom=?, prenom=?, email=?, mot_de_passe=?, role=?, statut=?, "
+                + "telephone=?, photo=?, email_recuperation=?, must_change_password=? WHERE id_utilisateur=?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, u.getNom());
             stmt.setString(2, u.getPrenom());
@@ -117,7 +128,8 @@ public class UtilisateurDao implements Dao<Utilisateur, Integer> {
             stmt.setString(7, u.getTelephone());
             stmt.setString(8, u.getPhoto());
             stmt.setString(9, u.getEmailRecuperation());
-            stmt.setInt(10, u.getIdUtilisateur());
+            stmt.setBoolean(10, u.isMustChangePassword());
+            stmt.setInt(11, u.getIdUtilisateur());
 
             stmt.executeUpdate();
         }
@@ -148,6 +160,8 @@ public class UtilisateurDao implements Dao<Utilisateur, Integer> {
                 rs.getString("photo")
         );
         u.setEmailRecuperation(rs.getString("email_recuperation"));
+        u.setMustChangePassword(rs.getBoolean("must_change_password"));
         return u;
     }
 }
+// ==================== FIN CLASSE ====================

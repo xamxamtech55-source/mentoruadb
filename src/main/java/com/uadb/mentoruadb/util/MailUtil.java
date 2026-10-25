@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.util;
 
+// ==================== DÉBUT IMPORTS ====================
 import jakarta.mail.Authenticator;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
@@ -14,7 +15,9 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Envoi de mails SMTP (utilisé pour la réinitialisation de mot de passe).
  *
@@ -111,3 +114,4 @@ public final class MailUtil {
         return proprietes;
     }
 }
+// ==================== FIN CLASSE ====================

@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.controller;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.dao.ExpertiseDao;
 import com.uadb.mentoruadb.model.Etudiant;
 import com.uadb.mentoruadb.model.Matiere;
@@ -26,7 +27,9 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /** Contrôleur lié à fxml/seance-groupe.fxml. */
 public class SeanceGroupeController {
 
@@ -132,3 +135,4 @@ public class SeanceGroupeController {
         }
     }
 }
+// ==================== FIN CLASSE ====================

@@ -1,10 +1,13 @@
 package com.uadb.mentoruadb.controller;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.dao.UtilisateurDao;
 import com.uadb.mentoruadb.model.Utilisateur;
 import com.uadb.mentoruadb.service.ReinitialisationService;
+import com.uadb.mentoruadb.util.ChampErreur;
 import com.uadb.mentoruadb.util.MessageLabel;
 import com.uadb.mentoruadb.util.SceneNavigator;
+import com.uadb.mentoruadb.util.Validateur;
 import jakarta.mail.MessagingException;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -16,16 +19,19 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Optional;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Contrôleur lié à fxml/mot-de-passe-oublie.fxml (étape 1 : demande du code).
- * On demande l'email institutionnel ET le numéro de carte d'étudiant (les deux sont créés à
- * l'inscription, voir InscriptionController), puis l'adresse de réception du code : n'importe
- * quel Gmail ou autre adresse existante. Ce champ est pré-rempli avec l'email de récupération du
- * compte (si renseigné) mais reste modifiable. Si l'identité correspond à un compte, un code à
+ * On demande l'email institutionnel ET le numéro de carte d'étudiant du compte, puis l'adresse
+ * de réception du code : n'importe quel Gmail ou autre adresse existante. Ce champ est pré-rempli
+ * avec l'email de récupération du compte (si renseigné) mais reste modifiable. Si l'identité
+ * correspond à un compte, un code à
  * 6 chiffres est envoyé, puis l'écran reinitialisation-code.fxml prend le relais.
- * Le message est le même que l'identité corresponde ou non : ne rien révéler sur les comptes
- * existants (énumération d'email).
+ * Si le compte est reconnu mais que le numéro de carte ne correspond pas, un message clair
+ * s'affiche et le champ est mis en évidence. Si l'email est inconnu, le message reste neutre
+ * (on ne révèle pas l'existence des comptes).
  */
 public class MotDePasseOublieController {
 
@@ -51,6 +57,12 @@ public class MotDePasseOublieController {
             }
         });
 
+        // La bordure rouge disparaît dès que l'étudiant corrige sa saisie.
+        emailField.textProperty().addListener((obs, ancien, nouveau) -> ChampErreur.effacer(emailField));
+        numeroCarteField.textProperty().addListener((obs, ancien, nouveau) -> ChampErreur.effacer(numeroCarteField));
+        emailRecuperationField.textProperty().addListener(
+                (obs, ancien, nouveau) -> ChampErreur.effacer(emailRecuperationField));
+
         MessageLabel.rendreDynamique(messageLabel);
     }
 
@@ -75,20 +87,37 @@ public class MotDePasseOublieController {
 
     @FXML
     private void onEnvoyerCodeClick() {
-        String email = emailField.getText().trim();
-        String numeroCarte = numeroCarteField.getText().trim();
+        String email = emailField.getText() == null ? "" : emailField.getText().trim();
+        String numeroCarte = numeroCarteField.getText() == null ? "" : numeroCarteField.getText().trim();
         String emailRecuperation = emailRecuperationField.getText() == null
                 ? "" : emailRecuperationField.getText().trim();
 
-        if (email.isBlank() || numeroCarte.isBlank()) {
-            messageLabel.setText("Remplis tous les champs.");
+        ChampErreur.effacer(emailField);
+        ChampErreur.effacer(numeroCarteField);
+        ChampErreur.effacer(emailRecuperationField);
+
+        if (email.isBlank()) {
+            ChampErreur.marquer(emailField);
+            messageLabel.setText("Renseigne ton email institutionnel.");
             return;
         }
         if (!email.toLowerCase().endsWith("@uadb.edu.sn")) {
+            ChampErreur.marquer(emailField);
             messageLabel.setText("Utilise ton email institutionnel (@uadb.edu.sn).");
             return;
         }
-        if (!emailRecuperation.isEmpty() && !emailRecuperation.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
+        if (numeroCarte.isBlank()) {
+            ChampErreur.marquer(numeroCarteField);
+            messageLabel.setText("Renseigne ton numéro de carte d'étudiant (7 chiffres).");
+            return;
+        }
+        if (!numeroCarte.matches("\\d{7}")) {
+            ChampErreur.marquer(numeroCarteField);
+            messageLabel.setText("Le numéro de carte doit contenir exactement 7 chiffres.");
+            return;
+        }
+        if (!emailRecuperation.isEmpty() && !Validateur.emailValide(emailRecuperation)) {
+            ChampErreur.marquer(emailRecuperationField);
             messageLabel.setText("L'email de réception du code n'est pas valide.");
             return;
         }
@@ -107,6 +136,13 @@ public class MotDePasseOublieController {
                     } else {
                         messageLabel.setText(MESSAGE_RESULTAT);
                     }
+                });
+            } catch (IllegalArgumentException e) {
+                // Compte reconnu mais numéro de carte incorrect : message clair + champ en rouge.
+                Platform.runLater(() -> {
+                    envoyerCodeButton.setDisable(false);
+                    ChampErreur.marquer(numeroCarteField);
+                    messageLabel.setText(e.getMessage());
                 });
             } catch (MessagingException e) {
                 Platform.runLater(() -> {
@@ -145,3 +181,4 @@ public class MotDePasseOublieController {
         }
     }
 }
+// ==================== FIN CLASSE ====================

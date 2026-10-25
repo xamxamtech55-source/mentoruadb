@@ -2,9 +2,9 @@
 -- MIGRATION 004 — réinitialisation de mot de passe par mail
 -- Sûre à relancer plusieurs fois (idempotente) : ne crée que ce qui manque.
 --
--- Usage :   mysql -u root -p < database/migration_004_reinitialisation_mot_de_passe.sql
+-- Usage :   mysql -u root -p < database/migrations/migration_004_reinitialisation_mot_de_passe.sql
 --
--- Une base neuve n'en a pas besoin : schema.sql contient déjà tout cela.
+-- Une base neuve n'en a pas besoin : database/schema/schema.sql contient déjà tout cela.
 -- ============================================================
 
 USE mentoruadb;

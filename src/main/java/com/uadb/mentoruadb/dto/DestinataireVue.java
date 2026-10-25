@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.dto;
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Un choix dans la liste "Partager avec" de l'écran mentor : soit un étudiant précis
  * (idEtudiant renseigné), soit l'option "Tous les étudiants" (idEtudiant == null).
@@ -18,3 +19,4 @@ public class DestinataireVue {
     @Override
     public String toString() { return nomAffiche; }
 }
+// ==================== FIN CLASSE ====================

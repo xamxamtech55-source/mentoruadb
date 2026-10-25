@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.model;
 
+// ==================== DÉBUT CLASSE ====================
 /** Entité ETUDIANT (spécialisation d'un utilisateur). */
 public class Etudiant {
     private int idEtudiant;
@@ -7,6 +8,8 @@ public class Etudiant {
     private int idFiliere;
     private int idNiveau;
     private String numeroCarte;
+    /** Dossier du référentiel universitaire vérifié ; null pour un compte historique non vérifié. */
+    private Integer idReferentiel;
 
     public Etudiant() {}
 
@@ -16,11 +19,17 @@ public class Etudiant {
     }
 
     public Etudiant(int idEtudiant, int idUtilisateur, int idFiliere, int idNiveau, String numeroCarte) {
+        this(idEtudiant, idUtilisateur, idFiliere, idNiveau, numeroCarte, null);
+    }
+
+    public Etudiant(int idEtudiant, int idUtilisateur, int idFiliere, int idNiveau,
+                    String numeroCarte, Integer idReferentiel) {
         this.idEtudiant = idEtudiant;
         this.idUtilisateur = idUtilisateur;
         this.idFiliere = idFiliere;
         this.idNiveau = idNiveau;
         this.numeroCarte = numeroCarte;
+        this.idReferentiel = idReferentiel;
     }
 
     public int getIdEtudiant() { return idEtudiant; }
@@ -37,4 +46,8 @@ public class Etudiant {
 
     public String getNumeroCarte() { return numeroCarte; }
     public void setNumeroCarte(String numeroCarte) { this.numeroCarte = numeroCarte; }
+
+    public Integer getIdReferentiel() { return idReferentiel; }
+    public void setIdReferentiel(Integer idReferentiel) { this.idReferentiel = idReferentiel; }
 }
+// ==================== FIN CLASSE ====================

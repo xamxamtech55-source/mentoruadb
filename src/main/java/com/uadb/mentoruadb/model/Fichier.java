@@ -1,7 +1,10 @@
 package com.uadb.mentoruadb.model;
 
+// ==================== DÉBUT IMPORTS ====================
 import java.time.LocalDate;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Entité FICHIER : ressource partagée par un mentor, liée à une matière et/ou une séance précise.
  * idEtudiant == null : partagé avec tous les étudiants ayant une demande acceptée pour ce
@@ -59,3 +62,4 @@ public class Fichier {
     public LocalDate getDateUpload() { return dateUpload; }
     public void setDateUpload(LocalDate dateUpload) { this.dateUpload = dateUpload; }
 }
+// ==================== FIN CLASSE ====================

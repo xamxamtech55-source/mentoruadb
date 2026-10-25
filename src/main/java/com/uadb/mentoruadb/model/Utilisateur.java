@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.model;
 
+// ==================== DÉBUT CLASSE ====================
 /** Entité UTILISATEUR (compte de connexion). */
 public class Utilisateur {
     private int idUtilisateur;
@@ -12,6 +13,7 @@ public class Utilisateur {
     private String telephone;
     private String photo;
     private String emailRecuperation;
+    private boolean mustChangePassword;
 
     public Utilisateur() {}
 
@@ -64,4 +66,12 @@ public class Utilisateur {
     /** Adresse personnelle (Gmail, autre) qui reçoit le code de réinitialisation ; null si non renseignée. */
     public String getEmailRecuperation() { return emailRecuperation; }
     public void setEmailRecuperation(String emailRecuperation) { this.emailRecuperation = emailRecuperation; }
+
+    /**
+     * Vrai si le compte utilise encore un mot de passe provisoire : l'accès aux
+     * fonctionnalités est bloqué jusqu'au choix d'un mot de passe personnel.
+     */
+    public boolean isMustChangePassword() { return mustChangePassword; }
+    public void setMustChangePassword(boolean mustChangePassword) { this.mustChangePassword = mustChangePassword; }
 }
+// ==================== FIN CLASSE ====================

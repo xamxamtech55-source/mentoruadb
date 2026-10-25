@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.controller;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.dao.EvaluationDao;
 import com.uadb.mentoruadb.dao.ExpertiseDao;
 import com.uadb.mentoruadb.dao.FiliereDao;
@@ -38,7 +39,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Contrôleur lié à fxml/recherche-mentor.fxml :
  * filtres UFR → filière → niveau → matière, suggestions pour la filière de l'étudiant,
@@ -449,3 +452,4 @@ public class RechercheMentorController {
         }
     }
 }
+// ==================== FIN CLASSE ====================

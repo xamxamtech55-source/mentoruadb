@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.dao;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.config.DatabaseConnection;
 import com.uadb.mentoruadb.model.DemandeMentorat;
 import com.uadb.mentoruadb.dto.DemandeVue;
@@ -9,7 +10,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 public class DemandeMentoratDao implements Dao<DemandeMentorat, Integer> {
 
     @Override
@@ -279,3 +282,4 @@ public class DemandeMentoratDao implements Dao<DemandeMentorat, Integer> {
         );
     }
 }
+// ==================== FIN CLASSE ====================

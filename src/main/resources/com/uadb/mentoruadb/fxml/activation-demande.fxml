@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true"
+            hbarPolicy="NEVER"
+            vbarPolicy="AS_NEEDED"
+            styleClass="acc-auth-scroll"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.uadb.mentoruadb.controller.ActivationDemandeController">
+  <content>
+    <VBox alignment="CENTER" styleClass="acc-auth-page">
+      <padding>
+        <Insets top="28.0" right="24.0" bottom="28.0" left="24.0"/>
+      </padding>
+      <children>
+        <VBox alignment="CENTER_LEFT"
+                              spacing="8.0"
+                              maxWidth="460.0"
+                              styleClass="acc-auth-carte">
+          <padding>
+            <Insets top="28.0" right="28.0" bottom="28.0" left="28.0"/>
+          </padding>
+          <children>
+            <StackPane maxWidth="Infinity">
+              <children>
+                <StackPane styleClass="acc-auth-logo"
+                                                           prefWidth="72.0"
+                                                           prefHeight="72.0"
+                                                           maxWidth="72.0"
+                                                           maxHeight="72.0"
+                                                           StackPane.alignment="CENTER_LEFT">
+                  <children>
+                    <ImageView fitHeight="48.0"
+                                                                       fitWidth="48.0"
+                                                                       preserveRatio="true">
+                      <image>
+                        <Image url="@../images/logo-uadb.png"/>
+                      </image>
+                    </ImageView>
+                  </children>
+                </StackPane>
+                <Button fx:id="retourButton"
+                                                        text="← Retour à la connexion"
+                                                        onAction="#onRetourClick"
+                                                        styleClass="acc-lien"
+                                                        StackPane.alignment="TOP_RIGHT"/>
+              </children>
+            </StackPane>
+            <Label text="Première connexion"
+                                           wrapText="true"
+                                           styleClass="acc-titre-form"/>
+            <Label text="Vérifie ton identité avec ton numéro de carte et ton e-mail institutionnel. Ensuite, renseigne une adresse e-mail personnelle de ton choix pour recevoir le code de validation."
+                                            wrapText="true"
+                                            maxWidth="Infinity"
+                                            styleClass="acc-texte-gris"/>
+            <Region prefHeight="6.0"/>
+            <Label text="Numéro de carte d'étudiant"
+                                            styleClass="acc-libelle"/>
+            <TextField fx:id="numeroCarteField"
+                                                promptText="7 chiffres"
+                                                maxWidth="Infinity"
+                                                styleClass="acc-champ"/>
+            <Label text="E-mail institutionnel"
+                                            styleClass="acc-libelle"/>
+            <TextField fx:id="emailField"
+                                                promptText="prenom.nom@uadb.edu.sn"
+                                                maxWidth="Infinity"
+                                                styleClass="acc-champ"/>
+            <Label text="Adresse e-mail personnelle (pour recevoir le code)"
+                                            wrapText="true"
+                                            styleClass="acc-libelle"/>
+            <TextField fx:id="emailPersonnelField"
+                                                promptText="ex. nom.prenom@gmail.com"
+                                                maxWidth="Infinity"
+                                                styleClass="acc-champ"/>
+            <Region prefHeight="6.0"/>
+            <Button fx:id="envoyerButton"
+                                             text="Vérifier et envoyer le code"
+                                             onAction="#onEnvoyerClick"
+                                             maxWidth="Infinity"
+                                             styleClass="acc-bouton-principal"/>
+            <Label fx:id="messageLabel"
+                                           wrapText="true"
+                                           maxWidth="Infinity"
+                                           styleClass="message-label"/>
+          </children>
+        </VBox>
+      </children>
+    </VBox>
+  </content>
+</ScrollPane>

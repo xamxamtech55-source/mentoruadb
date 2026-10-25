@@ -1,9 +1,12 @@
 package com.uadb.mentoruadb.dao;
 
+// ==================== DÉBUT IMPORTS ====================
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Contrat générique pour toutes les couches d'accès aux données.
  * T = le type d'entité (Utilisateur, Mentor, etc.)
@@ -21,3 +24,4 @@ public interface Dao<T, ID> {
 
     void delete(ID id) throws SQLException;
 }
+// ==================== FIN CLASSE ====================

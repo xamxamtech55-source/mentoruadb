@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.dto;
 
+// ==================== DÉBUT CLASSE ====================
 /** Vue enrichie d'un mentor pour l'affichage dans les résultats de recherche (pas une entité de la base). */
 public class MentorVue {
     private final int idMentor;
@@ -19,3 +20,4 @@ public class MentorVue {
     public String getNomFiliere() { return nomFiliere; }
     public String getLibelleNiveau() { return libelleNiveau; }
 }
+// ==================== FIN CLASSE ====================

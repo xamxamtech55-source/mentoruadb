@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.model;
 
+// ==================== DÉBUT CLASSE ====================
 /** Entité NIVEAU (ex : Licence 1, Licence 2, Master 1...). */
 public class Niveau {
     private int idNiveau;
@@ -22,3 +23,4 @@ public class Niveau {
         return libelle;
     }
 }
+// ==================== FIN CLASSE ====================

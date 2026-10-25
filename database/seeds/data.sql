@@ -1304,3 +1304,92 @@ WHERE f.nom = 'Gestion des Aires Protégées et de la Faune'
 -- =========================================================
 -- FIN DES DONNÉES
 -- =========================================================
+-- =========================================================
+-- 13. RÉFÉRENTIEL UNIVERSITAIRE DE DÉVELOPPEMENT (DONNÉES FICTIVES)
+-- Ces dossiers ne sont PAS des données réelles : ils servent à tester la
+-- première activation. Le numéro de carte et l'email doivent correspondre.
+-- Remplacer ce peuplement par un import du système universitaire officiel.
+-- =========================================================
+
+INSERT INTO referentiel_etudiant
+(
+    numero_carte,
+    email_institutionnel,
+    email_personnel,
+    nom,
+    prenom,
+    statut_inscription,
+    id_filiere,
+    id_niveau,
+    annee_academique
+)
+SELECT r.carte, r.email, r.personnel, r.nom, r.prenom, r.statut, f.id_filiere, n.id_niveau, r.annee
+FROM (
+    SELECT '9000001' AS carte, 'fatou.sarr@uadb.edu.sn' AS email,
+           'fatou.sarr.perso@gmail.com' AS personnel,
+           'Sarr' AS nom, 'Fatou' AS prenom, 'ACTIF' AS statut,
+           'Développement et Administration d''Applications' AS filiere,
+           'Licence 2' AS niveau, '2025-2026' AS annee
+    UNION ALL
+    SELECT '9000002', 'lamine.fall@uadb.edu.sn', 'lamine.fall.perso@gmail.com',
+           'Fall', 'Lamine', 'ACTIF',
+           'Développement et Administration d''Applications', 'Licence 1', '2025-2026'
+    UNION ALL
+    SELECT '9000003', 'arame.gueye@uadb.edu.sn', 'arame.gueye.perso@gmail.com',
+           'Gueye', 'Arame', 'INACTIF',
+           'Développement et Administration d''Applications', 'Licence 2', '2025-2026'
+    UNION ALL
+    SELECT '9000004', 'ousmane.ba@uadb.edu.sn', 'ousmane.ba.perso@gmail.com',
+           'Ba', 'Ousmane', 'ACTIF',
+           'Mathématiques', 'Licence 3', '2025-2026'
+    UNION ALL
+    SELECT '9000005', 'ndeye.diop@uadb.edu.sn', 'ndeye.diop.perso@gmail.com',
+           'Diop', 'Ndeye', 'ACTIF',
+           'Développement et Administration d''Applications', 'Licence 3', '2025-2026'
+    UNION ALL
+    SELECT '9000006', 'moussa.sy@uadb.edu.sn', 'moussa.sy.perso@gmail.com',
+           'Sy', 'Moussa', 'ACTIF',
+           'Développement et Administration d''Applications', 'Licence 2', '2024-2025'
+    UNION ALL
+    SELECT '1500001', 'moussa.diop@uadb.edu.sn', 'moussa.diop@gmail.com',
+           'Diop', 'Moussa', 'ACTIF',
+           'Développement et Administration d''Applications', 'Licence 1', '2026-2027'
+    UNION ALL
+    SELECT '1500002', 'aissatou.ndiaye@uadb.edu.sn', 'aissatou.ndiaye@yahoo.fr',
+           'Ndiaye', 'Aïssatou', 'ACTIF',
+           'Mathématiques', 'Licence 2', '2026-2027'
+    UNION ALL
+    SELECT '1500003', 'cheikh.fall@uadb.edu.sn', 'cheikh.fall@gmail.com',
+           'Fall', 'Cheikh', 'ACTIF',
+           'Systèmes, Réseaux et Télécoms', 'Licence 3', '2026-2027'
+    UNION ALL
+    SELECT '1500004', 'fatou.gueye@uadb.edu.sn', 'fatou.gueye.pro@gmail.com',
+           'Gueye', 'Fatou', 'ACTIF',
+           'Développement et Administration d''Applications', 'Master 1', '2026-2027'
+    UNION ALL
+    SELECT '1500005', 'ibrahima.sow@uadb.edu.sn', 'ibrahima.sow@outlook.com',
+           'Sow', 'Ibrahima', 'ACTIF',
+           'Systèmes, Réseaux et Télécoms', 'Master 2', '2026-2027'
+    UNION ALL
+    SELECT '1500006', 'khadija.mbaye@uadb.edu.sn', 'khadija.mbaye@gmail.com',
+           'Mbaye', 'Khadija', 'ACTIF',
+           'Économie Appliquée', 'Licence 1', '2026-2027'
+    UNION ALL
+    SELECT '1500007', 'ousmane.seck@uadb.edu.sn', 'ousmane.seck@gmail.com',
+           'Seck', 'Ousmane', 'ACTIF',
+           'Administration Publique', 'Licence 2', '2026-2027'
+    UNION ALL
+    SELECT '1500008', 'ndeye.kane@uadb.edu.sn', 'ndeye.kane.pro@gmail.com',
+           'Kane', 'Ndeye', 'ACTIF',
+           'Agriculture et Développement Durable', 'Licence 3', '2026-2027'
+    UNION ALL
+    SELECT '1500009', 'mamadou.ba@uadb.edu.sn', 'mamadou.ba@gmail.com',
+           'Ba', 'Mamadou', 'ACTIF',
+           'Management des Organisations', 'Master 1', '2026-2027'
+    UNION ALL
+    SELECT '1500010', 'aminata.diallo@uadb.edu.sn', 'aminata.diallo@gmail.com',
+           'Diallo', 'Aminata', 'ACTIF',
+           'Finance-Comptabilité', 'Master 2', '2026-2027'
+) r
+JOIN filiere f ON f.nom = r.filiere
+JOIN niveau n ON n.libelle = r.niveau;

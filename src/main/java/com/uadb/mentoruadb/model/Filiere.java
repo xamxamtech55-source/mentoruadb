@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.model;
 
+// ==================== DÉBUT CLASSE ====================
 /** Entité FILIERE : rattachée à une UFR. */
 public class Filiere {
     private int idFiliere;
@@ -27,3 +28,4 @@ public class Filiere {
         return nom;
     }
 }
+// ==================== FIN CLASSE ====================

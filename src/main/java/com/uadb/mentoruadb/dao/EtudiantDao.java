@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.dao;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.config.DatabaseConnection;
 import com.uadb.mentoruadb.model.Etudiant;
 
@@ -7,7 +8,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 public class EtudiantDao implements Dao<Etudiant, Integer> {
 
     @Override
@@ -19,7 +22,8 @@ public class EtudiantDao implements Dao<Etudiant, Integer> {
 
     /** Variante transactionnelle : utilise la connexion fournie et NE la ferme PAS (c'est à l'appelant de le faire). */
     public Etudiant create(Etudiant e, Connection conn) throws SQLException {
-        String sql = "INSERT INTO etudiant (id_utilisateur, id_filiere, id_niveau, numero_carte) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO etudiant (id_utilisateur, id_filiere, id_niveau, numero_carte, id_referentiel) "
+                + "VALUES (?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -27,6 +31,11 @@ public class EtudiantDao implements Dao<Etudiant, Integer> {
             stmt.setInt(2, e.getIdFiliere());
             stmt.setInt(3, e.getIdNiveau());
             stmt.setString(4, e.getNumeroCarte());
+            if (e.getIdReferentiel() == null) {
+                stmt.setNull(5, Types.INTEGER);
+            } else {
+                stmt.setInt(5, e.getIdReferentiel());
+            }
             stmt.executeUpdate();
 
             try (ResultSet keys = stmt.getGeneratedKeys()) {
@@ -46,6 +55,20 @@ public class EtudiantDao implements Dao<Etudiant, Integer> {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next() ? Optional.of(mapRow(rs)) : Optional.empty();
+            }
+        }
+    }
+
+    /** Retrouve le profil par numéro de carte (identifiant de connexion des comptes activés). */
+    public Optional<Etudiant> findByNumeroCarte(String numeroCarte) throws SQLException {
+        String sql = "SELECT * FROM etudiant WHERE numero_carte = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, numeroCarte);
             try (ResultSet rs = stmt.executeQuery()) {
                 return rs.next() ? Optional.of(mapRow(rs)) : Optional.empty();
             }
@@ -84,7 +107,8 @@ public class EtudiantDao implements Dao<Etudiant, Integer> {
 
     @Override
     public void update(Etudiant e) throws SQLException {
-        String sql = "UPDATE etudiant SET id_utilisateur = ?, id_filiere = ?, id_niveau = ?, numero_carte = ? WHERE id_etudiant = ?";
+        String sql = "UPDATE etudiant SET id_utilisateur = ?, id_filiere = ?, id_niveau = ?, numero_carte = ?, "
+                + "id_referentiel = ? WHERE id_etudiant = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -93,7 +117,12 @@ public class EtudiantDao implements Dao<Etudiant, Integer> {
             stmt.setInt(2, e.getIdFiliere());
             stmt.setInt(3, e.getIdNiveau());
             stmt.setString(4, e.getNumeroCarte());
-            stmt.setInt(5, e.getIdEtudiant());
+            if (e.getIdReferentiel() == null) {
+                stmt.setNull(5, Types.INTEGER);
+            } else {
+                stmt.setInt(5, e.getIdReferentiel());
+            }
+            stmt.setInt(6, e.getIdEtudiant());
             stmt.executeUpdate();
         }
     }
@@ -111,12 +140,17 @@ public class EtudiantDao implements Dao<Etudiant, Integer> {
     }
 
     private Etudiant mapRow(ResultSet rs) throws SQLException {
+        int referentiel = rs.getInt("id_referentiel");
+        Integer idReferentiel = rs.wasNull() ? null : referentiel;
+
         return new Etudiant(
                 rs.getInt("id_etudiant"),
                 rs.getInt("id_utilisateur"),
                 rs.getInt("id_filiere"),
                 rs.getInt("id_niveau"),
-                rs.getString("numero_carte")
+                rs.getString("numero_carte"),
+                idReferentiel
         );
     }
 }
+// ==================== FIN CLASSE ====================

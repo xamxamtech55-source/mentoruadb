@@ -52,15 +52,15 @@ git --version
 
 Base vierge :
 ```bash
-mysql -u root -p < database/schema.sql
-mysql -u root -p < database/data.sql
+mysql -u root -p < database/schema/schema.sql
+mysql -u root -p < database/seeds/data.sql
 ```
 
 **Base déjà créée avant une migration ?** Sauvegarde-la (`mysqldump -u root -p mentoruadb > sauvegarde.sql`)
-puis exécute les migrations manquantes dans l'ordre (`migration_001`, `_002`, …). Chaque script peut être
-relancé sans risque.
+puis exécute les migrations manquantes de `database/migrations/` dans l'ordre (`migration_001`, `_002`, …).
+Chaque script peut être relancé sans risque.
 
-Migrations existantes :
+Migrations existantes (dans `database/migrations/`) :
 
 | Script | Contenu |
 | --- | --- |
@@ -128,9 +128,11 @@ src/main/resources/...
   images/                      logo UADB, photo d'accueil
 src/test/...                   tests unitaires
 database/
-  schema.sql                   création des tables (fait foi)
-  data.sql                     jeu de données de démonstration
-  migration_00*.sql            migrations manuelles
+  schema/schema.sql            création des tables (fait foi)
+  seeds/data.sql               jeu de données de démonstration
+  seeds/seed_referentiel_uadb.sql  référentiel UADB de démonstration
+  migrations/migration_00*.sql migrations manuelles
+docs/conception/               modèles MCD/MPD
 README.md / CAHIER_DE_CHARGE.md   documentation
 ```
 

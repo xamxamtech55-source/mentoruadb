@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.dao;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.config.DatabaseConnection;
 import com.uadb.mentoruadb.dto.MentorDetailVue;
 import com.uadb.mentoruadb.dto.MentorRechercheVue;
@@ -10,7 +11,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 public class MentorDao implements Dao<Mentor, Integer> {
 
     @Override
@@ -382,3 +385,4 @@ public class MentorDao implements Dao<Mentor, Integer> {
         );
     }
 }
+// ==================== FIN CLASSE ====================

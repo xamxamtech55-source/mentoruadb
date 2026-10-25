@@ -68,6 +68,7 @@
 
     <!-- Contenu -->
     <center>
+        <ScrollPane fx:id="scrollContenu" fitToWidth="true" hbarPolicy="NEVER" styleClass="dashboard-scroll">
         <VBox spacing="10.0">
             <padding>
                 <Insets top="14.0" right="20.0" bottom="12.0" left="20.0" />
@@ -114,10 +115,10 @@
             <!-- Message de la rubrique active -->
             <Label fx:id="messageLabel" styleClass="message-label" wrapText="true" />
 
-            <StackPane fx:id="sectionsPane" VBox.vgrow="ALWAYS">
+            <StackPane fx:id="sectionsPane">
 
                 <!-- Mes demandes -->
-                <ScrollPane fx:id="secDemandes" fitToWidth="true">
+                <VBox fx:id="secDemandes">
                     <VBox spacing="10.0" styleClass="contenu-page">
                         <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0" /></padding>
 
@@ -153,10 +154,10 @@
                         </TableView>
                         <Button text="Effacer la demande de séance" onAction="#onEffacerDemandeSeanceClick" styleClass="bouton-secondaire" />
                     </VBox>
-                </ScrollPane>
+                </VBox>
 
                 <!-- Mes séances -->
-                <ScrollPane fx:id="secSeances" fitToWidth="true" visible="false" managed="false">
+                <VBox fx:id="secSeances" visible="false" managed="false">
                     <VBox spacing="10.0" styleClass="contenu-page">
                         <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0" /></padding>
 
@@ -203,10 +204,10 @@
                             <Button text="Évaluer" onAction="#onEvaluerClick" styleClass="ds-btn" />
                         </HBox>
                     </VBox>
-                </ScrollPane>
+                </VBox>
 
                 <!-- Évaluations -->
-                <ScrollPane fx:id="secEvaluations" fitToWidth="true" visible="false" managed="false">
+                <VBox fx:id="secEvaluations" visible="false" managed="false">
                     <VBox spacing="10.0" styleClass="contenu-page">
                         <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0" /></padding>
                         <Label text="Mes évaluations données" styleClass="subtitle-label" />
@@ -220,10 +221,10 @@
                             </columns>
                         </TableView>
                     </VBox>
-                </ScrollPane>
+                </VBox>
 
                 <!-- Ressources -->
-                <ScrollPane fx:id="secRessources" fitToWidth="true" visible="false" managed="false">
+                <VBox fx:id="secRessources" visible="false" managed="false">
                     <VBox spacing="10.0" styleClass="contenu-page">
                         <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0" /></padding>
                         <Label text="Fichiers partagés par mes mentors" styleClass="subtitle-label" />
@@ -236,8 +237,9 @@
                         </TableView>
                         <Button text="Ouvrir le fichier sélectionné" onAction="#onOuvrirFichierClick" styleClass="ds-btn" />
                     </VBox>
-                </ScrollPane>
+                </VBox>
             </StackPane>
         </VBox>
+        </ScrollPane>
     </center>
 </BorderPane>

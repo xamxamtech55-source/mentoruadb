@@ -1,8 +1,11 @@
 package com.uadb.mentoruadb.dto;
 
+// ==================== DÉBUT IMPORTS ====================
 import java.time.LocalDate;
 import java.time.LocalTime;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /** Vue enrichie d'une séance côté mentor, pour l'affichage (pas une entité de la base). */
 public class SeanceMentorVue {
     private final int idSeance;
@@ -32,3 +35,4 @@ public class SeanceMentorVue {
     public LocalTime getHeureFin() { return heureFin; }
     public String getStatut() { return statut; }
 }
+// ==================== FIN CLASSE ====================

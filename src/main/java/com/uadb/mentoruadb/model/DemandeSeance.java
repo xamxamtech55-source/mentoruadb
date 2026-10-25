@@ -1,7 +1,10 @@
 package com.uadb.mentoruadb.model;
 
+// ==================== DÉBUT IMPORTS ====================
 import java.time.LocalDate;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Entité DEMANDE_SEANCE : une fois une DemandeMentorat ACCEPTEE, l'étudiant peut demander une
  * séance quand il en a besoin. dateSouhaitee et message sont de simples indications facultatives
@@ -51,3 +54,4 @@ public class DemandeSeance {
     public Integer getIdSeance() { return idSeance; }
     public void setIdSeance(Integer idSeance) { this.idSeance = idSeance; }
 }
+// ==================== FIN CLASSE ====================

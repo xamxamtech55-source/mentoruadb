@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.dao;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.config.DatabaseConnection;
 
 import java.sql.Connection;
@@ -8,7 +9,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /** Table d'association pure (clé composite id_seance + id_etudiant) -> pas d'interface Dao<T,ID>. */
 public class SeanceParticipantDao {
 
@@ -117,3 +120,4 @@ public class SeanceParticipantDao {
         }
     }
 }
+// ==================== FIN CLASSE ====================

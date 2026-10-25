@@ -1,7 +1,10 @@
 package com.uadb.mentoruadb.dto;
 
+// ==================== DÉBUT IMPORTS ====================
 import java.time.LocalDate;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /** Vue enrichie d'une demande de séance reçue, côté mentor (pas une entité de la base). */
 public class DemandeSeanceRecueVue {
     private final int idDemandeSeance;
@@ -31,3 +34,4 @@ public class DemandeSeanceRecueVue {
     public String getStatut() { return statut; }
     public LocalDate getDateCreation() { return dateCreation; }
 }
+// ==================== FIN CLASSE ====================

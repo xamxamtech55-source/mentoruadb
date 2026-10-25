@@ -1,8 +1,10 @@
 package com.uadb.mentoruadb.controller;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.dao.MentorDao;
 import com.uadb.mentoruadb.dto.MentorDetailVue;
 import com.uadb.mentoruadb.util.MessageLabel;
+import com.uadb.mentoruadb.util.Validateur;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -17,7 +19,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Locale;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Contrôleur lié à fxml/liste-mentors.fxml : vue administrative de tous les mentors
  * (validés, en attente et refusés), contrairement à la recherche étudiant qui ne
@@ -172,7 +176,7 @@ public class ListeMentorsController {
 
         identiteValue.setText(mentor.getNomComplet());
         emailValue.setText(ouNonRenseigne(mentor.getEmail()));
-        telephoneValue.setText(ouNonRenseigne(mentor.getTelephone()));
+        telephoneValue.setText(ouNonRenseigne(Validateur.formaterTelephone(mentor.getTelephone())));
         carteValue.setText(ouNonRenseigne(mentor.getNumeroCarte()));
         formationValue.setText(mentor.getNomFiliere() + " — " + mentor.getLibelleNiveau());
         matieresValue.setText(ouNonRenseigne(mentor.getMatieres()));
@@ -212,3 +216,4 @@ public class ListeMentorsController {
         };
     }
 }
+// ==================== FIN CLASSE ====================

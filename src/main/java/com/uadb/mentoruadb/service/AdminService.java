@@ -1,16 +1,16 @@
 package com.uadb.mentoruadb.service;
 
+// ==================== DÉBUT IMPORTS ====================
 import com.uadb.mentoruadb.dao.EtudiantDao;
 import com.uadb.mentoruadb.dao.MentorDao;
-import com.uadb.mentoruadb.dao.NiveauDao;
 import com.uadb.mentoruadb.dao.NotificationDao;
 import com.uadb.mentoruadb.model.Etudiant;
 import com.uadb.mentoruadb.model.Mentor;
-import com.uadb.mentoruadb.model.Niveau;
 
 import java.sql.SQLException;
-import java.util.Optional;
+// ==================== FIN IMPORTS ====================
 
+// ==================== DÉBUT CLASSE ====================
 /**
  * Décisions d'administration sur les candidatures « devenir mentor ».
  *
@@ -27,10 +27,8 @@ public class AdminService {
 
     private final MentorDao mentorDao = new MentorDao();
     private final EtudiantDao etudiantDao = new EtudiantDao();
-    private final NiveauDao niveauDao = new NiveauDao();
+    private final EligibiliteService eligibiliteService = new EligibiliteService();
     private final NotificationDao notificationDao = new NotificationDao();
-
-    private static final String NIVEAU_INELIGIBLE = "Licence 1";
 
     /** Valide une candidature EN_ATTENTE, après contrôle d'éligibilité (RG20). */
     public Mentor validerCandidature(int idMentor) throws SQLException {
@@ -76,10 +74,7 @@ public class AdminService {
 
     /** RG20 : Licence 1 ne peut pas être mentor. Appelé uniquement pour une validation. */
     private void verifierEligibilite(Etudiant etudiant) throws SQLException {
-        Optional<Niveau> niveau = niveauDao.findById(etudiant.getIdNiveau());
-        if (niveau.isPresent() && NIVEAU_INELIGIBLE.equalsIgnoreCase(niveau.get().getLibelle())) {
-            throw new IllegalStateException(
-                    "Éligibilité refusée (RG20) : un étudiant de " + NIVEAU_INELIGIBLE + " ne peut pas être mentor.");
-        }
+        eligibiliteService.verifierEligibiliteMentor(etudiant.getIdEtudiant());
     }
 }
+// ==================== FIN CLASSE ====================

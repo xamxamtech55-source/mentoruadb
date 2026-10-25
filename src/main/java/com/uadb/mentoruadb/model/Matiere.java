@@ -1,5 +1,6 @@
 package com.uadb.mentoruadb.model;
 
+// ==================== DÉBUT CLASSE ====================
 /** Entité MATIERE. */
 public class Matiere {
     private int idMatiere;
@@ -22,3 +23,4 @@ public class Matiere {
         return nom;
     }
 }
+// ==================== FIN CLASSE ====================
